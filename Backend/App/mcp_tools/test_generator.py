@@ -6,18 +6,29 @@ class TestGeneratorTool:
         optimized_tests
     ):
 
+        positive_cases = []
+
+
+        for index, test in enumerate(
+            optimized_tests,
+            start=1
+        ):
+
+            positive_cases.append(
+                {
+                    "id": f"TC{index:03}",
+
+                    "title": test,
+
+                    "type": "Positive"
+                }
+            )
+
 
         return {
 
-            "positive_tests": [
-                {
-                    "id": "TC001",
-                    "title": test,
-                    "type": "Positive"
-                }
-
-                for test in optimized_tests
-            ],
+            "positive_tests":
+                positive_cases,
 
 
             "negative_tests": [
@@ -26,7 +37,7 @@ class TestGeneratorTool:
                     "id": "TC_NEG_001",
 
                     "title":
-                    "Verify invalid user input handling",
+                    "Verify invalid input handling",
 
                     "type":
                     "Negative"
@@ -48,4 +59,5 @@ class TestGeneratorTool:
                 }
 
             ]
+
         }
