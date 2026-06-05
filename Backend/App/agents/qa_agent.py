@@ -6,7 +6,9 @@ from app.orchestrator.multi_llm_orchestrator import (
 
 from app.agents.judge_agent import JudgeAgent
 
-
+from app.mcp_tools.test_generator import (
+    TestGeneratorTool
+)
 
 class QAAgent:
 
@@ -14,7 +16,7 @@ class QAAgent:
     def __init__(self):
 
         self.requirement_tool = RequirementAnalyzer()
-
+        self.test_generator = TestGeneratorTool()
         self.llm_orchestrator = (
             MultiLLMOrchestrator()
         )
@@ -46,17 +48,27 @@ class QAAgent:
             .evaluate(llm_outputs)
         )
 
+        test_cases = (
+    self.test_generator.generate(
+        final_result["optimized_tests"]
+    )
+)
+
 
         return {
 
-            "requirement_analysis":
-                analysis,
+    "requirement_analysis":
+        analysis,
 
 
-            "llm_outputs":
-                llm_outputs,
+    "llm_outputs":
+        llm_outputs,
 
 
-            "judge_result":
-                final_result
-        }
+    "judge_result":
+        final_result,
+
+
+    "generated_test_cases":
+        test_cases
+}
