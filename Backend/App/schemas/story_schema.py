@@ -2,12 +2,10 @@ from pydantic import BaseModel
 
 
 class UserStoryRequest(BaseModel):
-
     user_story: str
 
 
-class TestGenerationResponse(BaseModel):
-
+class UserStoryResponse(BaseModel):
     status: str
     message: str
-    received_story: str
+    story: str
