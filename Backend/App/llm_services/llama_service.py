@@ -18,45 +18,38 @@ class LlamaService:
         requirement
     ):
 
-
-        prompt = f"""
-
-        Act as a senior QA engineer.
-
-        Generate test scenarios.
-
-        Requirement:
-        {requirement}
-
-        Include:
-        - functional testing
-        - negative testing
-        - edge cases
-        - security testing
-
-        Return only test points.
-        """
-
-
         try:
 
-            response = (
-                self.client.chat.completions.create(
+            response = self.client.chat.completions.create(
 
-                    model="llama-3.1-8b-instant",
+                model="llama-3.1-8b-instant",
 
-                    messages=[
-                        {
-                            "role":"user",
-                            "content":prompt
-                        }
-                    ]
+                messages=[
+                    {
+                        "role": "system",
+                        "content":
+                        "You are an expert QA automation engineer."
+                    },
 
-                )
+                    {
+                        "role": "user",
+                        "content": f"""
+                        Generate QA test cases for:
+
+                        {requirement}
+
+                        Include:
+                        Positive tests
+                        Negative tests
+                        Edge cases
+                        Security tests
+                        """
+                    }
+                ]
             )
 
 
-            content = (
+            result = (
                 response
                 .choices[0]
                 .message
@@ -65,25 +58,21 @@ class LlamaService:
 
 
             tests = [
+                item.strip()
 
-                line.strip()
+                for item in result.split("\n")
 
-                for line in content.split("\n")
-
-                if line.strip()
+                if item.strip()
             ]
 
 
             return {
 
-                "model":
-                "Llama",
+                "model": "Llama",
 
-                "status":
-                "success",
+                "status": "success",
 
-                "tests":
-                tests
+                "tests": tests
             }
 
 
@@ -92,17 +81,13 @@ class LlamaService:
 
             return {
 
-                "model":
-                "Llama",
+                "model": "Llama",
 
-                "status":
-                "failed",
+                "status": "failed",
 
-                "error":
-                str(error),
+                "error": repr(error),
 
-                "tests":[
+                "tests": [
                     "Llama fallback activated"
                 ]
-
             }
