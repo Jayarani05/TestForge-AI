@@ -1,6 +1,11 @@
-from app.mcp_tools.requirement_analyzer import (
-    RequirementAnalyzer
+from app.mcp_tools.requirement_analyzer import RequirementAnalyzer
+
+from app.orchestrator.multi_llm_orchestrator import (
+    MultiLLMOrchestrator
 )
+
+from app.agents.judge_agent import JudgeAgent
+
 
 
 class QAAgent:
@@ -8,30 +13,50 @@ class QAAgent:
 
     def __init__(self):
 
-        self.requirement_tool = (
-            RequirementAnalyzer()
+        self.requirement_tool = RequirementAnalyzer()
+
+        self.llm_orchestrator = (
+            MultiLLMOrchestrator()
         )
+
+        self.judge = JudgeAgent()
+
 
 
     def process_story(
         self,
-        story: str
+        story
     ):
 
-        requirement_analysis = (
+
+        analysis = (
             self.requirement_tool
             .analyze(story)
         )
 
 
+        llm_outputs = (
+            self.llm_orchestrator
+            .generate_all(story)
+        )
+
+
+        final_result = (
+            self.judge
+            .evaluate(llm_outputs)
+        )
+
+
         return {
 
-            "agent": "QA Agent",
+            "requirement_analysis":
+                analysis,
 
-            "workflow": [
-                "Requirement Analysis"
-            ],
 
-            "analysis":
-                requirement_analysis
+            "llm_outputs":
+                llm_outputs,
+
+
+            "judge_result":
+                final_result
         }
