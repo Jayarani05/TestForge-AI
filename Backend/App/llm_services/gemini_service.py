@@ -15,7 +15,7 @@ class GeminiService:
 
         self.model = (
             genai.GenerativeModel(
-                "gemini-1.5-flash"
+                "gemini-3.5-flash"
             )
         )
 
