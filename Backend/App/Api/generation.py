@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-
+from app.agents.qa_agent import QAAgent
 from app.schemas.story_schema import (
     UserStoryRequest,
     UserStoryResponse
@@ -13,15 +13,29 @@ router = APIRouter(
 
 
 @router.post(
-    "/generate",
-    response_model=UserStoryResponse
+    "/generate"
 )
 def generate_tests(
     request: UserStoryRequest
 ):
 
-   return {
-    "status": "success",
-    "message": "Story received",
-    "story": request.user_story
-}
+    agent = QAAgent()
+
+
+    result = agent.process_story(
+        request.user_story
+    )
+
+
+    return {
+        "status": "success",
+
+        "message":
+        "QA Agent executed successfully",
+
+        "story":
+        request.user_story,
+
+        "agent_result":
+        result
+    }
