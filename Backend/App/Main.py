@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from app.api.health import router as health_router
 
 app = FastAPI(
     title="TestForge AI",
@@ -15,4 +16,4 @@ app.include_router(
 def root():
     return {
         "message": "TestForge AI Backend Running"
-    }
+}
