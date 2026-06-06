@@ -62,7 +62,9 @@ class QAAgent:
          self,
          story,
          output_type="test_cases",
-         language=None
+         language=None,
+         framework=None
+
     ):
 
 
@@ -130,7 +132,9 @@ class QAAgent:
             .generate(
                 output_type,
                 classified_tests,
-                language
+                language,
+                framework
+
 
             )
 

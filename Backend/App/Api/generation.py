@@ -27,7 +27,10 @@ def generate_tests(
 
         request.output_type,
 
-        request.language
+        request.language,
+
+        request.framework
+
 
     )
 
