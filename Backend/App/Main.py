@@ -16,6 +16,10 @@ from app.api.cicd import (
     router as cicd_router
 )
 
+from app.api.repository import (
+    router as repository_router
+)
+
 app = FastAPI(
     title="TestForge AI",
     description="AI Agentic QA Automation Platform",
@@ -52,6 +56,11 @@ app.include_router(
 
 app.include_router(
     cicd_router,
+    prefix="/api/v1"
+)
+
+app.include_router(
+    repository_router,
     prefix="/api/v1"
 )
 

@@ -2,6 +2,7 @@ import os
 import tempfile
 import shutil
 import json
+import stat
 
 from git import Repo
 
@@ -154,6 +155,23 @@ Return ONLY JSON:
         finally:
 
 
+            def remove_readonly(
+                func,
+                path,
+                exc
+            ):
+
+                os.chmod(
+                    path,
+                    stat.S_IWRITE
+                )
+
+                func(
+                    path
+                )
+
+
             shutil.rmtree(
-                temp_dir
+                temp_dir,
+                onerror=remove_readonly
             )
