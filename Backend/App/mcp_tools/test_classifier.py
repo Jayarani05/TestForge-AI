@@ -22,12 +22,15 @@ class TestClassifier:
 
         counters = {
 
-            "positive":1,
-            "negative":1,
-            "edge":1,
-            "security":1
+            "positive": 1,
+            "negative": 1,
+            "edge": 1,
+            "security": 1
 
         }
+
+
+        current_section = "positive"
 
 
 
@@ -37,123 +40,46 @@ class TestClassifier:
             text = test.lower()
 
 
-            if any(
-                word in text
 
-                for word in [
+            # detect headings
 
-                    "sql",
-                    "xss",
-                    "csrf",
-                    "attack",
-                    "security",
-                    "token",
-                    "encryption",
-                    "unauthorized"
+            if "positive test" in text:
 
-                ]
+                current_section = "positive"
+                continue
 
+
+            if "negative test" in text:
+
+                current_section = "negative"
+                continue
+
+
+            if "edge case" in text:
+
+                current_section = "edge"
+                continue
+
+
+            if "security test" in text:
+
+                current_section = "security"
+                continue
+
+
+
+            # ignore empty markdown separators
+
+            if (
+                text.strip() == ""
+                or text.strip() == "---"
             ):
 
-
-                result["security_tests"].append(
-
-                    self.create_case(
-
-                        "TC_SEC",
-
-                        counters["security"],
-
-                        test,
-
-                        "Critical"
-
-                    )
-
-                )
-
-
-                counters["security"] += 1
+                continue
 
 
 
-            elif any(
-
-                word in text
-
-                for word in [
-
-                    "invalid",
-                    "fail",
-                    "error",
-                    "empty",
-                    "wrong"
-
-                ]
-
-            ):
-
-
-                result["negative_tests"].append(
-
-                    self.create_case(
-
-                        "TC_NEG",
-
-                        counters["negative"],
-
-                        test,
-
-                        "High"
-
-                    )
-
-                )
-
-
-                counters["negative"] += 1
-
-
-
-            elif any(
-
-                word in text
-
-                for word in [
-
-                    "edge",
-                    "limit",
-                    "boundary",
-                    "large",
-                    "special"
-
-                ]
-
-            ):
-
-
-                result["edge_cases"].append(
-
-                    self.create_case(
-
-                        "TC_EDGE",
-
-                        counters["edge"],
-
-                        test,
-
-                        "Medium"
-
-                    )
-
-                )
-
-
-                counters["edge"] += 1
-
-
-
-            else:
+            if current_section == "positive":
 
 
                 result["positive_tests"].append(
@@ -177,7 +103,82 @@ class TestClassifier:
 
 
 
+            elif current_section == "negative":
+
+
+                result["negative_tests"].append(
+
+                    self.create_case(
+
+                        "TC_NEG",
+
+                        counters["negative"],
+
+                        test,
+
+                        "High"
+
+                    )
+
+                )
+
+
+                counters["negative"] += 1
+
+
+
+
+            elif current_section == "edge":
+
+
+                result["edge_cases"].append(
+
+                    self.create_case(
+
+                        "TC_EDGE",
+
+                        counters["edge"],
+
+                        test,
+
+                        "Medium"
+
+                    )
+
+                )
+
+
+                counters["edge"] += 1
+
+
+
+
+            elif current_section == "security":
+
+
+                result["security_tests"].append(
+
+                    self.create_case(
+
+                        "TC_SEC",
+
+                        counters["security"],
+
+                        test,
+
+                        "Critical"
+
+                    )
+
+                )
+
+
+                counters["security"] += 1
+
+
+
         return result
+
 
 
 
@@ -197,7 +198,10 @@ class TestClassifier:
 
 
             "title":
-            title,
+            title.replace(
+                "*",
+                ""
+            ).strip(),
 
 
             "priority":
