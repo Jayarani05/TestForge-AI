@@ -68,3 +68,28 @@ class GeminiService:
             "tests":
             tests
         }
+    
+    
+    def generate_response(
+    self,
+    prompt
+    ):
+
+        try:
+
+            response = (
+                self.model
+                .generate_content(
+                    prompt
+                )
+            )
+
+
+            return (
+                response.text
+            )
+
+
+        except Exception as e:
+
+            return str(e)

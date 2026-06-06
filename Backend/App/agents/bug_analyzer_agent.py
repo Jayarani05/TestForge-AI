@@ -58,36 +58,23 @@ Do not add explanations.
 """
 
         response = (
-            self.llm.generate_tests(
+            self.llm.generate_response(
                 prompt
             )
         )
 
         try:
 
-            raw = (
-                response
-                .get(
-                     "tests",
-                      []
-                )
-            )
-
-
-            text = "\n".join(
-                raw
-            )
-
-
             parsed = json.loads(
-                text
+            response
             )
 
         except Exception:
 
-            parsed = response
-
-        
+            parsed = {
+            "raw_analysis":
+            response
+            }
 
 
         return {
