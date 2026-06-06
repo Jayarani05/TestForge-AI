@@ -12,6 +12,10 @@ from app.api.healing import (
     router as healing_router
 )
 
+from app.api.cicd import (
+    router as cicd_router
+)
+
 app = FastAPI(
     title="TestForge AI",
     description="AI Agentic QA Automation Platform",
@@ -43,6 +47,11 @@ app.include_router(
 
 app.include_router(
     healing_router,
+    prefix="/api/v1"
+)
+
+app.include_router(
+    cicd_router,
     prefix="/api/v1"
 )
 
