@@ -24,6 +24,10 @@ from app.agents.project_context_agent import (
     ProjectContextAgent
 )
 
+from app.agents.test_data_agent import (
+    TestDataAgent
+)
+
 
 
 class QAAgent:
@@ -61,7 +65,11 @@ class QAAgent:
 
         self.context_agent = (
             ProjectContextAgent()
-)
+        )
+
+        self.test_data_agent = (
+             TestDataAgent()
+        )
 
 
 
@@ -146,6 +154,15 @@ class QAAgent:
 
         )
 
+
+        test_data = (
+            self.test_data_agent.generate(
+                 story,
+                 classified_tests
+            )
+        )
+
+
         final_output = (
 
             self.output_agent
@@ -190,4 +207,8 @@ class QAAgent:
 
             "project_context":
             context_result,
+
+            "test_data":
+            test_data,
+
         }
