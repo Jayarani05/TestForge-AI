@@ -30,6 +30,9 @@ from app.api.history import (
     router as history_router
 )
 
+from app.api.auth import (
+    router as auth_router
+)
 
 app = FastAPI(
     title="TestForge AI",
@@ -78,6 +81,14 @@ app.include_router(
 app.include_router(
     history_router,
     prefix="/api/v1"
+)
+
+app.include_router(
+
+    auth_router,
+
+    prefix="/api/v1"
+
 )
 
 Base.metadata.create_all(
