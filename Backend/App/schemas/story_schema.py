@@ -18,6 +18,10 @@ class UserStoryRequest(BaseModel):
 
     framework: Optional[str] = None
 
+    project_context: Optional[
+        Dict[str, Any]
+    ] = None
+
 
 class UserStoryResponse(BaseModel):
     status: str
