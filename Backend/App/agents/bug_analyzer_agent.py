@@ -18,7 +18,6 @@ class BugAnalyzerAgent:
 
         if execution_result.get("passed"):
 
-
             return {
 
                 "bug_found": False,
@@ -31,37 +30,38 @@ class BugAnalyzerAgent:
 
         prompt = f"""
 
-You are a senior QA engineer.
+You are an expert QA automation engineer.
 
-Analyze this failed automation result.
+Analyze this failed test execution.
 
 
-Execution Output:
+Execution Result:
 
 {execution_result}
 
 
-Generate:
+Return ONLY this JSON.
 
-1. Bug title
-2. Severity (Low/Medium/High/Critical)
-3. Root cause
-4. Developer fix suggestion
-5. QA recommendation
+Do not generate test cases.
+Do not add explanations.
+
+{
+ "title":"",
+ "severity":"",
+ "root_cause":"",
+ "possible_fix":"",
+ "qa_recommendation":""
+}
 
 
-Return JSON format only.
-
-"""
-
-
-        response = self.llm.generate(
-            prompt
+        response = (
+            self.llm.generate_tests(
+                prompt
+            )
         )
 
 
         return {
-
 
             "bug_found":
             True,
