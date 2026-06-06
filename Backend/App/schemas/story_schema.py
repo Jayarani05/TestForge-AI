@@ -1,9 +1,20 @@
-from pydantic import BaseModel
+
 from typing import Dict, Any
+from typing import Optional
+from pydantic import BaseModel
+
 
 
 class UserStoryRequest(BaseModel):
+
+
     user_story: str
+
+
+    output_type: str = "test_cases"
+
+
+    language: Optional[str] = None
 
 
 class UserStoryResponse(BaseModel):
