@@ -6,6 +6,7 @@ from app.api.export import (
     router as export_router
 )
 
+from app.api.execution import router as execution_router
 
 app = FastAPI(
     title="TestForge AI",
@@ -28,6 +29,11 @@ app.include_router(
 
 app.include_router(
     export_router,
+    prefix="/api/v1"
+)
+
+app.include_router(
+    execution_router,
     prefix="/api/v1"
 )
 
