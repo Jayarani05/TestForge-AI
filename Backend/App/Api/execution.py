@@ -5,6 +5,10 @@ from app.agents.test_execution_agent import (
     TestExecutionAgent
 )
 
+from app.agents.bug_analyzer_agent import (
+    BugAnalyzerAgent
+)
+
 
 router = APIRouter(
     prefix="/execution",
@@ -28,21 +32,34 @@ def execute_test(
     request: ExecutionRequest
 ):
 
-    agent = TestExecutionAgent()
+    executor = TestExecutionAgent()
 
 
-    result = agent.execute(
+    execution_result = executor.execute(
         request.code
     )
 
 
+    bug_agent = BugAnalyzerAgent()
+
+
+    bug_report = bug_agent.analyze(
+        execution_result
+    )
+
+
     return {
+
 
         "status":
         "success",
 
 
         "execution_result":
-        result
+        execution_result,
+
+
+        "bug_analysis":
+        bug_report
 
     }
