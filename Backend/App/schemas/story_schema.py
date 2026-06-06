@@ -16,6 +16,8 @@ class UserStoryRequest(BaseModel):
 
     language: Optional[str] = None
 
+    framework: Optional[str] = None
+
 
 class UserStoryResponse(BaseModel):
     status: str
