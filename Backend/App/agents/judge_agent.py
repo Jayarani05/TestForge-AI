@@ -3,42 +3,53 @@ class JudgeAgent:
 
     def evaluate(
         self,
-        llm_responses
+        llm_outputs
     ):
 
         evaluations = []
 
 
-        for response in llm_responses:
+        for output in llm_outputs:
 
 
-            score_details = (
+            result = (
                 self.calculate_score(
-                    response
+                    output
                 )
             )
 
 
             evaluations.append(
+
                 {
+
                     "model":
-                    response["model"],
+                    output["model"],
+
 
                     "score":
-                    score_details["total"],
+                    result["score"],
 
-                    "reason":
-                    score_details["reason"],
+
+                    "strengths":
+                    result["strengths"],
+
 
                     "tests":
-                    response["tests"]
+                    output["tests"]
+
                 }
+
             )
 
 
-        best = max(
+        winner = max(
+
             evaluations,
-            key=lambda x: x["score"]
+
+            key=lambda item:
+            item["score"]
+
         )
 
 
@@ -49,21 +60,24 @@ class JudgeAgent:
 
 
             "selected_model":
-            best["model"],
+            winner["model"],
 
 
-            "confidence":
-            best["score"],
+            "confidence_score":
+            winner["score"],
 
 
             "selection_reason":
-            best["reason"],
+            self.generate_reason(
+                winner
+            ),
 
 
             "optimized_tests":
-            best["tests"]
+            winner["tests"]
 
         }
+
 
 
 
@@ -73,115 +87,246 @@ class JudgeAgent:
     ):
 
 
-        tests = " ".join(
-            response["tests"]
-        ).lower()
+        tests = (
+
+            " ".join(
+                response["tests"]
+            )
+
+            .lower()
+
+        )
 
 
         score = 0
 
 
-        reasons = []
+        strengths = []
 
 
 
-        # coverage
-        count = len(
+        # 1. Test coverage - 30
+
+        test_count = len(
             response["tests"]
         )
 
 
-        if count >= 10:
+        if test_count >= 30:
 
-            score += 40
+            score += 30
 
-            reasons.append(
-                "High test coverage"
+            strengths.append(
+                "Excellent coverage"
+            )
+
+
+        elif test_count >= 15:
+
+            score += 20
+
+            strengths.append(
+                "Good coverage"
             )
 
 
         else:
 
-            score += count * 3
+            score += 10
 
 
 
-        security_words = [
+        # 2. Security depth - 25
+
+        security_keywords = [
 
             "security",
             "authentication",
             "authorization",
             "sql",
             "xss",
+            "csrf",
+            "token",
+            "encryption",
             "vulnerability",
             "attack"
+
         ]
 
 
-        if any(
-            word in tests
-            for word in security_words
-        ):
+        security_score = sum(
 
-            score += 25
+            1
 
-            reasons.append(
-                "Strong security validation"
+            for word in security_keywords
+
+            if word in tests
+
+        )
+
+
+        score += min(
+
+            security_score * 5,
+
+            25
+
+        )
+
+
+        if security_score:
+
+            strengths.append(
+                "Strong security testing"
             )
 
 
 
-        edge_words = [
+        # 3. Edge cases - 20
+
+
+        edge_keywords = [
 
             "edge",
             "boundary",
             "limit",
-            "exception"
+            "large",
+            "special",
+            "concurrent",
+            "timeout"
+
         ]
 
 
-        if any(
-            word in tests
-            for word in edge_words
-        ):
+        edge_score = sum(
 
-            score += 20
+            1
 
-            reasons.append(
-                "Includes edge case testing"
+            for word in edge_keywords
+
+            if word in tests
+
+        )
+
+
+        score += min(
+
+            edge_score * 4,
+
+            20
+
+        )
+
+
+        if edge_score:
+
+            strengths.append(
+                "Covers edge scenarios"
             )
 
 
 
-        negative_words = [
+        # 4. Structure quality - 15
 
-            "negative",
-            "invalid",
-            "failure",
-            "error"
+
+        structure_keywords = [
+
+            "steps",
+            "expected",
+            "precondition",
+            "scenario",
+            "verify"
+
         ]
 
 
-        if any(
-            word in tests
-            for word in negative_words
-        ):
+        structure_score = sum(
 
-            score += 15
+            1
 
-            reasons.append(
-                "Covers negative scenarios"
+            for word in structure_keywords
+
+            if word in tests
+
+        )
+
+
+        score += min(
+
+            structure_score * 3,
+
+            15
+
+        )
+
+
+        if structure_score:
+
+            strengths.append(
+                "Well structured test cases"
             )
+
+
+
+        # 5. Duplicate penalty
+
+
+        unique_tests = len(
+
+            set(
+                response["tests"]
+            )
+
+        )
+
+
+        duplicate_count = (
+
+            len(response["tests"])
+            -
+            unique_tests
+
+        )
+
+
+        score -= (
+
+            duplicate_count * 2
+
+        )
 
 
 
         return {
 
-            "total":
-            score,
+            "score":
+            max(
+                score,
+                0
+            ),
 
 
-            "reason":
-            ", ".join(reasons)
+            "strengths":
+            strengths
 
         }
+
+
+
+    def generate_reason(
+        self,
+        winner
+    ):
+
+
+        return (
+
+            f"{winner['model']} selected because of "
+
+            +
+
+            ", ".join(
+                winner["strengths"]
+            )
+
+        )
