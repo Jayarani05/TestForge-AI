@@ -1,4 +1,5 @@
 from app.llm_services.gemini_service import GeminiService
+import json
 
 
 class BugAnalyzerAgent:
@@ -45,20 +46,48 @@ Return ONLY this JSON.
 Do not generate test cases.
 Do not add explanations.
 
-{
- "title":"",
- "severity":"",
- "root_cause":"",
- "possible_fix":"",
- "qa_recommendation":""
-}
 
+{{
+"title":"",
+"severity":"",
+"root_cause":"",
+"possible_fix":"",
+"qa_recommendation":""
+}}
+
+"""
 
         response = (
             self.llm.generate_tests(
                 prompt
             )
         )
+
+        try:
+
+            raw = (
+                response
+                .get(
+                     "tests",
+                      []
+                )
+            )
+
+
+            text = "\n".join(
+                raw
+            )
+
+
+            parsed = json.loads(
+                text
+            )
+
+        except Exception:
+
+            parsed = response
+
+        
 
 
         return {
@@ -68,6 +97,6 @@ Do not add explanations.
 
 
             "analysis":
-            response
+            parsed
 
         }
