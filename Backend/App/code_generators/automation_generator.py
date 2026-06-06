@@ -17,7 +17,8 @@ class AutomationGenerator:
     def generate(
         self,
         test_cases,
-        language
+        language,
+        framework
     ):
 
 
@@ -28,7 +29,10 @@ class AutomationGenerator:
 
                 test_cases,
 
-                language
+                language,
+                
+                framework
+
 
             )
 

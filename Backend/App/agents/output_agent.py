@@ -19,7 +19,9 @@ class OutputAgent:
         self,
         output_type,
         test_cases,
-        language=None
+        language=None,
+        framework=None
+
     ):
 
 
@@ -53,7 +55,10 @@ class OutputAgent:
 
                     test_cases,
 
-                    language
+                    language,
+                    
+                    framework
+
 
                 )
 
@@ -70,6 +75,10 @@ class OutputAgent:
 
                 "language":
                 language,
+
+
+                "framework":
+                framework,
 
 
                 "code":

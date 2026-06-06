@@ -22,7 +22,8 @@ class CodeGenerationService:
     def generate_code(
         self,
         test_cases,
-        language
+        language,
+        framework
     ):
 
 
@@ -30,20 +31,22 @@ class CodeGenerationService:
 
 You are a senior QA automation engineer.
 
-Convert these manual test cases into executable automation code.
+Generate automation code.
 
-Language:
+Programming Language:
 {language}
 
-Requirements:
+Testing Framework:
+{framework}
 
-- Generate clean production quality code
-- Use best testing framework
-- Add proper assertions
-- Add setup and teardown
-- No explanations
-- Return only code
+Rules:
 
+- Strictly use the selected framework only
+- Do not switch frameworks
+- Add setup
+- Add teardown
+- Add assertions
+- Return only executable code
 
 Test cases:
 
