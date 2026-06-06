@@ -3,14 +3,66 @@ from sqlalchemy import (
     Integer,
     String,
     Text,
-    DateTime
+    DateTime,
+    ForeignKey
 )
 
+from sqlalchemy.orm import relationship
 
 from datetime import datetime
 
-
 from app.database.connection import Base
+
+
+
+class User(
+    Base
+):
+
+    __tablename__ = "users"
+
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+
+    name = Column(
+        String(100)
+    )
+
+
+    email = Column(
+        String(150),
+        unique=True,
+        index=True
+    )
+
+
+    password = Column(
+        String(255)
+    )
+
+
+    role = Column(
+        String(50),
+        default="QA Engineer"
+    )
+
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
+
+
+    histories = relationship(
+        "GenerationHistory",
+        back_populates="owner"
+    )
+
 
 
 
@@ -25,6 +77,17 @@ class GenerationHistory(
         Integer,
         primary_key=True,
         index=True
+    )
+
+
+    user_id = Column(
+
+        Integer,
+
+        ForeignKey(
+            "users.id"
+        )
+
     )
 
 
@@ -43,5 +106,14 @@ class GenerationHistory(
         DateTime,
 
         default=datetime.utcnow
+
+    )
+
+
+    owner = relationship(
+
+        "User",
+
+        back_populates="histories"
 
     )
