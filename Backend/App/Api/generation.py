@@ -23,7 +23,12 @@ def generate_tests(
 
 
     result = agent.process_story(
-        request.user_story
+        request.user_story,
+
+        request.output_type,
+
+        request.language
+
     )
 
 

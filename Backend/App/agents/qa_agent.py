@@ -18,6 +18,8 @@ from app.mcp_tools.test_classifier import (
     TestClassifier
 )
 
+from app.agents.output_agent import OutputAgent
+
 
 
 class QAAgent:
@@ -51,12 +53,16 @@ class QAAgent:
             TestClassifier()
         )
 
+        self.output_agent = OutputAgent()
+
 
 
 
     def process_story(
-        self,
-        story
+         self,
+         story,
+         output_type="test_cases",
+         language=None
     ):
 
 
@@ -118,6 +124,18 @@ class QAAgent:
 
         )
 
+        final_output = (
+
+            self.output_agent
+            .generate(
+                output_type,
+                classified_tests,
+                language
+
+            )
+
+        )
+
 
 
         return {
@@ -141,4 +159,6 @@ class QAAgent:
             "generated_test_cases":
             classified_tests
 
+            "final_output":
+            final_output
         }
