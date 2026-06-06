@@ -2,6 +2,9 @@ from fastapi import FastAPI
 
 from app.api.health import router as health_router
 from app.api.generation import router as test_router
+from app.api.export import (
+    router as export_router
+)
 
 
 app = FastAPI(
@@ -19,6 +22,12 @@ app.include_router(
 
 app.include_router(
     test_router,
+    prefix="/api/v1"
+)
+
+
+app.include_router(
+    export_router,
     prefix="/api/v1"
 )
 
