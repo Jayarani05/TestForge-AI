@@ -1,27 +1,56 @@
 from app.mcp_tools.requirement_analyzer import RequirementAnalyzer
 
+
 from app.orchestrator.multi_llm_orchestrator import (
     MultiLLMOrchestrator
 )
 
+
 from app.agents.judge_agent import JudgeAgent
+
 
 from app.mcp_tools.test_generator import (
     TestGeneratorTool
 )
 
+
+from app.mcp_tools.test_classifier import (
+    TestClassifier
+)
+
+
+
 class QAAgent:
+
 
 
     def __init__(self):
 
-        self.requirement_tool = RequirementAnalyzer()
-        self.test_generator = TestGeneratorTool()
+
+        self.requirement_tool = (
+            RequirementAnalyzer()
+        )
+
+
         self.llm_orchestrator = (
             MultiLLMOrchestrator()
         )
 
-        self.judge = JudgeAgent()
+
+        self.judge = (
+            JudgeAgent()
+        )
+
+
+        self.test_generator = (
+            TestGeneratorTool()
+        )
+
+
+        self.test_classifier = (
+            TestClassifier()
+        )
+
 
 
 
@@ -31,44 +60,85 @@ class QAAgent:
     ):
 
 
+        # Step 1:
+        # Analyze requirement
+
         analysis = (
+
             self.requirement_tool
-            .analyze(story)
+            .analyze(
+                story
+            )
+
         )
 
+
+
+        # Step 2:
+        # Generate using Gemini + Llama + DeepSeek
 
         llm_outputs = (
+
             self.llm_orchestrator
-            .generate_all(story)
+            .generate_all(
+                story
+            )
+
         )
 
 
-        final_result = (
+
+        # Step 3:
+        # Judge best LLM response
+
+        judge_result = (
+
             self.judge
-            .evaluate(llm_outputs)
+            .evaluate(
+                llm_outputs
+            )
+
         )
 
-        test_cases = (
-    self.test_generator.generate(
-        final_result["optimized_tests"]
-    )
-)
+
+
+        # Step 4:
+        # Classify optimized tests
+
+        classified_tests = (
+
+            self.test_classifier
+            .classify(
+
+                judge_result[
+                    "optimized_tests"
+                ]
+
+            )
+
+        )
+
 
 
         return {
 
-    "requirement_analysis":
-        analysis,
+
+            "requirement_analysis":
+            analysis,
 
 
-    "llm_outputs":
-        llm_outputs,
+
+            "llm_outputs":
+            llm_outputs,
 
 
-    "judge_result":
-        final_result,
+
+            "judge_result":
+            judge_result,
 
 
-    "generated_test_cases":
-        test_cases
-}
+
+            "generated_test_cases":
+            classified_tests
+
+        }
