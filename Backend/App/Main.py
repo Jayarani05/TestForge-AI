@@ -20,6 +20,13 @@ from app.api.repository import (
     router as repository_router
 )
 
+from app.database.connection import (
+    engine,
+    Base
+)
+from app.database import models
+
+
 app = FastAPI(
     title="TestForge AI",
     description="AI Agentic QA Automation Platform",
@@ -64,6 +71,9 @@ app.include_router(
     prefix="/api/v1"
 )
 
+Base.metadata.create_all(
+    bind=engine
+)
 
 @app.get("/")
 def root():
