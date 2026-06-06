@@ -20,6 +20,10 @@ from app.mcp_tools.test_classifier import (
 
 from app.agents.output_agent import OutputAgent
 
+from app.agents.project_context_agent import (
+    ProjectContextAgent
+)
+
 
 
 class QAAgent:
@@ -55,6 +59,10 @@ class QAAgent:
 
         self.output_agent = OutputAgent()
 
+        self.context_agent = (
+            ProjectContextAgent()
+)
+
 
 
 
@@ -63,7 +71,9 @@ class QAAgent:
          story,
          output_type="test_cases",
          language=None,
-         framework=None
+         framework=None,
+         project_context=None
+
 
     ):
 
@@ -126,6 +136,16 @@ class QAAgent:
 
         )
 
+        context_result = (
+
+            self.context_agent
+            .process(
+
+                project_context
+            )
+
+        )
+
         final_output = (
 
             self.output_agent
@@ -133,7 +153,9 @@ class QAAgent:
                 output_type,
                 classified_tests,
                 language,
-                framework
+                framework,
+                context_result
+
 
 
             )
@@ -164,5 +186,8 @@ class QAAgent:
             classified_tests,
 
             "final_output":
-            final_output
+            final_output,
+
+            "project_context":
+            context_result,
         }
