@@ -20,7 +20,8 @@ class OutputAgent:
         output_type,
         test_cases,
         language=None,
-        framework=None
+        framework=None,
+        context=None
 
     ):
 
@@ -57,7 +58,8 @@ class OutputAgent:
 
                     language,
                     
-                    framework
+                    framework,
+                    context
 
 
                 )

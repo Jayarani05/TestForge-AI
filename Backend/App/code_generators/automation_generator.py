@@ -18,7 +18,8 @@ class AutomationGenerator:
         self,
         test_cases,
         language,
-        framework
+        framework,
+        context=None
     ):
 
 
@@ -30,8 +31,10 @@ class AutomationGenerator:
                 test_cases,
 
                 language,
-                
-                framework
+
+                framework,
+
+                context
 
 
             )

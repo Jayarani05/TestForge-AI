@@ -23,7 +23,8 @@ class CodeGenerationService:
         self,
         test_cases,
         language,
-        framework
+        framework,
+        context=None
     ):
 
 
@@ -39,14 +40,17 @@ Programming Language:
 Testing Framework:
 {framework}
 
+Application Context:
+
+{context}
+
 Rules:
 
-- Strictly use the selected framework only
-- Do not switch frameworks
-- Add setup
-- Add teardown
-- Add assertions
-- Return only executable code
+- Use provided URL
+- Use provided selectors
+- Do not create fake HTML
+- Do not assume elements
+- Generate executable automation
 
 Test cases:
 
