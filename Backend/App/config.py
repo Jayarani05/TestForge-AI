@@ -20,6 +20,14 @@ DEEPSEEK_API_KEY = os.getenv(
     "DEEPSEEK_API_KEY"
 )
 
+JWT_SECRET_KEY = os.getenv(
+
+    "JWT_SECRET_KEY"
+)
+
+
+settings = Settings()
+
 if not GEMINI_API_KEY:
     print("Warning: GEMINI_API_KEY not found")
 
