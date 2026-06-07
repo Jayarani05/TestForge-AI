@@ -1,20 +1,82 @@
+import { useEffect, useState } from "react";
+
+import api from "../api/axios";
+
 import StatCard from "../components/StatCard";
 
 
 function Dashboard(){
 
 
-const analytics={
+const [data,setData] = useState(null);
 
-projects:10,
 
-tests:250,
 
-executions:100,
+useEffect(()=>{
 
-bugs:25
+
+loadDashboard();
+
+
+},[]);
+
+
+
+
+
+const loadDashboard = async()=>{
+
+
+try{
+
+
+const response = await api.get(
+
+"/dashboard"
+
+);
+
+
+setData(
+
+response.data
+
+);
+
+
+}
+
+catch(error){
+
+
+console.log(error);
+
+
+}
+
 
 };
+
+
+
+
+
+if(!data){
+
+
+return (
+
+<div className="bg-black min-h-screen text-white p-10">
+
+Loading...
+
+</div>
+
+);
+
+}
+
+
 
 
 
@@ -23,11 +85,12 @@ return (
 <div className="min-h-screen bg-black p-10">
 
 
-<h1 className="text-white text-3xl font-bold">
+<h1 className="text-white text-4xl font-bold">
 
-Welcome Back 👋
+Welcome {data.user.name} 👋
 
 </h1>
+
 
 
 <div className="
@@ -42,7 +105,9 @@ mt-10
 
 title="Projects"
 
-value={analytics.projects}
+value={
+data.analytics.total_projects
+}
 
 />
 
@@ -51,7 +116,9 @@ value={analytics.projects}
 
 title="Generated Tests"
 
-value={analytics.tests}
+value={
+data.analytics.total_generations
+}
 
 />
 
@@ -60,7 +127,9 @@ value={analytics.tests}
 
 title="Executions"
 
-value={analytics.executions}
+value={
+data.analytics.total_executions
+}
 
 />
 
@@ -69,7 +138,9 @@ value={analytics.executions}
 
 title="Bugs Found"
 
-value={analytics.bugs}
+value={
+data.analytics.bugs_found
+}
 
 />
 

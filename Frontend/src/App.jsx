@@ -1,26 +1,20 @@
 import {
 
 BrowserRouter,
-
 Routes,
-
-Route
+Route,
+Navigate
 
 } from "react-router-dom";
 
 
-
 import Login from "./pages/Login";
-
 import Register from "./pages/Register";
-
 import Dashboard from "./pages/Dashboard";
-
 import Projects from "./pages/Projects";
+import TestGenerator from "./pages/TestGenerator";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
-
-
 
 
 function App(){
@@ -32,6 +26,19 @@ return (
 
 
 <Routes>
+
+
+<Route
+
+path="/"
+
+element={
+
+<Navigate to="/login" />
+
+}
+
+/>
 
 
 <Route
@@ -52,27 +59,21 @@ element={<Register />}
 />
 
 
-
 <Route
 
 path="/dashboard"
 
 element={
 
-
 <ProtectedRoute>
-
 
 <Dashboard />
 
-
 </ProtectedRoute>
-
 
 }
 
 />
-
 
 
 <Route
@@ -81,15 +82,28 @@ path="/projects"
 
 element={
 
-
 <ProtectedRoute>
-
 
 <Projects />
 
-
 </ProtectedRoute>
 
+}
+
+/>
+
+
+<Route
+
+path="/generate"
+
+element={
+
+<ProtectedRoute>
+
+<TestGenerator />
+
+</ProtectedRoute>
 
 }
 
