@@ -1,6 +1,18 @@
 import { useState } from "react";
 
+import {
+
+    Github,
+    Search,
+    Code,
+    ShieldCheck,
+    Lightbulb
+
+} from "lucide-react";
+
+
 import api from "../api/axios";
+
 
 
 function Repository(){
@@ -15,14 +27,14 @@ const [loading,setLoading] = useState(false);
 
 
 
-const analyzeRepo = async()=>{
+
+async function analyzeRepo(){
 
 
 try{
 
 
 setLoading(true);
-
 
 
 const response = await api.post(
@@ -38,80 +50,115 @@ repo_url:url
 );
 
 
-
-console.log(response.data);
-
-
-setResult(
-
-response.data.repository_analysis
-
-);
+setResult(response.data);
 
 
 }
+
 
 catch(error){
 
-
-console.log(
-
-error.response?.data
-
-);
-
+console.log(error);
 
 alert("Repository analysis failed");
 
-
 }
-
 
 
 setLoading(false);
 
 
-};
+}
 
 
 
 
 
-return (
-
-<div className="min-h-screen bg-black p-10">
 
 
-<h1 className="text-white text-3xl font-bold">
+return(
+
+<div>
+
+
+{/* HEADER */}
+
+
+<div className="mb-6">
+
+
+<h1 className="text-2xl font-bold">
 
 Repository Intelligence
 
 </h1>
 
 
+<p className="text-gray-500">
+
+Analyze source code repositories using AI
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+
+{/* INPUT */}
+
+
+<div
+className="
+bg-white
+border
+rounded-xl
+p-6
+shadow-sm
+mb-6
+"
+>
+
+
+<h2 className="
+font-semibold
+flex
+items-center
+gap-2
+mb-5
+">
+
+<Github size={18}/>
+
+Repository URL
+
+</h2>
+
+
+
+
+
+<div className="flex gap-4">
 
 
 <input
 
-
 value={url}
-
 
 onChange={(e)=>setUrl(e.target.value)}
 
-
-placeholder="Enter GitHub repository URL"
-
+placeholder="https://github.com/user/project"
 
 className="
-w-full
-bg-gray-900
-text-white
-p-4
-rounded-xl
-mt-8
+flex-1
+border
+rounded-lg
+p-3
 "
-
 
 />
 
@@ -120,30 +167,35 @@ mt-8
 
 <button
 
-
 onClick={analyzeRepo}
-
 
 className="
 bg-blue-600
 text-white
-px-6
-py-3
+px-5
 rounded-lg
-mt-5
+flex
+gap-2
+items-center
 "
 
-
 >
+
+
+<Search size={18}/>
 
 
 {
 
 loading
+
 ?
-"Analyzing..."
+
+"Analyzing"
+
 :
-"Analyze Repository"
+
+"Analyze"
 
 }
 
@@ -152,115 +204,251 @@ loading
 
 
 
+</div>
+
+
+</div>
+
+
+
+
+
+
+
 
 
 
 {
 
-result && (
+result
+
+?
+
+<div className="grid grid-cols-2 gap-6">
+
+
+
+
+
+
+
+{/* TECH */}
 
 
 <div className="
-bg-gray-900
-text-white
+bg-white
+border
 rounded-xl
 p-6
-mt-8
-">
+"
+>
 
 
-<h2 className="text-xl">
+<h2 className="
+font-semibold
+flex
+gap-2
+mb-4
+"
+>
 
-Project Type:
+<Code size={18}/>
+
+Tech Stack
 
 </h2>
 
 
+
+
+{
+
+
+(result.tech_stack || []).map(
+
+(item)=>(
+
+<span
+
+key={item}
+
+className="
+inline-block
+bg-blue-50
+text-blue-600
+px-3
+py-1
+rounded-full
+mr-2
+mb-2
+"
+
+>
+
+{item}
+
+</span>
+
+)
+
+)
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* SECURITY */}
+
+
+
+<div className="
+bg-white
+border
+rounded-xl
+p-6
+"
+>
+
+
+
+<h2 className="
+font-semibold
+flex
+gap-2
+mb-4
+"
+>
+
+<ShieldCheck size={18}/>
+
+Security
+
+</h2>
+
+
+
 <p>
 
-{result.project_type}
+{
+
+result.security || "No critical issues detected"
+
+}
 
 </p>
 
 
 
 
-
-<h2 className="text-xl mt-5">
-
-Languages
-
-</h2>
-
-
-<ul>
-
-
-{
-
-result.languages?.map(
-
-(x,i)=>(
-
-<li key={i}>
-
-{x}
-
-</li>
-
-)
-
-)
-
-}
-
-
-</ul>
+</div>
 
 
 
 
 
-<h2 className="text-xl mt-5">
 
-Features
+
+
+
+{/* RECOMMENDATIONS */}
+
+
+<div className="
+bg-white
+border
+rounded-xl
+p-6
+col-span-2
+"
+>
+
+
+<h2 className="
+font-semibold
+flex
+gap-2
+mb-4
+"
+>
+
+<Lightbulb size={18}/>
+
+AI Recommendations
 
 </h2>
 
 
 
-<ul>
 
+
+<pre className="text-sm">
 
 {
 
-result.features?.map(
+JSON.stringify(
 
-(x,i)=>(
+result.recommendations,
 
-<li key={i}>
+null,
 
-{x}
-
-</li>
-
-)
+2
 
 )
 
 }
 
+</pre>
 
-</ul>
 
 
 
 
 </div>
 
-)
+
+
+
+
+
+</div>
+
+
+:
+
+
+<div
+
+className="
+bg-white
+border
+rounded-xl
+h-64
+flex
+items-center
+justify-center
+text-gray-400
+"
+
+>
+
+Repository insights appear here
+
+</div>
+
 
 }
+
+
 
 
 
@@ -271,6 +459,7 @@ result.features?.map(
 
 
 }
+
 
 
 export default Repository;
