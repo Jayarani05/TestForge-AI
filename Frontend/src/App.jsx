@@ -19,6 +19,7 @@ import Execution from "./pages/Execution";
 import Repository from "./pages/Repository";
 import Healing from "./pages/Healing";
 import CICD from "./pages/CICD";
+import Export from "./pages/Export";
 
 function App(){
 
@@ -170,6 +171,22 @@ element={
 <ProtectedRoute>
 
 <CICD />
+
+</ProtectedRoute>
+
+}
+
+/>
+
+<Route
+
+path="/export"
+
+element={
+
+<ProtectedRoute>
+
+<Export />
 
 </ProtectedRoute>
 
