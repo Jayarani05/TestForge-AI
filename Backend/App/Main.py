@@ -46,6 +46,9 @@ from fastapi.middleware.cors import (
     CORSMiddleware
 )
 
+from fastapi import Request
+
+from fastapi.responses import JSONResponse
 
 app = FastAPI(
     title="TestForge AI",
@@ -161,3 +164,35 @@ def root():
     return {
         "message": "TestForge AI Backend Running"
     }
+
+
+@app.exception_handler(
+    Exception
+)
+
+async def global_exception_handler(
+
+    request: Request,
+
+
+    exc: Exception
+
+):
+
+    return JSONResponse(
+
+        status_code=500,
+
+
+        content={
+
+            "status":
+            "error",
+
+
+            "message":
+            str(exc)
+
+        }
+
+    )

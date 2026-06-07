@@ -34,17 +34,13 @@ from app.database.models import (
     User
 )
 
-
-
-# ==========================
-# JWT CONFIG
-# ==========================
-
-
-SECRET_KEY = (
-    "testforge-secret-key"
+from app.config import (
+    settings
 )
 
+
+
+SECRET_KEY = settings.JWT_SECRET_KEY
 
 ALGORITHM = (
     "HS256"
@@ -55,9 +51,7 @@ ACCESS_TOKEN_EXPIRE_HOURS = 24
 
 
 
-# ==========================
-# PASSWORD HASHING
-# ==========================
+
 
 
 pwd_context = CryptContext(
@@ -105,10 +99,6 @@ def verify_password(
     )
 
 
-
-# ==========================
-# CREATE JWT TOKEN
-# ==========================
 
 
 def create_token(
@@ -163,9 +153,6 @@ def create_token(
 
 
 
-# ==========================
-# GET CURRENT USER
-# ==========================
 
 
 oauth2_scheme = OAuth2PasswordBearer(
