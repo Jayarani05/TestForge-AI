@@ -23,6 +23,7 @@ import Export from "./pages/Export";
 import Settings from "./pages/Settings";
 import BugReport from "./pages/BugReport";
 import NotFound from "./pages/NotFound";
+import History from "./pages/History";
 
 
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -223,6 +224,11 @@ path="*"
 
 element={<NotFound />}
 
+/>
+
+<Route
+    path="/history"
+    element={<History />}
 />
 
 

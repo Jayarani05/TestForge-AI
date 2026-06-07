@@ -21,7 +21,9 @@ import {
 import { useAuth } from "../context/AuthContext";
 
 
-
+import {
+    History
+} from "lucide-react";
 
 
 function Sidebar(){
@@ -146,6 +148,12 @@ function Sidebar(){
             name:"Bug Analysis",
             path:"/bugs",
             icon:Bug
+        },
+
+        {
+            name:"History",
+            path:"/history",
+            icon:History
         }
 
 

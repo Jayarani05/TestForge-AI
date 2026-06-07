@@ -1,13 +1,11 @@
 import { useState } from "react";
 
 import {
-
     Rocket,
     Copy,
-    Settings
-
+    Settings,
+    CheckCircle
 } from "lucide-react";
-
 
 import api from "../api/axios";
 
@@ -18,7 +16,7 @@ function CICD(){
 
 const [language,setLanguage] = useState("python");
 
-const [framework,setFramework] = useState("selenium");
+const [framework,setFramework] = useState("pytest");
 
 const [tool,setTool] = useState("github actions");
 
@@ -31,7 +29,7 @@ const [loading,setLoading] = useState(false);
 
 
 
-async function generatePipeline(){
+const generatePipeline = async()=>{
 
 
 try{
@@ -58,8 +56,17 @@ tool
 
 
 
+console.log(
+    "PIPELINE RESPONSE",
+    response.data
+);
+
+
+
 setPipeline(
 
+response.data.pipeline_code ||
+response.data.pipeline ||
 response.data
 
 );
@@ -67,7 +74,6 @@ response.data
 
 
 }
-
 
 catch(error){
 
@@ -86,7 +92,79 @@ setLoading(false);
 
 
 
+};
+
+
+
+
+
+
+
+
+
+const getPipelineText = ()=>{
+
+
+if(!pipeline){
+
+return "";
+
 }
+
+
+
+if(typeof pipeline === "string"){
+
+return pipeline;
+
+}
+
+
+
+if(pipeline.pipeline_code){
+
+return pipeline.pipeline_code;
+
+}
+
+
+
+return JSON.stringify(
+
+pipeline,
+
+null,
+
+2
+
+);
+
+
+};
+
+
+
+
+
+
+
+
+
+const copyPipeline = ()=>{
+
+
+navigator.clipboard.writeText(
+
+getPipelineText()
+
+);
+
+
+alert("Copied");
+
+
+};
+
 
 
 
@@ -98,6 +176,7 @@ setLoading(false);
 return(
 
 <div>
+
 
 
 {/* HEADER */}
@@ -115,12 +194,14 @@ CI/CD Generator
 
 <p className="text-gray-500">
 
-Generate automated DevOps pipelines using AI
+Generate DevOps pipelines using AI
 
 </p>
 
 
 </div>
+
+
 
 
 
@@ -138,7 +219,8 @@ Generate automated DevOps pipelines using AI
 
 
 
-{/* SETTINGS */}
+
+{/* LEFT */}
 
 
 <div
@@ -152,7 +234,8 @@ shadow-sm
 >
 
 
-<h2 className="
+<h2
+className="
 font-semibold
 flex
 gap-2
@@ -173,9 +256,14 @@ Pipeline Settings
 
 
 
+
+
+
+
+
 <label className="text-sm">
 
-Language
+Project Type
 
 </label>
 
@@ -200,26 +288,28 @@ mb-5
 
 <option value="python">
 
-Python
+Python Automation
 
 </option>
 
 
 <option value="java">
 
-Java
+Java Automation
 
 </option>
 
 
 <option value="javascript">
 
-JavaScript
+Javascript Automation
 
 </option>
 
 
+
 </select>
+
 
 
 
@@ -234,6 +324,7 @@ JavaScript
 Framework
 
 </label>
+
 
 
 <select
@@ -254,25 +345,34 @@ mb-5
 >
 
 
+
+<option value="pytest">
+
+pytest
+
+</option>
+
+
 <option value="selenium">
 
-Selenium
+selenium
 
 </option>
 
 
 <option value="playwright">
 
-Playwright
+playwright
 
 </option>
 
 
-<option value="pytest">
+<option value="junit">
 
-PyTest
+junit
 
 </option>
+
 
 
 </select>
@@ -285,10 +385,9 @@ PyTest
 
 
 
-
 <label className="text-sm">
 
-CI/CD Tool
+CI Tool
 
 </label>
 
@@ -312,11 +411,13 @@ mb-5
 >
 
 
+
 <option value="github actions">
 
 GitHub Actions
 
 </option>
+
 
 
 <option value="jenkins">
@@ -326,8 +427,56 @@ Jenkins
 </option>
 
 
+
+
 </select>
 
+
+
+
+
+
+
+
+
+<div
+className="
+bg-blue-50
+border
+rounded-xl
+p-4
+text-sm
+mb-5
+"
+>
+
+
+<b>Configuration</b>
+
+
+<p>
+
+Language: {language}
+
+</p>
+
+
+<p>
+
+Framework: {framework}
+
+</p>
+
+
+<p>
+
+Tool: {tool}
+
+</p>
+
+
+
+</div>
 
 
 
@@ -341,6 +490,8 @@ Jenkins
 <button
 
 onClick={generatePipeline}
+
+disabled={loading}
 
 className="
 bg-blue-600
@@ -392,7 +543,10 @@ loading
 
 
 
-{/* OUTPUT */}
+
+
+{/* RIGHT */}
+
 
 
 <div
@@ -407,42 +561,63 @@ shadow-sm
 
 
 
-<div className="
+<div
+className="
 flex
 justify-between
 mb-5
+items-center
 "
 >
 
 
-<h2 className="font-semibold">
+<h2
+className="
+font-semibold
+flex
+gap-2
+"
+>
+
+
+<CheckCircle size={18}/>
 
 Generated Pipeline
+
 
 </h2>
 
 
 
+
 <button
 
+onClick={copyPipeline}
+
 className="
+text-blue-600
 flex
 gap-2
-text-blue-600
 text-sm
 "
 
 >
 
+
 <Copy size={16}/>
 
 Copy
+
 
 </button>
 
 
 
 </div>
+
+
+
+
 
 
 
@@ -457,34 +632,30 @@ pipeline
 ?
 
 
-<pre
-
+<div
 className="
-bg-gray-900
-text-green-400
-rounded-lg
+border
+rounded-xl
+bg-gray-50
 p-5
 h-96
 overflow-auto
-text-sm
 "
+>
 
+
+<pre
+className="
+text-sm
+whitespace-pre-wrap
+font-mono
+"
 >
 
 
 {
 
-pipeline.pipeline_code ||
-
-JSON.stringify(
-
-pipeline,
-
-null,
-
-2
-
-)
+getPipelineText()
 
 }
 
@@ -492,11 +663,15 @@ null,
 </pre>
 
 
+</div>
+
+
+
+
 :
 
 
 <div
-
 className="
 h-96
 flex
@@ -504,7 +679,6 @@ items-center
 justify-center
 text-gray-400
 "
-
 >
 
 
@@ -523,11 +697,6 @@ Generated YAML appears here
 
 
 
-</div>
-
-
-
-
 
 </div>
 
@@ -536,12 +705,18 @@ Generated YAML appears here
 
 
 </div>
+
+
+
+
+
+</div>
+
 
 );
 
 
 }
-
 
 
 

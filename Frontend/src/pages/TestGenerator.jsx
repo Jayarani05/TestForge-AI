@@ -1,21 +1,75 @@
-import {
-
-    useState,
-    useEffect
-
-} from "react";
-
+import { useEffect, useState } from "react";
 
 import {
-
     Bot,
-    Copy,
-    Sparkles
-
+    Sparkles,
+    Cpu,
+    Database,
+    FileText,
+    CheckCircle,
+    XCircle,
+    Shield,
+    AlertTriangle
 } from "lucide-react";
 
-
 import api from "../api/axios";
+
+
+
+function TestCard({test}){
+
+return(
+
+<div className="
+border
+rounded-xl
+p-4
+mb-3
+shadow-sm
+bg-white
+">
+
+<div className="
+flex
+justify-between
+items-center
+">
+
+<b>
+{test.id}
+</b>
+
+
+<span className="
+text-sm
+font-semibold
+">
+
+{test.priority}
+
+</span>
+
+
+</div>
+
+
+<p className="
+text-sm
+mt-2
+text-gray-600
+">
+
+{test.title}
+
+</p>
+
+
+</div>
+
+);
+
+}
+
 
 
 
@@ -24,18 +78,44 @@ import api from "../api/axios";
 function TestGenerator(){
 
 
+const [projects,setProjects]=useState([]);
 
-const [story,setStory] = useState("");
+const [projectId,setProjectId]=useState("");
 
-const [result,setResult] = useState(null);
+const [story,setStory]=useState("");
 
-const [loading,setLoading] = useState(false);
+const [language,setLanguage]=useState("python");
+
+const [framework,setFramework]=useState("selenium");
+
+const [result,setResult]=useState(null);
+
+const [loading,setLoading]=useState(false);
 
 
 
-const [projects,setProjects] = useState([]);
 
-const [projectId,setProjectId] = useState("");
+const frameworks={
+
+python:[
+"selenium",
+"pytest",
+"playwright"
+],
+
+java:[
+"selenium",
+"junit",
+"testng"
+],
+
+javascript:[
+"playwright",
+"jest",
+"cypress"
+]
+
+};
 
 
 
@@ -43,9 +123,7 @@ const [projectId,setProjectId] = useState("");
 
 useEffect(()=>{
 
-
-    loadProjects();
-
+loadProjects();
 
 },[]);
 
@@ -53,55 +131,34 @@ useEffect(()=>{
 
 
 
-
-
-const loadProjects = async()=>{
-
+const loadProjects=async()=>{
 
 try{
 
-
-const response = await api.get(
-
-    "/projects/"
-
+const res=await api.get(
+"/projects/"
 );
 
 
-
-setProjects(
-
-    response.data
-
-);
+setProjects(res.data);
 
 
-
-if(response.data.length > 0){
-
+if(res.data.length>0){
 
 setProjectId(
-
-    response.data[0].id
-
+res.data[0].id
 );
 
-
 }
-
-
-
-}
-
-
-catch(error){
-
-
-console.log(error);
 
 
 }
 
+catch(err){
+
+console.log(err);
+
+}
 
 };
 
@@ -111,78 +168,62 @@ console.log(error);
 
 
 
-
-
-
-const generateTests = async()=>{
-
-
-try{
+const generateTests=async()=>{
 
 
 if(!projectId){
 
-
-alert(
-
-    "Please create/select a project first"
-
-);
-
+alert("Select project");
 
 return;
-
 
 }
 
 
+if(!story){
+
+alert("Enter requirement");
+
+return;
+
+}
+
+
+
+try{
 
 
 setLoading(true);
 
 
 
-
-const response = await api.post(
+const res=await api.post(
 
 "/tests/generate",
 
 {
 
+project_id:Number(projectId),
 
 user_story:story,
 
-
 output_type:"test_cases",
 
+language,
 
-language:"python",
+framework,
 
-
-framework:"selenium",
-
-
-project_context:"",
-
-
-project_id:Number(
-
-    projectId
-
-)
-
+project_context:{}
 
 }
 
 );
-
-
 
 
 
 setResult(
 
-response.data.agent_result
+res.data.agent_result
 
 );
 
@@ -190,30 +231,21 @@ response.data.agent_result
 
 }
 
+catch(err){
 
-catch(error){
+console.log(err);
 
-
-console.log(error);
-
-
-alert(
-
-"Generation failed"
-
-);
-
+alert("Generation failed");
 
 }
-
 
 
 
 setLoading(false);
 
 
-
 };
+
 
 
 
@@ -228,64 +260,68 @@ return(
 <div>
 
 
-<div className="mb-6">
-
-
-<h1 className="text-2xl font-bold">
+<h1 className="
+text-2xl
+font-bold
+">
 
 AI Test Generator
 
 </h1>
 
 
+<p className="
+text-gray-500
+mb-6
+">
 
-<p className="text-gray-500">
-
-Generate QA test cases using AI agents
+Generate QA test cases using AI Agents
 
 </p>
 
 
-</div>
 
-
-
-
-
-
-
-<div className="grid grid-cols-2 gap-6">
 
 
 
 
 
 <div className="
-bg-white
+grid
+grid-cols-2
+gap-6
+">
+
+
+
+
+
+
+
+
+{/* INPUT */}
+
+
+<div className="
 border
 rounded-xl
 p-6
-shadow-sm
+bg-white
 ">
 
 
 <h2 className="
-font-semibold
+font-bold
 flex
 gap-2
-items-center
 mb-5
 ">
 
-
-<Sparkles size={18}/>
-
+<Sparkles/>
 
 Requirement
 
-
 </h2>
-
 
 
 
@@ -298,56 +334,37 @@ value={projectId}
 onChange={(e)=>setProjectId(e.target.value)}
 
 className="
-w-full
 border
-rounded-lg
 p-3
-mb-5
+rounded-lg
+w-full
+mb-4
 "
 
 >
 
 
-<option value="">
-
-Select Project
-
-</option>
-
-
-
 {
-
-
-projects.map(
-
-(project)=>(
-
+projects.map(p=>(
 
 <option
 
-key={project.id}
+key={p.id}
 
-value={project.id}
+value={p.id}
 
 >
 
-
-{project.name}
-
+{p.name}
 
 </option>
 
-
-)
-
-)
+))
 
 }
 
 
 </select>
-
 
 
 
@@ -360,18 +377,105 @@ value={story}
 
 onChange={(e)=>setStory(e.target.value)}
 
-placeholder="Enter user story or requirement..."
+placeholder="Enter user story"
 
 className="
-w-full
-h-72
 border
 rounded-lg
 p-4
-resize-none
+w-full
+h-72
 "
 
 />
+
+
+
+
+
+
+
+
+<div className="
+grid
+grid-cols-2
+gap-4
+mt-4
+">
+
+
+
+<select
+
+value={language}
+
+onChange={(e)=>{
+
+let value=e.target.value;
+
+setLanguage(value);
+
+setFramework(
+frameworks[value][0]
+);
+
+}}
+
+className="border p-3"
+
+>
+
+
+<option value="python">
+Python
+</option>
+
+<option value="java">
+Java
+</option>
+
+<option value="javascript">
+Javascript
+</option>
+
+
+</select>
+
+
+
+
+
+
+<select
+
+value={framework}
+
+onChange={(e)=>setFramework(e.target.value)}
+
+className="border p-3"
+
+>
+
+
+{
+
+frameworks[language].map(f=>(
+
+<option key={f}>
+
+{f}
+
+</option>
+
+))
+
+}
+
+
+</select>
+
+
+</div>
 
 
 
@@ -384,8 +488,6 @@ resize-none
 
 onClick={generateTests}
 
-disabled={loading}
-
 className="
 mt-5
 bg-blue-600
@@ -395,30 +497,23 @@ py-3
 rounded-lg
 flex
 gap-2
-items-center
 "
 
 >
 
-
-<Bot size={18}/>
+<Bot/>
 
 
 {
-
-loading ?
-
+loading
+?
 "Generating..."
-
 :
-
 "Generate Tests"
-
 }
 
 
 </button>
-
 
 
 
@@ -431,25 +526,24 @@ loading ?
 
 
 
+
+{/* OUTPUT */}
+
+
 <div className="
-bg-white
 border
 rounded-xl
 p-6
-shadow-sm
+bg-white
+overflow-auto
+h-[700px]
 ">
 
 
-
-<div className="
-flex
-justify-between
-items-center
+<h2 className="
+font-bold
 mb-5
 ">
-
-
-<h2 className="font-semibold">
 
 Generated Output
 
@@ -457,24 +551,59 @@ Generated Output
 
 
 
-<button
-
-className="
-text-blue-600
-flex
-gap-2
-text-sm
-"
-
->
 
 
-<Copy size={16}/>
+{
 
-Copy
+result
+
+?
 
 
-</button>
+<div className="space-y-5">
+
+
+
+
+
+
+
+
+
+<div className="
+grid
+grid-cols-2
+gap-4
+">
+
+
+
+<div className="
+border
+rounded-xl
+p-4
+">
+
+
+<Cpu/>
+
+
+<p className="text-gray-500">
+
+Selected AI
+
+</p>
+
+
+<b>
+
+{
+result.judge_result?.selected_model
+||
+"AI Agent"
+}
+
+</b>
 
 
 </div>
@@ -485,63 +614,262 @@ Copy
 
 
 
+<div className="
+border
+rounded-xl
+p-4
+">
+
+
+<Database/>
+
+
+<p className="text-gray-500">
+
+Framework
+
+</p>
+
+
+<b>
+
+{framework}
+
+</b>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* REQUIREMENTS */}
+
+
+
+<div className="
+border
+rounded-xl
+p-5
+bg-gray-50
+">
+
+
+<h3 className="
+font-bold
+flex
+gap-2
+mb-3
+">
+
+<FileText/>
+
+Requirement Analysis
+
+</h3>
+
+
+
+
+
+<ul className="
+list-disc
+ml-5
+text-sm
+">
+
 {
 
-result ?
+result.requirement_intelligence
+?.functional_requirements
+?.map((item,i)=>(
+
+<li key={i}>
+
+{item}
+
+</li>
+
+))
+
+}
+
+</ul>
 
 
-<pre
+
+
+
+
+
+<h3 className="
+font-bold
+mt-5
+flex
+gap-2
+">
+
+<AlertTriangle/>
+
+Risks
+
+</h3>
+
+
+{
+
+result.requirement_intelligence
+?.risk_analysis
+?.risks
+?.map((risk,i)=>(
+
+
+<div
+
+key={i}
 
 className="
-bg-gray-900
-text-green-400
+bg-red-50
+p-3
 rounded-lg
-p-5
-overflow-auto
-h-96
+mt-2
 text-sm
 "
 
 >
 
+{risk}
 
-{
+</div>
 
-JSON.stringify(
 
-result,
-
-null,
-
-2
-
-)
+))
 
 }
 
 
-</pre>
+</div>
+
+
+
+
+
+
+
+
+
+{/* TEST SECTIONS */}
+
+
+{
+
+[
+
+[
+"positive_tests",
+<CheckCircle/>,
+"Positive Tests"
+],
+
+
+[
+"negative_tests",
+<XCircle/>,
+"Negative Tests"
+],
+
+
+[
+"security_tests",
+<Shield/>,
+"Security Tests"
+],
+
+
+[
+"edge_cases",
+<AlertTriangle/>,
+"Edge Cases"
+]
+
+
+].map(section=>(
+
+
+<div key={section[0]}>
+
+
+<h3 className="
+font-bold
+flex
+gap-2
+mb-3
+">
+
+{section[1]}
+
+{section[2]}
+
+</h3>
+
+
+
+{
+
+result.generated_test_cases
+?.result
+?.[section[0]]
+?.map(test=>(
+
+<TestCard
+
+key={test.id}
+
+test={test}
+
+/>
+
+))
+
+}
+
+
+</div>
+
+
+))
+
+}
+
+
+
+
+
+
+</div>
 
 
 :
 
 
-<div
-
-className="
+<div className="
 h-96
 flex
 items-center
 justify-center
 text-gray-400
-"
-
->
-
+">
 
 AI generated tests appear here
 
-
 </div>
 
 
@@ -549,23 +877,18 @@ AI generated tests appear here
 
 
 
-
-</div>
-
-
 </div>
 
 
 
 </div>
 
+
+</div>
 
 );
 
-
 }
-
-
 
 
 export default TestGenerator;

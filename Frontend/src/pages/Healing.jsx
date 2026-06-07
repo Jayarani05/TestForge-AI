@@ -4,12 +4,16 @@ import {
 
     Wrench,
     CheckCircle,
-    AlertCircle
+    AlertCircle,
+    Bug,
+    Code,
+    Lightbulb
 
 } from "lucide-react";
 
 
 import api from "../api/axios";
+
 
 
 
@@ -31,13 +35,25 @@ const [loading,setLoading] = useState(false);
 
 
 
+
 async function repairTest(){
+
+
+if(!failedCode.trim()){
+
+alert("Paste broken test code");
+
+return;
+
+}
+
 
 
 try{
 
 
 setLoading(true);
+
 
 
 const response = await api.post(
@@ -57,17 +73,21 @@ dom_snapshot:dom
 );
 
 
+
 setResult(response.data);
+
 
 
 }
 
-
 catch(error){
+
 
 console.log(error);
 
+
 alert("Healing failed");
+
 
 }
 
@@ -85,9 +105,12 @@ setLoading(false);
 
 
 
+
 return (
 
 <div>
+
+
 
 
 {/* HEADER */}
@@ -118,24 +141,32 @@ Automatically repair broken automation tests
 
 
 
-<div className="grid grid-cols-2 gap-6">
+
+
+
+<div className="
+grid
+grid-cols-2
+gap-6
+">
 
 
 
 
 
-{/* LEFT */}
 
 
-<div
-className="
+{/* LEFT PANEL */}
+
+
+
+<div className="
 bg-white
 border
 rounded-xl
 p-6
 shadow-sm
-"
->
+">
 
 
 
@@ -145,8 +176,7 @@ flex
 gap-2
 items-center
 mb-5
-"
->
+">
 
 <AlertCircle size={18}/>
 
@@ -164,18 +194,22 @@ value={failedCode}
 
 onChange={(e)=>setFailedCode(e.target.value)}
 
-placeholder="Paste failed Selenium code..."
+placeholder="Paste failed Selenium / Pytest code..."
 
 className="
 w-full
-h-40
+h-44
 border
 rounded-lg
 p-4
 font-mono
+resize-none
 "
 
 />
+
+
+
 
 
 
@@ -197,9 +231,12 @@ rounded-lg
 p-4
 mt-4
 font-mono
+resize-none
 "
 
 />
+
+
 
 
 
@@ -212,7 +249,7 @@ value={dom}
 
 onChange={(e)=>setDom(e.target.value)}
 
-placeholder="Paste current DOM snapshot..."
+placeholder="Paste DOM snapshot..."
 
 className="
 w-full
@@ -222,9 +259,11 @@ rounded-lg
 p-4
 mt-4
 font-mono
+resize-none
 "
 
 />
+
 
 
 
@@ -237,20 +276,19 @@ font-mono
 
 onClick={repairTest}
 
+disabled={loading}
+
 className="
 mt-5
 bg-blue-600
 text-white
-px-5
+px-6
 py-3
 rounded-lg
 flex
 gap-2
 items-center
-"
-
->
-
+">
 
 <Wrench size={18}/>
 
@@ -274,8 +312,6 @@ loading
 
 
 
-
-
 </div>
 
 
@@ -286,19 +322,23 @@ loading
 
 
 
-{/* RIGHT */}
+
+
+{/* RIGHT PANEL */}
 
 
 
-<div
-className="
+
+<div className="
 bg-white
 border
 rounded-xl
 p-6
 shadow-sm
-"
->
+">
+
+
+
 
 
 <h2 className="
@@ -306,15 +346,18 @@ font-semibold
 flex
 gap-2
 items-center
-mb-5
-"
->
+mb-6
+">
 
 <CheckCircle size={18}/>
 
 AI Solution
 
 </h2>
+
+
+
+
 
 
 
@@ -327,72 +370,50 @@ result
 ?
 
 
+
 <div className="space-y-5">
 
 
 
-<div>
-
-
-<p className="text-sm text-gray-500">
-
-Broken Locator
-
-</p>
-
-
-<h3 className="font-semibold text-red-600">
-
-{result.broken_locator}
-
-</h3>
-
-
-</div>
 
 
 
 
+{/* ISSUE */}
 
 
-
-<div>
-
-
-<p className="text-sm text-gray-500">
-
-Suggested Locator
-
-</p>
+<div className="
+border
+rounded-xl
+p-5
+">
 
 
-<h3 className="font-semibold text-green-600">
+<h3 className="
+font-bold
+flex
+gap-2
+mb-3
+">
 
-{result.suggested_locator}
+<Bug size={18}/>
+
+Problem Found
 
 </h3>
-
-
-</div>
-
-
-
-
-
-
-<div>
-
-
-<p className="text-sm text-gray-500">
-
-Reason
-
-</p>
 
 
 <p>
 
-{result.reason}
+{
+
+result.broken_locator ||
+
+result.issue ||
+
+"Broken locator detected"
+
+}
 
 </p>
 
@@ -406,21 +427,160 @@ Reason
 
 
 
-<pre
-className="
-bg-gray-900
-text-green-400
-rounded-lg
+
+{/* FIX */}
+
+
+<div className="
+border
+rounded-xl
 p-5
+">
+
+
+<h3 className="
+font-bold
+flex
+gap-2
+mb-3
+">
+
+<Lightbulb size={18}/>
+
+Suggested Fix
+
+</h3>
+
+
+
+<p className="font-semibold">
+
+
+{
+
+result.suggested_locator ||
+
+result.fix ||
+
+"Updated locator generated"
+
+}
+
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+{/* REASON */}
+
+
+
+<div className="
+border
+rounded-xl
+p-5
+">
+
+
+<h3 className="font-bold mb-3">
+
+Reason
+
+</h3>
+
+
+
+<p className="text-gray-600">
+
+{
+
+result.reason ||
+
+result.explanation ||
+
+"AI detected UI change and repaired the automation script."
+
+}
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+{/* FIXED CODE */}
+
+
+
+<div className="
+border
+rounded-xl
+p-5
+">
+
+
+<h3 className="
+font-bold
+flex
+gap-2
+mb-3
+">
+
+<Code size={18}/>
+
+Fixed Code
+
+</h3>
+
+
+
+<div className="
+bg-gray-50
+border
+rounded-lg
+p-4
+font-mono
+text-sm
 overflow-auto
-"
->
+">
 
 
-{result.fixed_code}
+{
+
+result.fixed_code ||
+
+"No code returned"
+
+}
 
 
-</pre>
+</div>
+
+
+
+</div>
+
 
 
 
@@ -433,40 +593,44 @@ overflow-auto
 :
 
 
-<div
-className="
+
+<div className="
 h-96
 flex
 items-center
 justify-center
 text-gray-400
-"
->
+">
 
-
-AI repaired code appears here
-
+AI repaired solution appears here
 
 </div>
+
+
 
 }
 
 
 
+
+
+
+</div>
+
+
+
+
+
+
+
 </div>
 
 
 
 
 
-</div>
-
-
-
-
 
 </div>
-
 
 );
 
