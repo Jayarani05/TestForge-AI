@@ -6,33 +6,32 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-GEMINI_API_KEY = os.getenv(
-    "GEMINI_API_KEY"
-)
+
+class Settings:
 
 
-GROQ_API_KEY = os.getenv(
-    "GROQ_API_KEY"
-)
+    def __init__(self):
 
 
-DEEPSEEK_API_KEY = os.getenv(
-    "DEEPSEEK_API_KEY"
-)
+        self.GEMINI_API_KEY = os.getenv(
+            "GEMINI_API_KEY"
+        )
 
-JWT_SECRET_KEY = os.getenv(
 
-    "JWT_SECRET_KEY"
-)
+        self.GROQ_API_KEY = os.getenv(
+            "GROQ_API_KEY"
+        )
+
+
+        self.DEEPSEEK_API_KEY = os.getenv(
+            "DEEPSEEK_API_KEY"
+        )
+
+
+        self.JWT_SECRET_KEY = os.getenv(
+            "JWT_SECRET_KEY"
+        )
+
 
 
 settings = Settings()
-
-if not GEMINI_API_KEY:
-    print("Warning: GEMINI_API_KEY not found")
-
-if not GROQ_API_KEY:
-    print("Warning: GROQ_API_KEY not found")
-
-if not DEEPSEEK_API_KEY:
-    print("Warning: DEEPSEEK_API_KEY not found")

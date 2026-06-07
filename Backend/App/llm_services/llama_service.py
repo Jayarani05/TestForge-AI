@@ -1,6 +1,6 @@
 from groq import Groq
 
-from app.config import GROQ_API_KEY
+from app.config import settings
 
 
 class LlamaService:
@@ -9,7 +9,7 @@ class LlamaService:
     def __init__(self):
 
         self.client = Groq(
-            api_key=GROQ_API_KEY
+            api_key=settings.GROQ_API_KEY
         )
 
 

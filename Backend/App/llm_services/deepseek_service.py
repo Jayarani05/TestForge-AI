@@ -1,7 +1,6 @@
 from openai import OpenAI
 
-from app.config import DEEPSEEK_API_KEY
-
+from app.config import settings
 
 class DeepSeekService:
 
@@ -10,7 +9,7 @@ class DeepSeekService:
 
         self.client = OpenAI(
 
-            api_key=DEEPSEEK_API_KEY,
+            api_key=settings.DEEPSEEK_API_KEY,
 
             base_url="https://openrouter.ai/api/v1"
         )

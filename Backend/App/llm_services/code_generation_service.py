@@ -1,6 +1,6 @@
 import google.generativeai as genai
 
-from app.config import GEMINI_API_KEY
+from app.config import settings
 
 
 class CodeGenerationService:
@@ -9,7 +9,7 @@ class CodeGenerationService:
     def __init__(self):
 
         genai.configure(
-            api_key=GEMINI_API_KEY
+            api_key=settings.GEMINI_API_KEY
         )
 
 
