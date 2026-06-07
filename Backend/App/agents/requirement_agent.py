@@ -1,23 +1,37 @@
 import json
+import os
+
 import google.generativeai as genai
 
-from app.core.config import settings
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
 
 
 genai.configure(
-    api_key=settings.GEMINI_API_KEY
+
+    api_key=os.getenv(
+        "GEMINI_API_KEY"
+    )
+
 )
 
 
 
-def analyze_requirement(user_story: str):
+
+
+def analyze_requirement(user_story:str):
+
 
     model = genai.GenerativeModel(
-        "gemini-1.5-flash"
+        "gemini-3.5-flash"
     )
 
 
-    prompt = f"""
+
+    prompt=f"""
 
 You are a senior QA requirement analyst.
 
@@ -26,9 +40,11 @@ Analyze this user story:
 {user_story}
 
 
-Return only JSON:
+Return ONLY JSON:
+
 
 {{
+
 "functional_requirements":[],
 
 "non_functional_requirements":[],
@@ -36,34 +52,81 @@ Return only JSON:
 "sentiment":{{
 
 "type":"",
+
 "confidence":0,
+
 "reason":""
 
 }},
 
+
 "risk_analysis":{{
 
 "risk_level":"",
+
 "risks":[]
 
 }}
 
 }}
 
+
 """
 
 
-    response = model.generate_content(
+
+    response=model.generate_content(
         prompt
     )
 
 
-    clean = (
-        response.text
-        .replace("```json","")
-        .replace("```","")
-        .strip()
-    )
+
+    clean=response.text.replace(
+        "```json",
+        ""
+    ).replace(
+        "```",
+        ""
+    ).strip()
 
 
-    return json.loads(clean)
+
+    try:
+
+
+        return json.loads(
+            clean
+        )
+
+
+
+    except Exception:
+
+
+        return {
+
+
+            "functional_requirements":[],
+
+            "non_functional_requirements":[],
+
+            "sentiment":{
+
+                "type":"Neutral",
+
+                "confidence":0,
+
+                "reason":"parse failed"
+
+            },
+
+            "risk_analysis":{
+
+                "risk_level":"Unknown",
+
+                "risks":[]
+
+            }
+
+
+        }
