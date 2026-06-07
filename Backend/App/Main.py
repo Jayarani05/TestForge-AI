@@ -38,6 +38,9 @@ from app.api.projects import (
     router as project_router
 )
 
+from app.api.dashboard import (
+    router as dashboard_router
+)
 
 
 app = FastAPI(
@@ -100,6 +103,14 @@ app.include_router(
 app.include_router(
 
     project_router,
+
+    prefix="/api/v1"
+
+)
+
+app.include_router(
+
+    dashboard_router,
 
     prefix="/api/v1"
 
