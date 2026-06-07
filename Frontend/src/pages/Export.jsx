@@ -1,314 +1,304 @@
 import { useState } from "react";
 
+import {
+
+    FileText,
+    Table,
+    Code,
+    Download
+
+} from "lucide-react";
+
+
 import api from "../api/axios";
+
 
 
 
 function Export(){
 
 
-    const [exportType,setExportType] =
-    useState("pdf");
+const [loading,setLoading] = useState("");
 
+const [file,setFile] = useState(null);
 
-    const [content,setContent] =
-    useState("");
 
 
-    const [loading,setLoading] =
-    useState(false);
 
 
+async function exportFile(type){
 
 
-    const downloadFile = async()=>{
 
+try{
 
-        try{
 
+setLoading(type);
 
-            setLoading(true);
 
 
+const response = await api.post(
 
-            const response =
-            await api.post(
+"/export",
 
-                "/export",
+{
 
-                {
+export_type:type,
 
-                    export_type:
-                    exportType,
 
+data:{
 
-                    data:{
 
+generated_test_cases:{
 
-                        generated_test_cases:{
 
+functional:[
 
-                            "Generated Tests":[
+{
 
+id:"TC001",
 
-                                {
+title:"Login test",
 
+type:"functional",
 
-                                    id:"TC001",
+priority:"high"
 
+}
 
-                                    title:
-                                    content,
+]
 
 
-                                    type:
-                                    "Functional",
+},
 
 
-                                    priority:
-                                    "High"
+code:
 
+"driver.find_element(By.ID,'login').click()",
 
-                                }
 
+language:"python"
 
-                            ]
 
+}
 
-                        },
 
+}
 
+);
 
-                        code:
-                        content,
 
 
-                        language:
-                        "python"
 
+setFile(
 
-                    }
+response.data
 
+);
 
-                },
 
 
-                {
+}
 
-                    responseType:
-                    "blob"
 
-                }
+catch(error){
 
 
-            );
+console.log(error);
 
 
+alert("Export failed");
 
 
+}
 
 
 
-            const url =
-            window.URL.createObjectURL(
+setLoading("");
 
-                new Blob(
-                    [response.data]
-                )
 
-            );
 
+}
 
 
 
-            const link =
-            document.createElement(
-                "a"
-            );
 
 
 
-            link.href=url;
 
 
 
+const options=[
 
 
 
-            if(exportType==="pdf"){
+{
 
+type:"pdf",
 
-                link.download=
-                "qa_report.pdf";
+title:"PDF Report",
 
+desc:"Complete QA report",
 
-            }
+icon:FileText
 
+},
 
-            else if(exportType==="excel"){
 
 
-                link.download=
-                "test_cases.xlsx";
+{
 
+type:"excel",
 
-            }
+title:"Excel Sheet",
 
+desc:"Generated test cases",
 
-            else{
+icon:Table
 
+},
 
-                link.download=
-                "generated_test.py";
 
 
-            }
+{
 
+type:"code",
 
+title:"Code Export",
 
+desc:"Automation scripts",
 
-            link.click();
+icon:Code
 
+}
 
 
 
-        }
+];
 
 
-        catch(error){
 
 
-            console.log(
-                error
-            );
 
 
-            alert(
-                "Export failed"
-            );
 
 
-        }
+return(
 
+<div>
 
 
-        setLoading(false);
 
 
-    };
 
+{/* HEADER */}
 
 
+<div className="mb-6">
 
 
+<h1 className="text-2xl font-bold">
 
+Export Center
 
+</h1>
 
-    return(
 
+<p className="text-gray-500">
 
-        <div className="min-h-screen bg-black p-10">
+Download reports, test cases and automation files
 
+</p>
 
-            <h1 className="text-white text-3xl font-bold">
 
-                Export Center
+</div>
 
-            </h1>
 
 
 
 
 
-            <textarea
 
 
-            value={content}
 
 
-            onChange={(e)=>
+{/* CARDS */}
 
-            setContent(
-                e.target.value
-            )
 
-            }
+<div className="grid grid-cols-3 gap-6">
 
 
-            placeholder="Paste generated test content"
 
+{
 
-            className="
-            bg-gray-900
-            text-white
-            p-5
-            rounded-xl
-            w-full
-            h-52
-            mt-8
-            "
 
+options.map(
 
-            />
+(item)=>{
 
 
+const Icon=item.icon;
 
 
 
+return(
 
 
-            <select
+<div
 
+key={item.type}
 
-            value={exportType}
+className="
+bg-white
+border
+rounded-xl
+p-6
+shadow-sm
+"
 
+>
 
-            onChange={(e)=>
 
-            setExportType(
-                e.target.value
-            )
 
-            }
 
+<div
 
-            className="
-            bg-gray-900
-            text-white
-            p-4
-            rounded-xl
-            mt-5
-            "
+className="
+bg-blue-50
+text-blue-600
+w-fit
+p-3
+rounded-lg
+mb-5
+"
 
+>
 
-            >
 
+<Icon size={24}/>
 
-                <option value="pdf">
 
-                    PDF
+</div>
 
-                </option>
 
 
 
-                <option value="excel">
 
-                    Excel
 
-                </option>
+<h2 className="font-semibold text-lg">
 
+{item.title}
 
+</h2>
 
-                <option value="code">
 
-                    Code
 
-                </option>
+<p className="text-gray-500 text-sm mt-2">
 
+{item.desc}
 
+</p>
 
-            </select>
 
 
 
@@ -316,55 +306,176 @@ function Export(){
 
 
 
+<button
 
-            <button
+onClick={()=>exportFile(item.type)}
 
+className="
+mt-6
+bg-blue-600
+text-white
+px-4
+py-2
+rounded-lg
+flex
+gap-2
+items-center
+"
 
-            onClick={downloadFile}
+>
 
 
-            disabled={loading}
 
+<Download size={16}/>
 
-            className="
-            bg-blue-600
-            text-white
-            px-6
-            py-3
-            rounded-lg
-            ml-5
-            "
 
 
-            >
+{
 
 
-            {
+loading===item.type
 
-            loading
+?
 
-            ?
+"Exporting..."
 
-            "Exporting..."
+:
 
-            :
+"Export"
 
-            "Download"
 
-            }
+}
 
 
-            </button>
 
 
+</button>
 
 
 
 
-        </div>
 
+</div>
 
-    );
+
+);
+
+
+}
+
+)
+
+}
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+{/* HISTORY */}
+
+
+<div
+
+className="
+bg-white
+border
+rounded-xl
+p-6
+mt-6
+"
+
+>
+
+
+
+<h2 className="font-semibold mb-5">
+
+Recent Export
+
+</h2>
+
+
+
+
+
+
+{
+
+file
+
+?
+
+
+<div
+
+className="
+flex
+justify-between
+items-center
+"
+
+>
+
+
+<span>
+
+Export generated successfully
+
+</span>
+
+
+
+<span className="text-green-600">
+
+Ready
+
+</span>
+
+
+
+</div>
+
+
+
+:
+
+
+<p className="text-gray-400">
+
+No exports yet
+
+</p>
+
+
+}
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+);
+
 
 
 }
