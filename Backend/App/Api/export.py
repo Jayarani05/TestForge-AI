@@ -1,12 +1,19 @@
-from fastapi import APIRouter
+from fastapi import (
+    APIRouter,
+    Depends,
+    HTTPException
+)
 
-from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
-from typing import Dict, Any
+from app.database.session import get_db
 
+from app.security.auth import (
+    get_current_user
+)
 
-from app.services.export_service import (
-    ExportService
+from app.database.models import (
+    GenerationHistory
 )
 
 
@@ -17,47 +24,57 @@ router = APIRouter(
 
 
 
-class ExportRequest(BaseModel):
+@router.get(
+    "/{history_id}"
+)
 
-
-    export_type: str
-
-
-    data: Dict[str, Any]
-
-
-
-
-@router.post("")
-def export_file(
-    request: ExportRequest
+def export_generation(
+    history_id:int,
+    db:Session = Depends(get_db),
+    current_user = Depends(get_current_user)
 ):
 
 
-    service = ExportService()
+    history = (
+        db.query(GenerationHistory)
 
+        .filter(
+            GenerationHistory.id == history_id,
 
-    file_path = service.export(
+            GenerationHistory.user_id
+            ==
+            current_user.id
+        )
 
-        request.export_type,
-
-        request.data
-
+        .first()
     )
+
+
+
+    if not history:
+
+        raise HTTPException(
+            status_code=404,
+            detail="History not found"
+        )
+
 
 
     return {
 
-
-        "status":
-        "success",
-
-
-        "message":
-        "File exported successfully",
+        "project_id":
+        history.project_id,
 
 
-        "file_path":
-        file_path
+        "requirement":
+        history.user_story,
+
+
+        "generated_tests":
+        history.result,
+
+
+        "export_type":
+        "json"
 
     }
