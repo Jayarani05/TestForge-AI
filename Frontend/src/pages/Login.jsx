@@ -2,165 +2,315 @@ import { useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 
-import { useAuth } from "../context/AuthContext";
+import api from "../api/axios";
 
-import Input from "../components/Input";
 
 
 function Login(){
 
 
-const navigate = useNavigate();
 
-
-const { login } = useAuth();
-
-
-
-const [email,setEmail] = useState("");
-
-const [password,setPassword] = useState("");
-
-const [error,setError] = useState("");
+    const navigate = useNavigate();
 
 
 
 
-const handleLogin = async()=>{
+    const [email,setEmail] =
+
+        useState("");
 
 
-try{
+
+    const [password,setPassword] =
+
+        useState("");
 
 
-await login(
-
-email,
-
-password
-
-);
 
 
-navigate(
+    const loginUser = async()=>{
 
-"/dashboard"
 
-);
+
+        try{
+
+
+
+
+
+            const response = await api.post(
+
+
+                "/auth/login",
+
+
+                {
+
+
+                    email:email,
+
+
+                    password:password
+
+
+                }
+
+
+            );
+
+
+
+
+
+
+            console.log(
+
+                response.data
+
+            );
+
+
+
+
+
+
+            localStorage.setItem(
+
+
+                "token",
+
+
+                response.data.access_token
+
+
+            );
+
+
+
+
+
+
+            navigate(
+
+                "/dashboard"
+
+            );
+
+
+
+
+
+
+        }
+
+
+        catch(error){
+
+
+
+            console.log(
+
+
+                error.response?.data
+
+
+            );
+
+
+
+            alert(
+
+
+                "Invalid login"
+
+
+            );
+
+
+
+        }
+
+
+
+    };
+
+
+
+
+
+
+
+
+
+    return(
+
+
+
+        <div className="min-h-screen bg-black flex justify-center items-center">
+
+
+
+
+
+
+            <div className="
+            bg-gray-900
+            p-10
+            rounded-xl
+            w-96
+            ">
+
+
+
+
+
+
+                <h1 className="
+                text-white
+                text-3xl
+                font-bold
+                mb-8
+                ">
+
+
+                    Login
+
+
+                </h1>
+
+
+
+
+
+
+
+
+
+                <input
+
+
+                    value={email}
+
+
+                    onChange={(e)=>
+
+                        setEmail(
+
+                            e.target.value
+
+                        )
+
+                    }
+
+
+                    placeholder="Email"
+
+
+
+                    className="
+                    w-full
+                    p-3
+                    rounded
+                    mb-5
+                    "
+
+
+                />
+
+
+
+
+
+
+
+
+
+                <input
+
+
+                    value={password}
+
+
+                    type="password"
+
+
+                    onChange={(e)=>
+
+                        setPassword(
+
+                            e.target.value
+
+                        )
+
+                    }
+
+
+                    placeholder="Password"
+
+
+
+                    className="
+                    w-full
+                    p-3
+                    rounded
+                    mb-5
+                    "
+
+
+                />
+
+
+
+
+
+
+
+
+
+                <button
+
+
+                    onClick={loginUser}
+
+
+                    className="
+                    bg-blue-600
+                    text-white
+                    w-full
+                    py-3
+                    rounded
+                    "
+
+
+                >
+
+
+                    Login
+
+
+                </button>
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+        </div>
+
+
+    );
+
 
 
 }
 
-catch(err){
 
-
-setError(
-
-"Invalid email or password"
-
-);
-
-
-}
-
-
-};
-
-
-
-
-return (
-
-
-<div className="min-h-screen bg-black flex items-center justify-center">
-
-
-<div className="bg-gray-950 p-10 rounded-xl w-96">
-
-
-<h1 className="text-white text-3xl font-bold">
-
-TestForge AI
-
-</h1>
-
-
-<p className="text-gray-400">
-
-AI QA Automation Platform
-
-</p>
-
-
-<div className="space-y-5 mt-8">
-
-
-<Input
-
-label="Email"
-
-value={email}
-
-onChange={(e)=>setEmail(e.target.value)}
-
-/>
-
-
-
-<Input
-
-label="Password"
-
-type="password"
-
-value={password}
-
-onChange={(e)=>setPassword(e.target.value)}
-
-/>
-
-
-
-{
-
-error &&
-
-<p className="text-red-500">
-
-{error}
-
-</p>
-
-}
-
-
-
-<button
-
-onClick={handleLogin}
-
-className="bg-blue-600 text-white w-full py-3 rounded-lg"
-
->
-
-
-Login
-
-
-</button>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-);
-
-
-}
 
 
 export default Login;
