@@ -63,6 +63,14 @@ class User(
         back_populates="owner"
     )
 
+    projects = relationship(
+
+    "Project",
+
+    back_populates="owner"
+
+)
+
 
 
 
@@ -115,5 +123,63 @@ class GenerationHistory(
         "User",
 
         back_populates="histories"
+
+    )
+
+
+class Project(
+    Base
+):
+
+    __tablename__ = "projects"
+
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+
+    name = Column(
+        String(150)
+    )
+
+
+    description = Column(
+        Text
+    )
+
+
+    technology = Column(
+        String(100)
+    )
+
+
+    owner_id = Column(
+
+        Integer,
+
+        ForeignKey(
+            "users.id"
+        )
+
+    )
+
+
+    created_at = Column(
+
+        DateTime,
+
+        default=datetime.utcnow
+
+    )
+
+
+    owner = relationship(
+
+        "User",
+
+        back_populates="projects"
 
     )
