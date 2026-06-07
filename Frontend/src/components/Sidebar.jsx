@@ -8,6 +8,7 @@ import {
     Bot,
     PlayCircle,
     Code,
+    Bug,
     Wrench,
     Rocket,
     FileDown,
@@ -139,6 +140,12 @@ function Sidebar(){
 
             icon:Settings
 
+        },
+
+        {
+            name:"Bug Analysis",
+            path:"/bugs",
+            icon:Bug
         }
 
 

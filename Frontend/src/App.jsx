@@ -21,6 +21,7 @@ import Healing from "./pages/Healing";
 import CICD from "./pages/CICD";
 import Export from "./pages/Export";
 import Settings from "./pages/Settings";
+import BugReport from "./pages/BugReport";
 
 
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -206,6 +207,14 @@ element={<Settings />}
 
 </Route>
 
+
+<Route
+
+path="/bugs"
+
+element={<BugReport />}
+
+/>
 
 
 
