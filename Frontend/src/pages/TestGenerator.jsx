@@ -1,12 +1,22 @@
-import { useState } from "react";
+import {
+
+    useState,
+    useEffect
+
+} from "react";
+
 
 import {
+
     Bot,
     Copy,
     Sparkles
+
 } from "lucide-react";
 
+
 import api from "../api/axios";
+
 
 
 
@@ -14,11 +24,91 @@ import api from "../api/axios";
 function TestGenerator(){
 
 
+
 const [story,setStory] = useState("");
 
 const [result,setResult] = useState(null);
 
 const [loading,setLoading] = useState(false);
+
+
+
+const [projects,setProjects] = useState([]);
+
+const [projectId,setProjectId] = useState("");
+
+
+
+
+
+useEffect(()=>{
+
+
+    loadProjects();
+
+
+},[]);
+
+
+
+
+
+
+
+const loadProjects = async()=>{
+
+
+try{
+
+
+const response = await api.get(
+
+    "/projects/"
+
+);
+
+
+
+setProjects(
+
+    response.data
+
+);
+
+
+
+if(response.data.length > 0){
+
+
+setProjectId(
+
+    response.data[0].id
+
+);
+
+
+}
+
+
+
+}
+
+
+catch(error){
+
+
+console.log(error);
+
+
+}
+
+
+};
+
+
+
+
+
 
 
 
@@ -30,7 +120,27 @@ const generateTests = async()=>{
 try{
 
 
+if(!projectId){
+
+
+alert(
+
+    "Please create/select a project first"
+
+);
+
+
+return;
+
+
+}
+
+
+
+
 setLoading(true);
+
+
 
 
 const response = await api.post(
@@ -39,19 +149,34 @@ const response = await api.post(
 
 {
 
+
 user_story:story,
+
 
 output_type:"test_cases",
 
+
 language:"python",
+
 
 framework:"selenium",
 
-project_id:1
+
+project_context:"",
+
+
+project_id:Number(
+
+    projectId
+
+)
+
 
 }
 
 );
+
+
 
 
 
@@ -72,17 +197,24 @@ catch(error){
 console.log(error);
 
 
-alert("Generation failed");
+alert(
+
+"Generation failed"
+
+);
 
 
 }
 
 
 
+
 setLoading(false);
 
 
+
 };
+
 
 
 
@@ -96,9 +228,6 @@ return(
 <div>
 
 
-{/* HEADER */}
-
-
 <div className="mb-6">
 
 
@@ -107,6 +236,7 @@ return(
 AI Test Generator
 
 </h1>
+
 
 
 <p className="text-gray-500">
@@ -130,10 +260,6 @@ Generate QA test cases using AI agents
 
 
 
-
-{/* INPUT */}
-
-
 <div className="
 bg-white
 border
@@ -151,11 +277,78 @@ items-center
 mb-5
 ">
 
+
 <Sparkles size={18}/>
+
 
 Requirement
 
+
 </h2>
+
+
+
+
+
+
+<select
+
+value={projectId}
+
+onChange={(e)=>setProjectId(e.target.value)}
+
+className="
+w-full
+border
+rounded-lg
+p-3
+mb-5
+"
+
+>
+
+
+<option value="">
+
+Select Project
+
+</option>
+
+
+
+{
+
+
+projects.map(
+
+(project)=>(
+
+
+<option
+
+key={project.id}
+
+value={project.id}
+
+>
+
+
+{project.name}
+
+
+</option>
+
+
+)
+
+)
+
+}
+
+
+</select>
+
+
 
 
 
@@ -184,66 +377,14 @@ resize-none
 
 
 
-<div className="
-grid
-grid-cols-2
-gap-4
-mt-5
-">
-
-
-
-<select className="border rounded-lg p-3">
-
-<option>
-
-Python
-
-</option>
-
-<option>
-
-Java
-
-</option>
-
-
-</select>
-
-
-
-
-
-<select className="border rounded-lg p-3">
-
-<option>
-
-Selenium
-
-</option>
-
-<option>
-
-Playwright
-
-</option>
-
-
-</select>
-
-
-
-</div>
-
-
-
-
 
 
 
 <button
 
 onClick={generateTests}
+
+disabled={loading}
 
 className="
 mt-5
@@ -257,7 +398,6 @@ gap-2
 items-center
 "
 
-
 >
 
 
@@ -266,9 +406,7 @@ items-center
 
 {
 
-loading
-
-?
+loading ?
 
 "Generating..."
 
@@ -284,7 +422,6 @@ loading
 
 
 
-
 </div>
 
 
@@ -294,10 +431,6 @@ loading
 
 
 
-
-{/* OUTPUT */}
-
-
 <div className="
 bg-white
 border
@@ -305,6 +438,7 @@ rounded-xl
 p-6
 shadow-sm
 ">
+
 
 
 <div className="
@@ -337,12 +471,10 @@ text-sm
 
 <Copy size={16}/>
 
-
 Copy
 
 
 </button>
-
 
 
 </div>
@@ -353,13 +485,10 @@ Copy
 
 
 
-
-
 {
 
-result
+result ?
 
-?
 
 <pre
 
@@ -376,7 +505,9 @@ text-sm
 >
 
 
-{JSON.stringify(
+{
+
+JSON.stringify(
 
 result,
 
@@ -384,7 +515,9 @@ null,
 
 2
 
-)}
+)
+
+}
 
 
 </pre>
@@ -393,7 +526,9 @@ null,
 :
 
 
-<div className="
+<div
+
+className="
 h-96
 flex
 items-center
@@ -415,11 +550,7 @@ AI generated tests appear here
 
 
 
-
 </div>
-
-
-
 
 
 </div>
@@ -427,11 +558,13 @@ AI generated tests appear here
 
 
 </div>
+
 
 );
 
 
 }
+
 
 
 

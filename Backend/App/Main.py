@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 from app.api.health import router as health_router
-from app.api.generation import router as test_router
+from app.api import generation
 from app.api.export import (
     router as export_router
 )
@@ -96,10 +96,9 @@ app.include_router(
 
 
 app.include_router(
-    test_router,
+    generation.router,
     prefix="/api/v1"
 )
-
 
 app.include_router(
     export_router,
@@ -195,4 +194,14 @@ async def global_exception_handler(
 
         }
 
+        
+
     )
+
+
+print("\n========== ROUTES ==========")
+
+for route in app.routes:
+    print(route.path)
+
+print("============================\n")

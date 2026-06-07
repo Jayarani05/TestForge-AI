@@ -1,3 +1,135 @@
+# from fastapi import (
+#     APIRouter,
+#     Depends
+# )
+
+
+# from sqlalchemy.orm import Session
+
+
+# from app.database.session import (
+#     get_db
+# )
+
+
+# from app.security.auth import (
+#     get_current_user
+# )
+
+
+# from app.database.models import (
+#     Project,
+#     GenerationHistory
+# )
+
+
+
+# router = APIRouter(
+
+#     prefix="/dashboard",
+
+#     tags=["Dashboard"]
+
+# )
+
+
+
+# @router.get(
+#     "/"
+# )
+
+# def get_dashboard(
+
+#     db: Session = Depends(
+#         get_db
+#     ),
+
+
+#     current_user = Depends(
+#         get_current_user
+#     )
+
+# ):
+
+
+#     total_projects = (
+
+#         db.query(Project)
+
+#         .filter(
+
+#             Project.owner_id
+#             ==
+#             current_user.id
+
+#         )
+
+#         .count()
+
+#     )
+
+
+
+#     total_generations = (
+
+#         db.query(GenerationHistory)
+
+#         .filter(
+
+#             GenerationHistory.user_id
+#             ==
+#             current_user.id
+
+#         )
+
+#         .count()
+
+#     )
+
+
+
+#     return {
+
+
+#         "user": {
+
+
+#             "name":
+#             current_user.name,
+
+
+#             "email":
+#             current_user.email,
+
+
+#             "role":
+#             current_user.role
+
+#         },
+
+
+#         "analytics": {
+
+
+#             "total_projects":
+#             total_projects,
+
+
+#             "total_generations":
+#             total_generations,
+
+
+#             "total_executions":
+#             0,
+
+
+#             "bugs_found":
+#             0
+
+#         }
+
+#     }
+
 from fastapi import (
     APIRouter,
     Depends
@@ -7,9 +139,11 @@ from fastapi import (
 from sqlalchemy.orm import Session
 
 
+
 from app.database.session import (
     get_db
 )
+
 
 
 from app.security.auth import (
@@ -17,10 +151,16 @@ from app.security.auth import (
 )
 
 
+
 from app.database.models import (
+
     Project,
+
     GenerationHistory
+
 )
+
+
 
 
 
@@ -28,104 +168,197 @@ router = APIRouter(
 
     prefix="/dashboard",
 
-    tags=["Dashboard"]
+    tags=[
+
+        "Dashboard"
+
+    ]
 
 )
+
+
+
+
 
 
 
 @router.get(
+
     "/"
+
 )
 
-def get_dashboard(
 
-    db: Session = Depends(
+def dashboard(
+
+
+    db:Session = Depends(
+
         get_db
+
     ),
 
 
+
     current_user = Depends(
+
         get_current_user
+
     )
+
 
 ):
 
 
+
+
     total_projects = (
+
 
         db.query(Project)
 
         .filter(
 
-            Project.owner_id
-            ==
-            current_user.id
+            Project.owner_id == current_user.id
 
         )
 
         .count()
 
+
     )
+
+
+
+
 
 
 
     total_generations = (
 
-        db.query(GenerationHistory)
+
+        db.query(
+
+            GenerationHistory
+
+        )
+
 
         .filter(
 
             GenerationHistory.user_id
+
             ==
+
             current_user.id
 
         )
 
+
         .count()
 
+
     )
+
+
+
+
+
+
+
+    recent = (
+
+
+        db.query(
+
+            GenerationHistory
+
+        )
+
+
+        .filter(
+
+            GenerationHistory.user_id
+
+            ==
+
+            current_user.id
+
+        )
+
+
+        .order_by(
+
+            GenerationHistory.id.desc()
+
+        )
+
+
+        .limit(5)
+
+
+        .all()
+
+
+    )
+
+
+
+
+
+
 
 
 
     return {
 
 
-        "user": {
+        "projects":
+
+        total_projects,
 
 
-            "name":
-            current_user.name,
+
+        "generated_tests":
+
+        total_generations,
 
 
-            "email":
-            current_user.email,
+
+        "executions":
+
+        0,
 
 
-            "role":
-            current_user.role
 
-        },
+        "bugs":
 
-
-        "analytics": {
+        0,
 
 
-            "total_projects":
-            total_projects,
+
+        "recent_activity":
+
+        [
+
+            {
+
+                "id":
+
+                item.id,
 
 
-            "total_generations":
-            total_generations,
+
+                "story":
+
+                item.user_story
 
 
-            "total_executions":
-            0,
+            }
 
+            for item in recent
 
-            "bugs_found":
-            0
+        ]
 
-        }
 
     }

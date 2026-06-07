@@ -1,12 +1,22 @@
 import {
 
-FolderKanban,
-TestTube,
-PlayCircle,
-Bug,
-Bot
+    useEffect,
+    useState
+
+} from "react";
+
+
+import {
+
+    FolderKanban,
+    TestTube,
+    PlayCircle,
+    Bug
 
 } from "lucide-react";
+
+
+import api from "../api/axios";
 
 
 import StatCard from "../components/ui/StatCard";
@@ -14,242 +24,72 @@ import StatCard from "../components/ui/StatCard";
 
 
 
+
 function Dashboard(){
 
 
-return (
 
-<div>
+const [dashboard,setDashboard] = useState(null);
 
 
-{/* HEADER */}
+const [loading,setLoading] = useState(true);
 
 
-<div
-className="
-mb-6
-"
->
 
 
-<h1
-className="
-text-2xl
-font-bold
-"
->
 
-Welcome back, Jayarani 👋
+useEffect(()=>{
 
-</h1>
 
+    loadDashboard();
 
-<p
-className="
-text-gray-500
-"
->
 
-Manage your AI powered QA automation workspace
+},[]);
 
-</p>
 
 
-</div>
 
 
 
 
+const loadDashboard = async()=>{
 
 
-{/* STATS */}
+try{
 
 
-<div
-className="
-grid
-grid-cols-4
-gap-5
-mb-6
-"
->
+const response = await api.get(
 
+    "/dashboard/"
 
-<StatCard
+);
 
-title="Total Projects"
 
-value="24"
 
-icon={FolderKanban}
+setDashboard(
 
-change="+12% from last month"
+    response.data
 
-/>
+);
 
 
-<StatCard
 
-title="Tests Generated"
+}
 
-value="3,562"
+catch(error){
 
-icon={TestTube}
 
-change="+19% from last month"
+console.log(error);
 
-/>
-
-
-<StatCard
-
-title="Executions"
-
-value="1,287"
-
-icon={PlayCircle}
-
-change="+8% from last month"
-
-/>
-
-
-<StatCard
-
-title="Bugs Found"
-
-value="182"
-
-icon={Bug}
-
-change="-6% from last month"
-
-/>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div
-className="
-grid
-grid-cols-3
-gap-5
-"
->
-
-
-
-
-{/* PROJECTS */}
-
-
-<div
-className="
-bg-white
-border
-rounded-xl
-p-5
-col-span-2
-"
->
-
-
-<h2
-className="
-font-semibold
-mb-4
-"
->
-
-Recent Projects
-
-</h2>
-
-
-
-
-{
-
-[
-
-"E-Commerce Platform",
-
-"Mobile Banking App",
-
-"Inventory Management"
-
-].map(
-
-(project)=>(
-
-
-<div
-
-key={project}
-
-className="
-flex
-justify-between
-border-b
-py-3
-"
-
->
-
-
-<div>
-
-
-<p className="font-medium">
-
-{project}
-
-</p>
-
-
-<p className="text-sm text-gray-500">
-
-Updated recently
-
-</p>
-
-
-</div>
-
-
-<span
-className="
-text-green-600
-text-sm
-"
->
-
-Active
-
-</span>
-
-
-
-</div>
-
-
-)
-
-)
 
 }
 
 
 
-</div>
+setLoading(false);
+
+
+};
 
 
 
@@ -258,110 +98,14 @@ Active
 
 
 
+if(loading){
 
 
-{/* AGENTS */}
+return(
 
+<div className="text-gray-500">
 
-<div
-className="
-bg-white
-border
-rounded-xl
-p-5
-"
->
-
-
-
-<h2
-className="
-font-semibold
-mb-4
-flex
-gap-2
-items-center
-"
->
-
-
-<Bot size={18}/>
-
-
-AI Agents
-
-
-</h2>
-
-
-
-
-{
-
-[
-
-"Generator Agent",
-
-"Execution Agent",
-
-"Bug Analyzer",
-
-"Self Healing Agent"
-
-].map(
-
-(agent)=>(
-
-
-<div
-
-key={agent}
-
-className="
-flex
-justify-between
-py-3
-"
-
->
-
-
-<span>
-
-{agent}
-
-</span>
-
-
-<span className="text-green-600">
-
-Online
-
-</span>
-
-
-
-</div>
-
-
-)
-
-)
-
-}
-
-
-
-
-</div>
-
-
-
-
-</div>
-
-
-
+Loading dashboard...
 
 </div>
 
@@ -369,6 +113,203 @@ Online
 
 
 }
+
+
+
+
+
+
+
+
+
+return(
+
+<div>
+
+
+<h1 className="text-2xl font-bold mb-2">
+
+Dashboard
+
+</h1>
+
+
+
+<p className="text-gray-500 mb-6">
+
+Welcome back to TestForge AI
+
+</p>
+
+
+
+
+
+
+
+
+
+<div className="
+grid
+grid-cols-4
+gap-5
+mb-8
+">
+
+
+
+
+
+<StatCard
+
+title="Projects"
+
+value={dashboard.projects}
+
+icon={FolderKanban}
+
+/>
+
+
+
+
+<StatCard
+
+title="Generated Tests"
+
+value={dashboard.generated_tests}
+
+icon={TestTube}
+
+/>
+
+
+
+
+<StatCard
+
+title="Executions"
+
+value={dashboard.executions}
+
+icon={PlayCircle}
+
+/>
+
+
+
+
+<StatCard
+
+title="Bugs"
+
+value={dashboard.bugs}
+
+icon={Bug}
+
+/>
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<div className="
+bg-white
+border
+rounded-xl
+p-6
+shadow-sm
+">
+
+
+
+<h2 className="font-semibold mb-4">
+
+Recent Activity
+
+</h2>
+
+
+
+
+
+{
+
+dashboard.recent_activity.length > 0
+
+?
+
+dashboard.recent_activity.map(
+
+(item)=>(
+
+
+<div
+
+key={item.id}
+
+className="
+border-b
+py-3
+"
+
+>
+
+
+{item.story}
+
+
+</div>
+
+
+)
+
+)
+
+
+:
+
+
+<div className="text-gray-400">
+
+No activity yet
+
+</div>
+
+
+}
+
+
+
+
+
+</div>
+
+
+
+
+
+
+
+</div>
+
+
+);
+
+
+}
+
+
 
 
 export default Dashboard;

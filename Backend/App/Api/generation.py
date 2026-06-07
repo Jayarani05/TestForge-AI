@@ -1,9 +1,179 @@
+# from fastapi import (
+#     APIRouter,
+#     Depends
+# )
+
+# from sqlalchemy.orm import Session
+
+
+# from app.agents.qa_agent import (
+#     QAAgent
+# )
+
+
+# from app.schemas.story_schema import (
+#     UserStoryRequest
+# )
+
+
+# from app.database.session import (
+#     get_db
+# )
+
+
+# from app.database.history_repository import (
+#     save_generation
+# )
+
+
+# from app.security.auth import (
+
+#     get_current_user
+
+# )
+
+
+# from app.database.models import (
+
+#     Project
+
+# )
+
+
+# from fastapi import HTTPException
+
+
+# router = APIRouter(
+#     prefix="/tests",
+#     tags=["Test Generation"]
+# )
+
+
+
+# @router.post(
+#     "/generate"
+# )
+
+# def generate_tests(
+
+#     request: UserStoryRequest,
+
+
+#     db:Session = Depends(
+#         get_db
+#     ),
+
+
+#     current_user = Depends(
+#         get_current_user
+#     )
+
+# ):
+
+
+#     project = (
+
+#     db.query(Project)
+
+#     .filter(
+
+#         Project.id == request.project_id,
+
+
+#         Project.owner_id == current_user.id
+
+#     )
+
+#     .first()
+
+#     )
+
+
+#     if not project:
+
+
+#         raise HTTPException(
+
+#             status_code=404,
+
+
+#             detail="Project not found"
+
+#         )
+
+#     agent = QAAgent()
+
+
+#     result = agent.process_story(
+
+#         request.user_story,
+
+
+#         request.output_type,
+
+
+#         request.language,
+
+
+#         request.framework,
+
+
+#         request.project_context
+
+#     )
+
+
+#     # save generated result in database
+
+#     save_generation(
+
+#         db,
+
+
+#         current_user.id,
+
+
+#         request.project_id,
+
+
+#         request.user_story,
+
+
+#         result
+
+#     )
+
+
+
+#     return {
+
+
+#         "status":
+#         "success",
+
+
+#         "message":
+#         "QA Agent executed successfully",
+
+
+#         "story":
+#         request.user_story,
+
+
+#         "agent_result":
+#         result
+
+#     }
+
 from fastapi import (
     APIRouter,
-    Depends
+    Depends,
+    HTTPException
 )
 
+
 from sqlalchemy.orm import Session
+
 
 
 from app.agents.qa_agent import (
@@ -11,9 +181,11 @@ from app.agents.qa_agent import (
 )
 
 
+
 from app.schemas.story_schema import (
     UserStoryRequest
 )
+
 
 
 from app.database.session import (
@@ -21,9 +193,11 @@ from app.database.session import (
 )
 
 
+
 from app.database.history_repository import (
     save_generation
 )
+
 
 
 from app.security.auth import (
@@ -33,6 +207,7 @@ from app.security.auth import (
 )
 
 
+
 from app.database.models import (
 
     Project
@@ -40,56 +215,100 @@ from app.database.models import (
 )
 
 
-from fastapi import HTTPException
+
+
 
 
 router = APIRouter(
-    prefix="/tests",
-    tags=["Test Generation"]
+
+    tags=[
+
+        "Test Generation"
+
+    ]
+
 )
+
+
+
+
+
+
+
 
 
 
 @router.post(
-    "/generate"
+
+    "/tests/generate"
+
 )
 
+
 def generate_tests(
+
 
     request: UserStoryRequest,
 
 
-    db:Session = Depends(
+
+    db: Session = Depends(
+
         get_db
+
     ),
 
 
+
     current_user = Depends(
+
         get_current_user
+
     )
+
 
 ):
 
 
+
+    # verify project ownership
+
+
     project = (
 
-    db.query(Project)
 
-    .filter(
+        db.query(
 
-        Project.id == request.project_id,
+            Project
+
+        )
 
 
-        Project.owner_id == current_user.id
+        .filter(
+
+
+            Project.id == request.project_id,
+
+
+
+            Project.owner_id == current_user.id
+
+
+        )
+
+
+        .first()
+
 
     )
 
-    .first()
 
-    )
+
+
 
 
     if not project:
+
 
 
         raise HTTPException(
@@ -101,10 +320,27 @@ def generate_tests(
 
         )
 
+
+
+
+
+
+
+
+
+    # Run QA Agent
+
+
     agent = QAAgent()
 
 
+
+
+
+
+
     result = agent.process_story(
+
 
         request.user_story,
 
@@ -120,12 +356,22 @@ def generate_tests(
 
         request.project_context
 
+
     )
 
 
-    # save generated result in database
+
+
+
+
+
+
+
+    # Save generation history
+
 
     save_generation(
+
 
         db,
 
@@ -141,7 +387,13 @@ def generate_tests(
 
         result
 
+
     )
+
+
+
+
+
 
 
 
@@ -149,18 +401,26 @@ def generate_tests(
 
 
         "status":
+
         "success",
 
 
+
         "message":
+
         "QA Agent executed successfully",
 
 
+
         "story":
+
         request.user_story,
 
 
+
         "agent_result":
+
         result
+
 
     }
