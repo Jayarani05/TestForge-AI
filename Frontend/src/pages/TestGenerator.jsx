@@ -9,278 +9,388 @@ import ResultViewer from "../components/ResultViewer";
 function TestGenerator(){
 
 
-const [story,setStory] = useState("");
+    const [story,setStory] = useState("");
 
+    const [language,setLanguage] =
+        useState("Python");
 
-const [language,setLanguage] = useState(
-    "Python"
-);
 
+    const [framework,setFramework] =
+        useState("Pytest");
 
-const [framework,setFramework] = useState(
-    "Pytest"
-);
 
+    const [loading,setLoading] =
+        useState(false);
 
-const [loading,setLoading] =
-useState(false);
 
+    const [result,setResult] =
+        useState(null);
 
-const [result,setResult] =
-useState(null);
 
 
 
+    const generateTests = async()=>{
 
 
-const generateTests = async()=>{
+        try{
 
 
-try{
+            setLoading(true);
 
 
-setLoading(true);
 
+            const response = await api.post(
 
+                "/tests/generate",
 
-const response = await api.post(
+                {
 
-"/tests/generate",
+                    user_story: story,
 
-{
 
-user_story:story,
+                    output_type: "test_cases",
 
-output_type:"test_cases",
 
-language,
+                    language: language,
 
-framework,
 
-project_context:""
+                    framework: framework,
 
-}
 
-);
+                    project_context: {
 
 
+                        project_name:
+                        "TestForge AI",
 
-setResult(
 
-response.data.agent_result
+                        technology:
+                        "React + FastAPI",
 
-);
 
+                        description:
+                        "AI QA Automation Platform"
 
+                    },
 
-}
 
-catch(error){
+                    project_id: 1
 
+                }
 
-console.log(error);
+            );
 
 
-alert(
-"Generation failed"
-);
 
 
-}
+            console.log(
 
+                response.data
 
-setLoading(false);
+            );
 
 
-};
 
+            setResult(
 
+                response.data.agent_result
 
+            );
 
 
 
-return (
+        }
 
 
-<div className="min-h-screen bg-black p-10">
+        catch(error){
 
 
-<h1 className="
-text-white
-text-3xl
-font-bold
-">
 
-AI Test Generator
+            console.log(
 
-</h1>
+                error.response?.data
 
+            );
 
 
 
-<textarea
+            alert(
 
-value={story}
+                JSON.stringify(
 
-onChange={(e)=>setStory(e.target.value)}
+                    error.response?.data,
 
-placeholder="Enter user story..."
+                    null,
 
-className="
-w-full
-h-40
-mt-8
-bg-gray-900
-text-white
-p-5
-rounded-xl
-"
+                    2
 
-/>
+                )
 
+            );
 
 
+        }
 
 
-<div className="flex gap-5 mt-5">
 
+        setLoading(false);
 
-<select
 
-value={language}
 
-onChange={(e)=>setLanguage(e.target.value)}
+    };
 
-className="
-bg-gray-900
-text-white
-p-3
-rounded
-"
 
->
 
 
-<option>
 
-Python
 
-</option>
 
+    return (
 
-<option>
 
-Java
+        <div className="min-h-screen bg-black p-10">
 
-</option>
 
+            <h1 className="
+            text-white
+            text-3xl
+            font-bold
+            ">
 
-</select>
+                AI Test Generator
 
+            </h1>
 
 
 
 
-<select
 
-value={framework}
 
-onChange={(e)=>setFramework(e.target.value)}
+            <textarea
 
-className="
-bg-gray-900
-text-white
-p-3
-rounded
-"
 
->
+                value={story}
 
 
-<option>
+                onChange={(e)=>
 
-Pytest
+                    setStory(
+                        e.target.value
+                    )
 
-</option>
+                }
 
 
-<option>
+                placeholder="Enter user story..."
 
-Selenium
 
-</option>
+                className="
+                w-full
+                h-40
+                mt-8
+                bg-gray-900
+                text-white
+                p-5
+                rounded-xl
+                "
 
+            />
 
-</select>
 
 
-</div>
 
 
 
 
+            <div className="flex gap-5 mt-5">
 
-<button
 
-onClick={generateTests}
 
-className="
-bg-blue-600
-text-white
-px-6
-py-3
-rounded-lg
-mt-6
-"
+                <select
 
->
 
+                    value={language}
 
-{
 
-loading
-?
-"Generating..."
-:
-"Generate Tests"
+                    onChange={(e)=>
 
+                        setLanguage(
+                            e.target.value
+                        )
 
-}
+                    }
 
 
-</button>
+                    className="
+                    bg-gray-900
+                    text-white
+                    p-3
+                    rounded
+                    "
 
+                >
 
 
+                    <option value="Python">
 
+                        Python
 
-{
+                    </option>
 
-result &&
 
-<ResultViewer
+                    <option value="Java">
 
-title="Generated Test Cases"
+                        Java
 
-content={
+                    </option>
 
-JSON.stringify(
-result,
-null,
-2
-)
 
-}
 
-/>
+                </select>
 
-}
 
 
-</div>
 
 
-);
+
+
+
+                <select
+
+
+                    value={framework}
+
+
+                    onChange={(e)=>
+
+                        setFramework(
+                            e.target.value
+                        )
+
+                    }
+
+
+                    className="
+                    bg-gray-900
+                    text-white
+                    p-3
+                    rounded
+                    "
+
+                >
+
+
+                    <option value="Pytest">
+
+                        Pytest
+
+                    </option>
+
+
+
+                    <option value="Selenium">
+
+                        Selenium
+
+                    </option>
+
+
+                </select>
+
+
+
+            </div>
+
+
+
+
+
+
+
+
+            <button
+
+
+                onClick={generateTests}
+
+
+                disabled={loading}
+
+
+                className="
+                bg-blue-600
+                text-white
+                px-6
+                py-3
+                rounded-lg
+                mt-6
+                "
+
+            >
+
+
+                {
+
+                    loading
+
+                    ?
+
+                    "Generating..."
+
+                    :
+
+                    "Generate Tests"
+
+                }
+
+
+            </button>
+
+
+
+
+
+
+
+
+            {
+
+                result &&
+
+
+                <ResultViewer
+
+
+                    title="Generated Test Cases"
+
+
+                    content={
+
+                        JSON.stringify(
+
+                            result,
+
+                            null,
+
+                            2
+
+                        )
+
+                    }
+
+
+                />
+
+
+            }
+
+
+
+
+        </div>
+
+
+    );
 
 
 }
