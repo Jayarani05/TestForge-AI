@@ -1,28 +1,88 @@
+import { useState } from "react";
+
+import api from "../api/axios";
+
+
 function Repository(){
 
 
-const features=[
+const [url,setUrl] = useState("");
 
-"FastAPI Backend",
+const [result,setResult] = useState(null);
 
-"JWT Authentication",
+const [loading,setLoading] = useState(false);
 
-"AI Test Generator",
 
-"CI/CD Support"
 
-];
+
+const analyzeRepo = async()=>{
+
+
+try{
+
+
+setLoading(true);
+
+
+
+const response = await api.post(
+
+"/repository/analyze",
+
+{
+
+repo_url:url
+
+}
+
+);
+
+
+
+console.log(response.data);
+
+
+setResult(
+
+response.data.repository_analysis
+
+);
+
+
+}
+
+catch(error){
+
+
+console.log(
+
+error.response?.data
+
+);
+
+
+alert("Repository analysis failed");
+
+
+}
+
+
+
+setLoading(false);
+
+
+};
+
+
+
 
 
 return (
 
-<div className="bg-black min-h-screen p-10">
+<div className="min-h-screen bg-black p-10">
 
 
-<h1 className="
-text-white
-text-3xl
-">
+<h1 className="text-white text-3xl font-bold">
 
 Repository Intelligence
 
@@ -30,34 +90,123 @@ Repository Intelligence
 
 
 
-<div className="mt-8 space-y-4">
+
+<input
+
+
+value={url}
+
+
+onChange={(e)=>setUrl(e.target.value)}
+
+
+placeholder="Enter GitHub repository URL"
+
+
+className="
+w-full
+bg-gray-900
+text-white
+p-4
+rounded-xl
+mt-8
+"
+
+
+/>
+
+
+
+
+<button
+
+
+onClick={analyzeRepo}
+
+
+className="
+bg-blue-600
+text-white
+px-6
+py-3
+rounded-lg
+mt-5
+"
+
+
+>
 
 
 {
 
-features.map(
+loading
+?
+"Analyzing..."
+:
+"Analyze Repository"
 
-(item,index)=>(
+}
 
 
-<div
+</button>
 
-key={index}
 
-className="
+
+
+
+
+{
+
+result && (
+
+
+<div className="
 bg-gray-900
 text-white
-p-5
 rounded-xl
-"
-
->
-
-{item}
+p-6
+mt-8
+">
 
 
-</div>
+<h2 className="text-xl">
 
+Project Type:
+
+</h2>
+
+
+<p>
+
+{result.project_type}
+
+</p>
+
+
+
+
+
+<h2 className="text-xl mt-5">
+
+Languages
+
+</h2>
+
+
+<ul>
+
+
+{
+
+result.languages?.map(
+
+(x,i)=>(
+
+<li key={i}>
+
+{x}
+
+</li>
 
 )
 
@@ -66,10 +215,57 @@ rounded-xl
 }
 
 
-</div>
+</ul>
+
+
+
+
+
+<h2 className="text-xl mt-5">
+
+Features
+
+</h2>
+
+
+
+<ul>
+
+
+{
+
+result.features?.map(
+
+(x,i)=>(
+
+<li key={i}>
+
+{x}
+
+</li>
+
+)
+
+)
+
+}
+
+
+</ul>
+
+
 
 
 </div>
+
+)
+
+}
+
+
+
+</div>
+
 
 );
 

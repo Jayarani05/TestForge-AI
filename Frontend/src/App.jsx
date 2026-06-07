@@ -16,6 +16,7 @@ import TestGenerator from "./pages/TestGenerator";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Execution from "./pages/Execution";
+import Repository from "./pages/Repository";
 
 
 function App(){
@@ -124,6 +125,22 @@ element={
         </ProtectedRoute>
 
     }
+
+/>
+
+<Route
+
+path="/repository"
+
+element={
+
+<ProtectedRoute>
+
+<Repository />
+
+</ProtectedRoute>
+
+}
 
 />
 
