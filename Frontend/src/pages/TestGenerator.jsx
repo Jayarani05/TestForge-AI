@@ -1,396 +1,434 @@
 import { useState } from "react";
 
+import {
+    Bot,
+    Copy,
+    Sparkles
+} from "lucide-react";
+
 import api from "../api/axios";
 
-import ResultViewer from "../components/ResultViewer";
 
 
 
 function TestGenerator(){
 
 
-    const [story,setStory] = useState("");
+const [story,setStory] = useState("");
 
-    const [language,setLanguage] =
-        useState("Python");
+const [result,setResult] = useState(null);
 
+const [loading,setLoading] = useState(false);
 
-    const [framework,setFramework] =
-        useState("Pytest");
 
 
-    const [loading,setLoading] =
-        useState(false);
 
 
-    const [result,setResult] =
-        useState(null);
+const generateTests = async()=>{
 
 
+try{
 
 
-    const generateTests = async()=>{
+setLoading(true);
 
 
-        try{
+const response = await api.post(
 
+"/tests/generate",
 
-            setLoading(true);
+{
 
+user_story:story,
 
+output_type:"test_cases",
 
-            const response = await api.post(
+language:"python",
 
-                "/tests/generate",
+framework:"selenium",
 
-                {
+project_id:1
 
-                    user_story: story,
+}
 
+);
 
-                    output_type: "test_cases",
 
 
-                    language: language,
+setResult(
 
+response.data.agent_result
 
-                    framework: framework,
+);
 
 
-                    project_context: {
 
+}
 
-                        project_name:
-                        "TestForge AI",
 
+catch(error){
 
-                        technology:
-                        "React + FastAPI",
 
+console.log(error);
 
-                        description:
-                        "AI QA Automation Platform"
 
-                    },
+alert("Generation failed");
 
 
-                    project_id: 1
+}
 
-                }
 
-            );
 
+setLoading(false);
 
 
+};
 
-            console.log(
 
-                response.data
 
-            );
 
 
 
-            setResult(
 
-                response.data.agent_result
 
-            );
+return(
 
+<div>
 
 
-        }
+{/* HEADER */}
 
 
-        catch(error){
+<div className="mb-6">
 
 
+<h1 className="text-2xl font-bold">
 
-            console.log(
+AI Test Generator
 
-                error.response?.data
+</h1>
 
-            );
 
+<p className="text-gray-500">
 
+Generate QA test cases using AI agents
 
-            alert(
+</p>
 
-                JSON.stringify(
 
-                    error.response?.data,
+</div>
 
-                    null,
 
-                    2
 
-                )
 
-            );
 
 
-        }
 
+<div className="grid grid-cols-2 gap-6">
 
 
-        setLoading(false);
 
 
 
-    };
 
+{/* INPUT */}
 
 
+<div className="
+bg-white
+border
+rounded-xl
+p-6
+shadow-sm
+">
 
 
+<h2 className="
+font-semibold
+flex
+gap-2
+items-center
+mb-5
+">
 
+<Sparkles size={18}/>
 
-    return (
+Requirement
 
+</h2>
 
-        <div className="min-h-screen bg-black p-10">
 
 
-            <h1 className="
-            text-white
-            text-3xl
-            font-bold
-            ">
 
-                AI Test Generator
 
-            </h1>
+<textarea
 
+value={story}
 
+onChange={(e)=>setStory(e.target.value)}
 
+placeholder="Enter user story or requirement..."
 
+className="
+w-full
+h-72
+border
+rounded-lg
+p-4
+resize-none
+"
 
+/>
 
-            <textarea
 
 
-                value={story}
 
 
-                onChange={(e)=>
+<div className="
+grid
+grid-cols-2
+gap-4
+mt-5
+">
 
-                    setStory(
-                        e.target.value
-                    )
 
-                }
 
+<select className="border rounded-lg p-3">
 
-                placeholder="Enter user story..."
+<option>
 
+Python
 
-                className="
-                w-full
-                h-40
-                mt-8
-                bg-gray-900
-                text-white
-                p-5
-                rounded-xl
-                "
+</option>
 
-            />
+<option>
 
+Java
 
+</option>
 
 
+</select>
 
 
 
-            <div className="flex gap-5 mt-5">
 
 
+<select className="border rounded-lg p-3">
 
-                <select
+<option>
 
+Selenium
 
-                    value={language}
+</option>
 
+<option>
 
-                    onChange={(e)=>
+Playwright
 
-                        setLanguage(
-                            e.target.value
-                        )
+</option>
 
-                    }
 
+</select>
 
-                    className="
-                    bg-gray-900
-                    text-white
-                    p-3
-                    rounded
-                    "
 
-                >
 
+</div>
 
-                    <option value="Python">
 
-                        Python
 
-                    </option>
 
 
-                    <option value="Java">
 
-                        Java
 
-                    </option>
+<button
 
+onClick={generateTests}
 
+className="
+mt-5
+bg-blue-600
+text-white
+px-5
+py-3
+rounded-lg
+flex
+gap-2
+items-center
+"
 
-                </select>
 
+>
 
 
+<Bot size={18}/>
 
 
+{
 
+loading
 
+?
 
-                <select
+"Generating..."
 
+:
 
-                    value={framework}
+"Generate Tests"
 
+}
 
-                    onChange={(e)=>
 
-                        setFramework(
-                            e.target.value
-                        )
+</button>
 
-                    }
 
 
-                    className="
-                    bg-gray-900
-                    text-white
-                    p-3
-                    rounded
-                    "
 
-                >
 
+</div>
 
-                    <option value="Pytest">
 
-                        Pytest
 
-                    </option>
 
 
 
-                    <option value="Selenium">
 
-                        Selenium
 
-                    </option>
 
+{/* OUTPUT */}
 
-                </select>
 
+<div className="
+bg-white
+border
+rounded-xl
+p-6
+shadow-sm
+">
 
 
-            </div>
+<div className="
+flex
+justify-between
+items-center
+mb-5
+">
 
 
+<h2 className="font-semibold">
 
+Generated Output
 
+</h2>
 
 
 
+<button
 
-            <button
+className="
+text-blue-600
+flex
+gap-2
+text-sm
+"
 
+>
 
-                onClick={generateTests}
 
+<Copy size={16}/>
 
-                disabled={loading}
 
+Copy
 
-                className="
-                bg-blue-600
-                text-white
-                px-6
-                py-3
-                rounded-lg
-                mt-6
-                "
 
-            >
+</button>
 
 
-                {
 
-                    loading
+</div>
 
-                    ?
 
-                    "Generating..."
 
-                    :
 
-                    "Generate Tests"
 
-                }
 
 
-            </button>
 
 
+{
 
+result
 
+?
 
+<pre
 
+className="
+bg-gray-900
+text-green-400
+rounded-lg
+p-5
+overflow-auto
+h-96
+text-sm
+"
 
+>
 
-            {
 
-                result &&
+{JSON.stringify(
 
+result,
 
-                <ResultViewer
+null,
 
+2
 
-                    title="Generated Test Cases"
+)}
 
 
-                    content={
+</pre>
 
-                        JSON.stringify(
 
-                            result,
+:
 
-                            null,
 
-                            2
+<div className="
+h-96
+flex
+items-center
+justify-center
+text-gray-400
+"
 
-                        )
+>
 
-                    }
 
+AI generated tests appear here
 
-                />
 
+</div>
 
-            }
 
+}
 
 
 
-        </div>
 
 
-    );
+</div>
+
+
+
+
+
+</div>
+
+
+
+</div>
+
+);
 
 
 }
