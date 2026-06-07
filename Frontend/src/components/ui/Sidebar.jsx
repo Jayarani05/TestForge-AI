@@ -1,7 +1,23 @@
 import { NavLink } from "react-router-dom";
 
 
-import { useAuth } from "../../context/AuthContext";
+import {
+
+    LayoutDashboard,
+    FolderKanban,
+    Bot,
+    PlayCircle,
+    Github,
+    Wrench,
+    Rocket,
+    FileDown,
+    Settings,
+    LogOut
+
+} from "lucide-react";
+
+
+import { useAuth } from "../context/AuthContext";
 
 
 
@@ -19,101 +35,67 @@ function Sidebar(){
     const menu = [
 
 
-
         {
-
             name:"Dashboard",
-
             path:"/dashboard",
-
-            icon:"📊"
-
+            icon:LayoutDashboard
         },
 
 
-
         {
-
             name:"Projects",
-
             path:"/projects",
-
-            icon:"🗂️"
-
+            icon:FolderKanban
         },
 
 
-
         {
-
             name:"AI Generator",
-
             path:"/generate",
-
-            icon:"🤖"
-
+            icon:Bot
         },
 
 
-
         {
-
             name:"Execution",
-
             path:"/execution",
-
-            icon:"⚙️"
-
+            icon:PlayCircle
         },
 
 
-
         {
-
             name:"Repository",
-
             path:"/repository",
-
-            icon:"🧠"
-
+            icon:Github
         },
 
 
-
         {
-
             name:"Self Healing",
-
             path:"/healing",
-
-            icon:"🩹"
-
+            icon:Wrench
         },
 
 
-
         {
-
             name:"CI/CD",
-
             path:"/cicd",
-
-            icon:"🚀"
-
+            icon:Rocket
         },
 
 
+        {
+            name:"Export",
+            path:"/export",
+            icon:FileDown
+        },
+
 
         {
-
-            name:"Export",
-
-            path:"/export",
-
-            icon:"📄"
-
+            name:"Settings",
+            path:"/settings",
+            icon:Settings
         }
-
 
 
     ];
@@ -124,178 +106,299 @@ function Sidebar(){
 
 
 
-
-
     return (
 
 
-
-
-        <div
-
-            className="
-            h-screen
-            w-64
-            bg-gray-950
-            text-white
-            fixed
-            left-0
-            top-0
-            p-6
-            "
-
-
+        <aside
+        className="
+        fixed
+        left-0
+        top-0
+        h-screen
+        w-64
+        bg-white
+        border-r
+        border-gray-200
+        flex
+        flex-col
+        "
         >
 
 
 
 
 
-            <h1
 
-                className="
-                text-2xl
-                font-bold
-                mb-10
-                "
+            {/* LOGO */}
 
+
+            <div
+            className="
+            h-16
+            flex
+            items-center
+            px-6
+            border-b
+            "
             >
 
 
-                TestForge AI
+                <div>
 
 
-            </h1>
+                    <h1
+                    className="
+                    text-xl
+                    font-bold
+                    "
+                    >
+
+                        ⚡ TestForge AI
 
 
-
-
-
-
-
-
-            {
-
-
-                menu.map(
-
-                    (item)=>(
+                    </h1>
 
 
 
-                        <NavLink
+                    <p
+                    className="
+                    text-xs
+                    text-gray-500
+                    "
+                    >
+
+                        QA Automation Platform
 
 
-                            key={item.path}
+                    </p>
 
 
-                            to={item.path}
+                </div>
 
 
-                            className={
-
-                                ({isActive})=>
-
-
-                                `
-
-                                block
-                                p-3
-                                rounded-lg
-                                mb-3
-
-
-                                ${
-
-                                    isActive
-
-                                    ?
-
-                                    "bg-blue-600"
-
-                                    :
-
-                                    "hover:bg-gray-800"
-
-                                }
-
-
-                                `
-
-
-                            }
-
-
-                        >
+            </div>
 
 
 
-                            {item.icon}
-
-
-                            {" "}
-
-
-                            {item.name}
 
 
 
-                        </NavLink>
+
+
+
+
+            {/* MENU */}
+
+
+
+            <nav
+            className="
+            flex-1
+            p-4
+            "
+            >
+
+
+
+
+                {
+
+                menu.map((item)=>{
+
+
+                    const Icon=item.icon;
+
+
+
+                    return(
+
+
+                    <NavLink
+
+
+                    key={item.path}
+
+
+                    to={item.path}
+
+
+                    className={({isActive})=>
+
+
+                    `
+
+                    flex
+                    items-center
+                    gap-3
+                    px-4
+                    py-3
+                    rounded-xl
+                    mb-2
+                    text-sm
+                    transition
+
+
+                    ${
+
+                    isActive
+
+                    ?
+
+                    "bg-blue-600 text-white shadow"
+
+                    :
+
+                    "text-gray-600 hover:bg-gray-100"
+
+                    }
+
+                    `
+
+
+                    }
+
+
+                    >
+
+
+
+                        <Icon size={18}/>
+
+
+
+                        {item.name}
+
+
+
+                    </NavLink>
 
 
 
                     )
 
-                )
 
-            }
-
+                })
 
 
-
+                }
 
 
 
 
 
-            <button
+            </nav>
+
+
+
+
+
+
+
+
+
+            {/* PROFILE */}
+
+
+            <div
+            className="
+            border-t
+            p-4
+            "
+            >
+
+
+
+
+                <div
+                className="
+                bg-gray-50
+                rounded-xl
+                p-3
+                mb-3
+                "
+                >
+
+
+                    <p
+                    className="
+                    font-medium
+                    text-sm
+                    "
+                    >
+
+                        Jayarani
+
+
+                    </p>
+
+
+
+                    <p
+                    className="
+                    text-xs
+                    text-gray-500
+                    "
+                    >
+
+                        QA Engineer
+
+
+                    </p>
+
+
+                </div>
+
+
+
+
+
+
+
+                <button
 
 
                 onClick={logout}
 
 
                 className="
-                absolute
-                bottom-8
-                left-6
-                bg-red-600
-                px-8
-                py-3
+                flex
+                items-center
+                gap-2
+                text-red-600
+                text-sm
+                w-full
+                p-3
                 rounded-lg
-                hover:bg-red-700
+                hover:bg-red-50
                 "
 
 
-
-            >
-
+                >
 
 
-                Logout
+                    <LogOut size={18}/>
 
 
-
-            </button>
+                    Logout
 
 
 
+                </button>
 
 
 
 
 
-        </div>
 
+            </div>
+
+
+
+
+
+
+
+        </aside>
 
 
     );
