@@ -1,14 +1,13 @@
 from app.llm_services.gemini_service import GeminiService
+
 import json
 
 
 class BugAnalyzerAgent:
 
-
     def __init__(self):
 
         self.llm = GeminiService()
-
 
 
     def analyze(
@@ -16,16 +15,11 @@ class BugAnalyzerAgent:
         execution_result
     ):
 
-
         if execution_result.get("passed"):
 
             return {
-
                 "bug_found": False,
-
-                "message":
-                "All tests passed"
-
+                "message": "All tests passed"
             }
 
 
@@ -35,17 +29,12 @@ You are an expert QA automation engineer.
 
 Analyze this failed test execution.
 
-
 Execution Result:
 
 {execution_result}
 
 
-Return ONLY this JSON.
-
-Do not generate test cases.
-Do not add explanations.
-
+Return ONLY JSON:
 
 {{
 "title":"",
@@ -57,24 +46,25 @@ Do not add explanations.
 
 """
 
-        response = (
-            self.llm.generate_response(
-                prompt
-            )
+
+        response = self.llm.generate_response(
+            prompt
         )
+
 
         try:
 
-            parsed = json.loads(
-            response
+            analysis = json.loads(
+                response
             )
 
         except Exception:
 
-            parsed = {
-            "raw_analysis":
-            response
+            analysis = {
+                "raw_analysis":
+                response
             }
+
 
 
         return {
@@ -82,8 +72,7 @@ Do not add explanations.
             "bug_found":
             True,
 
-
             "analysis":
-            parsed
+            analysis
 
         }

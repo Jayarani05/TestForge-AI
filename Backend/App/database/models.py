@@ -1,66 +1,204 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-
-from app.database.session import get_db
-
-from app.database.models import (
-    ExecutionHistory
+from sqlalchemy import (
+    Column,
+    Integer,
+    String,
+    ForeignKey,
+    JSON,
+    DateTime
 )
 
-from app.security.auth import (
-    get_current_user
-)
+from sqlalchemy.sql import func
 
-
-router = APIRouter(
-    prefix="/execution",
-    tags=["Execution"]
-)
+from app.database.connection import Base
 
 
 
-@router.post("/run")
-def run_execution(
-    data:dict,
-    db:Session=Depends(get_db),
-    current_user=Depends(get_current_user)
-):
 
+class User(Base):
 
-    result = {
+    __tablename__ = "users"
 
-        "status":"passed",
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
 
-        "message":"Execution completed"
+    name = Column(
+        String
+    )
 
-    }
+    email = Column(
+        String,
+        unique=True,
+        index=True
+    )
 
-
-    execution = ExecutionHistory(
-
-        user_id=current_user.id,
-
-        project_id=data.get(
-            "project_id"
-        ),
-
-        result=result
-
+    hashed_password = Column(
+        String
     )
 
 
-    db.add(execution)
-
-    db.commit()
 
 
 
-    return {
 
-        "message":
-        "Execution successful",
+class Project(Base):
 
-        "result":
-        result
+    __tablename__ = "projects"
 
-    }
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    name = Column(
+        String
+    )
+
+    description = Column(
+        String
+    )
+
+    technology = Column(
+        String
+    )
+
+    owner_id = Column(
+        Integer,
+        ForeignKey(
+            "users.id"
+        )
+    )
+
+
+
+
+
+
+
+
+class GenerationHistory(Base):
+
+    __tablename__ = "generation_history"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+
+    user_id = Column(
+        Integer,
+        ForeignKey(
+            "users.id"
+        )
+    )
+
+
+    project_id = Column(
+        Integer,
+        ForeignKey(
+            "projects.id"
+        )
+    )
+
+
+    user_story = Column(
+        String
+    )
+
+
+    result = Column(
+        JSON
+    )
+
+
+    created_at = Column(
+        DateTime,
+        server_default=func.now()
+    )
+
+
+
+
+
+
+
+
+class ExecutionHistory(Base):
+
+    __tablename__ = "execution_history"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+
+    user_id = Column(
+        Integer,
+        ForeignKey(
+            "users.id"
+        )
+    )
+
+
+    project_id = Column(
+        Integer,
+        ForeignKey(
+            "projects.id"
+        )
+    )
+
+
+    result = Column(
+        JSON
+    )
+
+
+    created_at = Column(
+        DateTime,
+        server_default=func.now()
+    )
+
+
+class BugReport(Base):
+
+    __tablename__ = "bug_reports"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    user_id = Column(
+        Integer,
+        ForeignKey(
+            "users.id"
+        )
+    )
+
+    project_id = Column(
+        Integer,
+        ForeignKey(
+            "projects.id"
+        )
+    )
+
+    error = Column(
+        String
+    )
+
+    result = Column(
+        JSON
+    )
+
+    created_at = Column(
+        DateTime,
+        server_default=func.now()
+    )

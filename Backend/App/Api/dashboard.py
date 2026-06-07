@@ -31,6 +31,8 @@ from app.database.models import (
 
 from app.database.models import ExecutionHistory
 
+from app.database.models import BugReport
+
 
 
 router = APIRouter(
@@ -175,6 +177,17 @@ def dashboard(
     db.query(ExecutionHistory)
     .filter(
         ExecutionHistory.user_id
+        ==
+        current_user.id
+    )
+    .count()
+    )
+
+
+    bugs = (
+    db.query(BugReport)
+    .filter(
+        BugReport.user_id
         ==
         current_user.id
     )

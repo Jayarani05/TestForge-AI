@@ -50,6 +50,8 @@ from fastapi import Request
 
 from fastapi.responses import JSONResponse
 
+from app.api import bug
+
 app = FastAPI(
     title="TestForge AI",
     description="AI Agentic QA Automation Platform",
@@ -152,6 +154,11 @@ app.include_router(
 
     prefix="/api/v1"
 
+)
+
+app.include_router(
+    bug.router,
+    prefix="/api/v1"
 )
 
 Base.metadata.create_all(
