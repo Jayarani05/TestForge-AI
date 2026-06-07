@@ -1,54 +1,38 @@
-import { Inbox } from "lucide-react";
+import { Outlet } from "react-router-dom";
+
+import Sidebar from "../components/Sidebar";
+
+import Header from "../components/Header";
 
 
 
-function EmptyState({
-
-title,
-
-message
-
-}){
+function DashboardLayout(){
 
 
 return(
 
-<div
-className="
-border
-border-dashed
-rounded-xl
-p-10
-text-center
-text-gray-500
-"
->
+<div className="min-h-screen bg-gray-50">
 
 
-<Inbox
-size={35}
-className="mx-auto mb-3"
-/>
+<Sidebar/>
 
 
-<h3
-className="
-font-semibold
-text-gray-700
-"
->
-
-{title}
-
-</h3>
+<div className="ml-64 max-lg:ml-0">
 
 
-<p className="text-sm mt-2">
+<Header/>
 
-{message}
 
-</p>
+<main className="p-6">
 
+
+<Outlet/>
+
+
+</main>
+
+
+</div>
 
 
 </div>
@@ -59,4 +43,4 @@ text-gray-700
 }
 
 
-export default EmptyState;
+export default DashboardLayout;
