@@ -233,3 +233,39 @@ class RepositoryAnalysis(Base):
         DateTime,
         server_default=func.now()
     )
+
+
+class CICDHistory(Base):
+
+    __tablename__ = "cicd_history"
+
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+
+    user_id = Column(
+        Integer,
+        ForeignKey(
+            "users.id"
+        )
+    )
+
+
+    tool = Column(
+        String
+    )
+
+
+    result = Column(
+        JSON
+    )
+
+
+    created_at = Column(
+        DateTime,
+        server_default=func.now()
+    )

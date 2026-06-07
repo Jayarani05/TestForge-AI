@@ -1,11 +1,24 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
-from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+
+from app.database.session import get_db
+
+from app.security.auth import (
+    get_current_user
+)
+
+
+from app.database.models import (
+    CICDHistory
+)
 
 
 from app.agents.cicd_agent import (
     CICDAgent
 )
+
 
 
 
@@ -16,25 +29,12 @@ router = APIRouter(
 
 
 
-class CICDRequest(
-    BaseModel
-):
 
-    language: str
-
-    framework: str
-
-    tool: str
-
-
-
-
-@router.post(
-    "/generate"
-)
-
+@router.post("/generate")
 def generate_pipeline(
-    request: CICDRequest
+    request:dict,
+    db:Session = Depends(get_db),
+    current_user = Depends(get_current_user)
 ):
 
 
@@ -42,23 +42,62 @@ def generate_pipeline(
 
 
     result = agent.generate(
+        request
+    )
 
-        request.framework,
 
-        request.language,
 
-        request.tool
+    history = CICDHistory(
+
+        user_id=current_user.id,
+
+        tool=request.get(
+            "tool"
+        ),
+
+        result=result
 
     )
 
 
+    db.add(history)
+
+
+    db.commit()
+
+
+
     return {
 
-        "status":
-        "success",
+        "status":"success",
 
-
-        "pipeline":
-        result
+        "pipeline":result
 
     }
+
+
+
+
+
+
+
+@router.get("/history")
+def cicd_history(
+    db:Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+
+
+    return (
+
+        db.query(CICDHistory)
+
+        .filter(
+            CICDHistory.user_id
+            ==
+            current_user.id
+        )
+
+        .all()
+
+    )
