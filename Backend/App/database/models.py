@@ -71,9 +71,6 @@ class User(
 
 )
 
-
-
-
 class GenerationHistory(
     Base
 ):
@@ -94,6 +91,17 @@ class GenerationHistory(
 
         ForeignKey(
             "users.id"
+        )
+
+    )
+
+
+    project_id = Column(
+
+        Integer,
+
+        ForeignKey(
+            "projects.id"
         )
 
     )
@@ -125,6 +133,16 @@ class GenerationHistory(
         back_populates="histories"
 
     )
+
+
+    project = relationship(
+
+        "Project",
+
+        back_populates="generations"
+
+    )
+
 
 
 class Project(
@@ -183,3 +201,12 @@ class Project(
         back_populates="projects"
 
     )
+
+
+    generations = relationship(
+
+    "GenerationHistory",
+
+    back_populates="project"
+
+)

@@ -26,6 +26,22 @@ from app.database.history_repository import (
 )
 
 
+from app.security.auth import (
+
+    get_current_user
+
+)
+
+
+from app.database.models import (
+
+    Project
+
+)
+
+
+from fastapi import HTTPException
+
 
 router = APIRouter(
     prefix="/tests",
@@ -43,12 +59,47 @@ def generate_tests(
     request: UserStoryRequest,
 
 
-    db: Session = Depends(
+    db:Session = Depends(
         get_db
+    ),
+
+
+    current_user = Depends(
+        get_current_user
     )
 
 ):
 
+
+    project = (
+
+    db.query(Project)
+
+    .filter(
+
+        Project.id == request.project_id,
+
+
+        Project.owner_id == current_user.id
+
+    )
+
+    .first()
+
+    )
+
+
+    if not project:
+
+
+        raise HTTPException(
+
+            status_code=404,
+
+
+            detail="Project not found"
+
+        )
 
     agent = QAAgent()
 
@@ -78,7 +129,15 @@ def generate_tests(
 
         db,
 
+
+        current_user.id,
+
+
+        request.project_id,
+
+
         request.user_story,
+
 
         result
 

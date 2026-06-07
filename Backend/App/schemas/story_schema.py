@@ -23,6 +23,9 @@ class UserStoryRequest(BaseModel):
     ] = None
 
 
+    project_id:int
+
+
 class UserStoryResponse(BaseModel):
     status: str
     message: str

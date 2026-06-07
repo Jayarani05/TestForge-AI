@@ -26,7 +26,11 @@ from app.security.auth import (
     get_current_user
 )
 
+from app.database.models import (
 
+    GenerationHistory
+
+)
 
 router = APIRouter(
 
@@ -127,6 +131,57 @@ def get_projects(
         .filter(
 
             Project.owner_id
+            ==
+            current_user.id
+
+        )
+
+
+        .all()
+
+    )
+
+
+@router.get(
+
+    "/{project_id}/history"
+
+)
+
+
+def project_history(
+
+
+    project_id:int,
+
+
+    db:Session = Depends(
+        get_db
+    ),
+
+
+    current_user = Depends(
+        get_current_user
+    )
+
+):
+
+
+    return (
+
+        db.query(
+            GenerationHistory
+        )
+
+
+        .filter(
+
+            GenerationHistory.project_id
+            ==
+            project_id,
+
+
+            GenerationHistory.user_id
             ==
             current_user.id
 
