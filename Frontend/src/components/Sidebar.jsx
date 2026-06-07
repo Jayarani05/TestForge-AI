@@ -183,6 +183,8 @@ function Sidebar(){
 
         flex
         flex-col
+
+        max-lg:hidden
         "
 
 

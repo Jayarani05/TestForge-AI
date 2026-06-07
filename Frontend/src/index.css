@@ -194,3 +194,143 @@ body {
 
 
 }
+
+
+/* =====================
+   Final UI Polish
+===================== */
+
+
+button{
+
+    cursor:pointer;
+
+    transition:
+
+    all 0.2s ease;
+
+}
+
+
+
+button:hover{
+
+    transform:
+
+    translateY(-1px);
+
+}
+
+
+
+button:disabled{
+
+
+    opacity:0.6;
+
+
+    cursor:not-allowed;
+
+
+}
+
+
+
+
+input,
+textarea,
+select{
+
+
+    outline:none;
+
+
+    transition:
+
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+
+}
+
+
+
+
+
+input:focus,
+textarea:focus,
+select:focus{
+
+
+    border-color:
+
+    #2563eb;
+
+
+
+    box-shadow:
+
+    0 0 0 2px rgba(37,99,235,0.15);
+
+
+}
+
+
+
+
+.card-hover{
+
+
+    transition:
+
+    0.2s ease;
+
+
+}
+
+
+
+
+.card-hover:hover{
+
+
+    transform:
+
+    translateY(-3px);
+
+
+
+    box-shadow:
+
+    0 10px 25px rgba(0,0,0,0.08);
+
+
+}
+
+
+
+/* responsive images */
+
+
+img{
+
+
+    max-width:100%;
+
+
+}
+
+
+
+/* text selection */
+
+
+::selection{
+
+
+    background:
+
+    #dbeafe;
+
+
+}

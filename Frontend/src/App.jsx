@@ -22,6 +22,7 @@ import CICD from "./pages/CICD";
 import Export from "./pages/Export";
 import Settings from "./pages/Settings";
 import BugReport from "./pages/BugReport";
+import NotFound from "./pages/NotFound";
 
 
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -216,6 +217,13 @@ element={<BugReport />}
 
 />
 
+<Route
+
+path="*"
+
+element={<NotFound />}
+
+/>
 
 
 

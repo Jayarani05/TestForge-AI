@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import {
 
-    Github,
+    GitBranch,
     Search,
     Code,
     ShieldCheck,
@@ -132,7 +132,7 @@ gap-2
 mb-5
 ">
 
-<Github size={18}/>
+<GitBranch size={18}/>
 
 Repository URL
 
