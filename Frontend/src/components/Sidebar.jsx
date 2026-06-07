@@ -1,8 +1,6 @@
 import { NavLink } from "react-router-dom";
 
-
 import {
-
     LayoutDashboard,
     FolderKanban,
     Bot,
@@ -13,7 +11,6 @@ import {
     FileDown,
     Settings,
     LogOut
-
 } from "lucide-react";
 
 
@@ -21,14 +18,10 @@ import { useAuth } from "../context/AuthContext";
 
 
 
-
 function Sidebar(){
 
 
-
     const { logout } = useAuth();
-
-
 
 
 
@@ -50,21 +43,21 @@ function Sidebar(){
 
 
         {
-            name:"AI Generator",
+            name:"Test Generator",
             path:"/generate",
             icon:Bot
         },
 
 
         {
-            name:"Execution",
+            name:"Test Execution",
             path:"/execution",
             icon:PlayCircle
         },
 
 
         {
-            name:"Repository",
+            name:"Repository Analysis",
             path:"/repository",
             icon:Github
         },
@@ -78,14 +71,14 @@ function Sidebar(){
 
 
         {
-            name:"CI/CD",
+            name:"CI/CD Generator",
             path:"/cicd",
             icon:Rocket
         },
 
 
         {
-            name:"Export",
+            name:"Export Center",
             path:"/export",
             icon:FileDown
         },
@@ -97,9 +90,7 @@ function Sidebar(){
             icon:Settings
         }
 
-
     ];
-
 
 
 
@@ -126,18 +117,15 @@ function Sidebar(){
 
 
 
-
-
-
             {/* LOGO */}
 
 
             <div
             className="
             h-16
+            px-5
             flex
             items-center
-            px-6
             border-b
             "
             >
@@ -148,8 +136,9 @@ function Sidebar(){
 
                     <h1
                     className="
-                    text-xl
+                    text-lg
                     font-bold
+                    text-gray-900
                     "
                     >
 
@@ -157,7 +146,6 @@ function Sidebar(){
 
 
                     </h1>
-
 
 
                     <p
@@ -176,8 +164,8 @@ function Sidebar(){
                 </div>
 
 
-            </div>
 
+            </div>
 
 
 
@@ -190,14 +178,13 @@ function Sidebar(){
             {/* MENU */}
 
 
-
             <nav
             className="
             flex-1
-            p-4
+            p-3
+            overflow-y-auto
             "
             >
-
 
 
 
@@ -206,83 +193,87 @@ function Sidebar(){
                 menu.map((item)=>{
 
 
-                    const Icon=item.icon;
+                    const Icon = item.icon;
 
 
 
                     return(
 
 
-                    <NavLink
+                        <NavLink
 
 
-                    key={item.path}
+                        key={item.path}
 
 
-                    to={item.path}
+                        to={item.path}
 
 
-                    className={({isActive})=>
+                        className={({isActive})=>
 
 
-                    `
+                        `
 
-                    flex
-                    items-center
-                    gap-3
-                    px-4
-                    py-3
-                    rounded-xl
-                    mb-2
-                    text-sm
-                    transition
+                        flex
+                        items-center
+                        gap-3
 
+                        px-4
+                        py-3
 
-                    ${
+                        rounded-lg
 
-                    isActive
+                        text-sm
 
-                    ?
+                        mb-1
 
-                    "bg-blue-600 text-white shadow"
-
-                    :
-
-                    "text-gray-600 hover:bg-gray-100"
-
-                    }
-
-                    `
+                        transition
 
 
-                    }
+                        ${
+
+                        isActive
+
+                        ?
+
+                        "bg-blue-600 text-white"
+
+                        :
+
+                        "text-gray-600 hover:bg-gray-100"
+
+                        }
 
 
-                    >
+                        `
+
+                        }
+
+
+                        >
+
+
+                            <Icon size={18}/>
+
+
+                            <span>
+
+                                {item.name}
+
+                            </span>
 
 
 
-                        <Icon size={18}/>
+                        </NavLink>
 
 
 
-                        {item.name}
-
-
-
-                    </NavLink>
-
-
-
-                    )
+                    );
 
 
                 })
 
-
                 }
-
-
 
 
 
@@ -296,7 +287,8 @@ function Sidebar(){
 
 
 
-            {/* PROFILE */}
+
+            {/* USER SECTION */}
 
 
             <div
@@ -308,21 +300,21 @@ function Sidebar(){
 
 
 
-
                 <div
                 className="
                 bg-gray-50
-                rounded-xl
+                rounded-lg
                 p-3
                 mb-3
                 "
                 >
 
 
+
                     <p
                     className="
-                    font-medium
                     text-sm
+                    font-semibold
                     "
                     >
 
@@ -346,7 +338,9 @@ function Sidebar(){
                     </p>
 
 
+
                 </div>
+
 
 
 
@@ -363,13 +357,20 @@ function Sidebar(){
                 className="
                 flex
                 items-center
-                gap-2
+                gap-3
+
                 text-red-600
-                text-sm
-                w-full
-                p-3
+
+                px-3
+                py-2
+
                 rounded-lg
+
                 hover:bg-red-50
+
+                w-full
+
+                text-sm
                 "
 
 
@@ -382,9 +383,7 @@ function Sidebar(){
                     Logout
 
 
-
                 </button>
-
 
 
 
@@ -395,14 +394,10 @@ function Sidebar(){
 
 
 
-
-
-
         </aside>
 
 
     );
-
 
 
 }

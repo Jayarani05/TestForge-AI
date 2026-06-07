@@ -10,16 +10,26 @@ Navigate
 
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+
+
 import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
 import TestGenerator from "./pages/TestGenerator";
-
-import ProtectedRoute from "./routes/ProtectedRoute";
 import Execution from "./pages/Execution";
 import Repository from "./pages/Repository";
 import Healing from "./pages/Healing";
 import CICD from "./pages/CICD";
 import Export from "./pages/Export";
+import Settings from "./pages/Settings";
+
+
+import ProtectedRoute from "./routes/ProtectedRoute";
+
+
+import DashboardLayout from "./layouts/DashboardLayout";
+
+
+
 
 function App(){
 
@@ -32,17 +42,17 @@ return (
 <Routes>
 
 
+
 <Route
 
 path="/"
 
-element={
-
-<Navigate to="/login" />
-
-}
+element={<Navigate to="/login" />}
 
 />
+
+
+
 
 
 <Route
@@ -54,6 +64,7 @@ element={<Login />}
 />
 
 
+
 <Route
 
 path="/register"
@@ -63,136 +74,140 @@ element={<Register />}
 />
 
 
-<Route
 
-path="/dashboard"
+
+
+
+{/* PROTECTED APP LAYOUT */}
+
+
+<Route
 
 element={
 
 <ProtectedRoute>
 
-<Dashboard />
+<DashboardLayout />
 
 </ProtectedRoute>
 
 }
 
+>
+
+
+
+
+
+<Route
+
+path="/dashboard"
+
+element={<Dashboard />}
+
 />
+
+
 
 
 <Route
 
 path="/projects"
 
-element={
-
-<ProtectedRoute>
-
-<Projects />
-
-</ProtectedRoute>
-
-}
+element={<Projects />}
 
 />
+
+
+
 
 
 <Route
 
 path="/generate"
 
-element={
-
-<ProtectedRoute>
-
-<TestGenerator />
-
-</ProtectedRoute>
-
-}
+element={<TestGenerator />}
 
 />
+
+
+
 
 
 <Route
 
-    path="/execution"
+path="/execution"
 
-    element={
-
-        <ProtectedRoute>
-
-            <Execution />
-
-        </ProtectedRoute>
-
-    }
+element={<Execution />}
 
 />
+
+
+
+
 
 <Route
 
 path="/repository"
 
-element={
-
-<ProtectedRoute>
-
-<Repository />
-
-</ProtectedRoute>
-
-}
+element={<Repository />}
 
 />
+
+
+
+
 
 <Route
 
-    path="/healing"
+path="/healing"
 
-    element={
-
-        <ProtectedRoute>
-
-            <Healing />
-
-        </ProtectedRoute>
-
-    }
+element={<Healing />}
 
 />
+
+
+
+
 
 <Route
 
 path="/cicd"
 
-element={
-
-<ProtectedRoute>
-
-<CICD />
-
-</ProtectedRoute>
-
-}
+element={<CICD />}
 
 />
+
+
+
+
 
 <Route
 
 path="/export"
 
-element={
-
-<ProtectedRoute>
-
-<Export />
-
-</ProtectedRoute>
-
-}
+element={<Export />}
 
 />
+
+
+
+
+<Route
+
+path="/settings"
+
+element={<Settings />}
+
+/>
+
+
+
+
+</Route>
+
+
+
 
 
 </Routes>
@@ -200,7 +215,9 @@ element={
 
 </BrowserRouter>
 
+
 );
+
 
 }
 
