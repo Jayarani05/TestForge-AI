@@ -1,316 +1,352 @@
 import { useState } from "react";
 
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 
 
 function Login(){
 
 
-
     const navigate = useNavigate();
 
 
-
-
-    const [email,setEmail] =
-
-        useState("");
+    const { login } = useAuth();
 
 
 
-    const [password,setPassword] =
+    const [email,setEmail] = useState("");
 
-        useState("");
+    const [password,setPassword] = useState("");
+
+    const [error,setError] = useState("");
 
 
 
 
-    const loginUser = async()=>{
 
+    async function handleSubmit(e){
+
+
+        e.preventDefault();
 
 
         try{
 
 
+            await login(
 
+                email,
 
-
-            const response = await api.post(
-
-
-                "/auth/login",
-
-
-                {
-
-
-                    email:email,
-
-
-                    password:password
-
-
-                }
-
+                password
 
             );
 
 
+            navigate("/dashboard");
 
 
+        }
+
+        catch(err){
 
 
-            console.log(
-
-                response.data
-
+            setError(
+                "Invalid email or password"
             );
-
-
-
-
-
-
-            localStorage.setItem(
-
-
-                "token",
-
-
-                response.data.access_token
-
-
-            );
-
-
-
-
-
-
-            navigate(
-
-                "/dashboard"
-
-            );
-
-
-
-
 
 
         }
 
 
-        catch(error){
+    }
 
 
 
-            console.log(
 
 
-                error.response?.data
 
+return (
 
-            );
+<div
+className="
+min-h-screen
+flex
+items-center
+justify-center
+bg-gray-50
+"
+>
 
 
 
-            alert(
+<div
+className="
+w-full
+max-w-md
+"
+>
 
 
-                "Invalid login"
+{/* BRAND */}
 
 
-            );
+<div
+className="
+text-center
+mb-8
+"
+>
 
 
+<h1
+className="
+text-3xl
+font-bold
+"
+>
 
-        }
+⚡ TestForge AI
 
+</h1>
 
 
-    };
+<p
+className="
+text-gray-500
+mt-2
+"
+>
 
+AI powered QA automation platform
 
+</p>
 
 
+</div>
 
 
 
 
 
-    return(
 
 
+<form
 
-        <div className="min-h-screen bg-black flex justify-center items-center">
+onSubmit={handleSubmit}
 
+className="
+bg-white
+border
+rounded-xl
+shadow-sm
+p-8
+"
 
+>
 
 
 
+<h2
+className="
+text-xl
+font-semibold
+text-center
+mb-2
+"
+>
 
-            <div className="
-            bg-gray-900
-            p-10
-            rounded-xl
-            w-96
-            ">
+Welcome back
 
+</h2>
 
 
+<p
+className="
+text-center
+text-gray-500
+text-sm
+mb-6
+"
+>
 
+Sign in to your account
 
+</p>
 
-                <h1 className="
-                text-white
-                text-3xl
-                font-bold
-                mb-8
-                ">
 
 
-                    Login
 
 
-                </h1>
 
 
+{
 
+error &&
 
+<p
+className="
+bg-red-50
+text-red-600
+p-3
+rounded-lg
+text-sm
+mb-4
+"
+>
 
+{error}
 
-
-
-
-                <input
-
-
-                    value={email}
-
-
-                    onChange={(e)=>
-
-                        setEmail(
-
-                            e.target.value
-
-                        )
-
-                    }
-
-
-                    placeholder="Email"
-
-
-
-                    className="
-                    w-full
-                    p-3
-                    rounded
-                    mb-5
-                    "
-
-
-                />
-
-
-
-
-
-
-
-
-
-                <input
-
-
-                    value={password}
-
-
-                    type="password"
-
-
-                    onChange={(e)=>
-
-                        setPassword(
-
-                            e.target.value
-
-                        )
-
-                    }
-
-
-                    placeholder="Password"
-
-
-
-                    className="
-                    w-full
-                    p-3
-                    rounded
-                    mb-5
-                    "
-
-
-                />
-
-
-
-
-
-
-
-
-
-                <button
-
-
-                    onClick={loginUser}
-
-
-                    className="
-                    bg-blue-600
-                    text-white
-                    w-full
-                    py-3
-                    rounded
-                    "
-
-
-                >
-
-
-                    Login
-
-
-                </button>
-
-
-
-
-
-
-            </div>
-
-
-
-
-
-        </div>
-
-
-    );
-
-
+</p>
 
 }
 
 
+
+
+
+
+
+
+
+<label className="text-sm">
+
+Email
+
+</label>
+
+
+<input
+
+type="email"
+
+value={email}
+
+onChange={(e)=>setEmail(e.target.value)}
+
+placeholder="name@example.com"
+
+className="
+mt-2
+mb-4
+w-full
+border
+rounded-lg
+p-3
+"
+
+/>
+
+
+
+
+
+
+
+
+<label className="text-sm">
+
+Password
+
+</label>
+
+
+
+<input
+
+type="password"
+
+value={password}
+
+onChange={(e)=>setPassword(e.target.value)}
+
+placeholder="Enter password"
+
+className="
+mt-2
+mb-6
+w-full
+border
+rounded-lg
+p-3
+"
+
+/>
+
+
+
+
+
+
+
+<button
+
+className="
+w-full
+bg-blue-600
+text-white
+rounded-lg
+p-3
+hover:bg-blue-700
+"
+
+>
+
+Sign in
+
+</button>
+
+
+
+
+
+
+<p
+className="
+text-center
+text-sm
+mt-6
+"
+>
+
+Don't have an account?
+
+
+<Link
+
+to="/register"
+
+className="
+text-blue-600
+ml-1
+"
+
+>
+
+Sign up
+
+</Link>
+
+
+</p>
+
+
+
+
+
+</form>
+
+
+</div>
+
+
+</div>
+
+);
+
+
+}
 
 
 export default Login;
