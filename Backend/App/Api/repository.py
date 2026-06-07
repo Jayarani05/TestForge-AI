@@ -1,55 +1,91 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
-from pydantic import BaseModel
+from app.database.session import get_db
 
+from app.security.auth import (
+    get_current_user
+)
+
+from app.database.models import (
+    RepositoryAnalysis
+)
 
 from app.agents.repository_agent import (
     RepositoryAgent
 )
 
 
-
 router = APIRouter(
     prefix="/repository",
-    tags=["Repository Intelligence"]
+    tags=["Repository"]
 )
 
 
 
-class RepoRequest(
-    BaseModel
-):
-
-    repo_url: str
-
-
-
-
-@router.post(
-    "/analyze"
-)
-
+@router.post("/analyze")
 def analyze_repository(
-    request: RepoRequest
+    request:dict,
+    db:Session=Depends(get_db),
+    current_user=Depends(get_current_user)
 ):
-
 
     agent = RepositoryAgent()
 
 
     result = agent.analyze(
-        request.repo_url
+        request.get(
+            "repo_url"
+        )
     )
+
+
+    repo = RepositoryAnalysis(
+
+        user_id=current_user.id,
+
+        repo_url=request.get(
+            "repo_url"
+        ),
+
+        result=result
+    )
+
+
+    db.add(repo)
+
+    db.commit()
+
 
 
     return {
 
+        "status":"success",
 
-        "status":
-        "success",
-
-
-        "repository_analysis":
-        result
+        "analysis":result
 
     }
+
+
+
+
+
+@router.get("/history")
+def repo_history(
+    db:Session=Depends(get_db),
+    current_user=Depends(get_current_user)
+):
+
+    return (
+        db.query(
+            RepositoryAnalysis
+        )
+
+        .filter(
+            RepositoryAnalysis.user_id
+            ==
+            current_user.id
+        )
+
+        .all()
+    )

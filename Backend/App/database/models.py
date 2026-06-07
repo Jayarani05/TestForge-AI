@@ -202,3 +202,34 @@ class BugReport(Base):
         DateTime,
         server_default=func.now()
     )
+
+
+class RepositoryAnalysis(Base):
+
+    __tablename__ = "repository_analysis"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    user_id = Column(
+        Integer,
+        ForeignKey(
+            "users.id"
+        )
+    )
+
+    repo_url = Column(
+        String
+    )
+
+    result = Column(
+        JSON
+    )
+
+    created_at = Column(
+        DateTime,
+        server_default=func.now()
+    )
