@@ -10,67 +10,60 @@ genai.configure(
 
 
 
-def analyze_requirement(user_story:str):
-
+def analyze_requirement(user_story: str):
 
     model = genai.GenerativeModel(
         "gemini-1.5-flash"
     )
 
 
-    prompt=f"""
+    prompt = f"""
 
-
-You are a senior software requirement analyst.
+You are a senior QA requirement analyst.
 
 Analyze this user story:
 
 {user_story}
 
 
-Return ONLY JSON:
+Return only JSON:
 
 {{
- "functional_requirements":[
+"functional_requirements":[],
 
- ],
+"non_functional_requirements":[],
 
- "non_functional_requirements":[
+"sentiment":{{
 
- ],
+"type":"",
+"confidence":0,
+"reason":""
 
- "sentiment":{{
-    "type":"",
-    "confidence":0,
-    "reason":""
- }},
+}},
 
- "risk_analysis":{{
-    "risk_level":"",
-    "risks":[]
- }}
+"risk_analysis":{{
+
+"risk_level":"",
+"risks":[]
+
 }}
 
+}}
 
 """
 
 
-    response=model.generate_content(
+    response = model.generate_content(
         prompt
     )
 
 
-    text=response.text
+    clean = (
+        response.text
+        .replace("```json","")
+        .replace("```","")
+        .strip()
+    )
 
 
-    text=text.replace(
-        "```json",
-        ""
-    ).replace(
-        "```",
-        ""
-    ).strip()
-
-
-
-    return json.loads(text)
+    return json.loads(clean)

@@ -29,6 +29,8 @@ from app.agents.test_data_agent import (
 )
 
 
+from app.agents.requirement_agent import analyze_requirement
+
 
 class QAAgent:
 
@@ -84,6 +86,14 @@ class QAAgent:
 
 
     ):
+        
+
+        requirement_intelligence = analyze_requirement(
+            user_story
+        )
+
+
+    # existing Gemini llama deepseek code continues here
 
 
         # Step 1:
@@ -184,31 +194,34 @@ class QAAgent:
         return {
 
 
-            "requirement_analysis":
-            analysis,
+    "requirement_intelligence":
+
+        requirement_intelligence,
 
 
+    "requirement_analysis":
 
-            "llm_outputs":
-            llm_outputs,
-
-
-
-            "judge_result":
-            judge_result,
+        requirement_analysis,
 
 
+    "llm_outputs":
 
-            "generated_test_cases":
-            classified_tests,
+        llm_outputs,
 
-            "final_output":
-            final_output,
 
-            "project_context":
-            context_result,
+    "judge_result":
 
-            "test_data":
-            test_data,
+        judge_result,
 
-        }
+
+    "generated_test_cases":
+
+        generated_tests,
+
+
+    "test_data":
+
+        test_data
+
+
+}
