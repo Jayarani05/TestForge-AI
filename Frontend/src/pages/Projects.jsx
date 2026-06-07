@@ -1,146 +1,275 @@
+import { useEffect, useState } from "react";
+
 import {
-
-    Plus,
-    MoreVertical
-
+    FolderKanban,
+    Trash,
+    Edit
 } from "lucide-react";
 
+import api from "../api/axios";
 
 
 function Projects(){
 
 
+const [projects,setProjects] = useState([]);
 
-const projects = [
+const [name,setName] = useState("");
 
+const [description,setDescription] = useState("");
 
-    {
+const [technology,setTechnology] = useState("");
 
-        name:"E-Commerce Platform",
-
-        type:"Web Application",
-
-        stack:[
-
-            "Java",
-
-            "Spring Boot",
-
-            "React"
-
-        ],
-
-        updated:"Updated 2h ago"
-
-    },
+const [editId,setEditId] = useState(null);
 
 
 
-    {
+useEffect(()=>{
 
-        name:"Mobile Banking App",
+    loadProjects();
 
-        type:"Mobile Application",
-
-        stack:[
-
-            "Java",
-
-            "Selenium",
-
-            "TestNG"
-
-        ],
-
-        updated:"Updated 1d ago"
-
-    },
+},[]);
 
 
 
-    {
 
-        name:"Inventory Management",
-
-        type:"API Application",
-
-        stack:[
-
-            "Python",
-
-            "FastAPI"
-
-        ],
-
-        updated:"Updated 3d ago"
-
-    }
+const loadProjects = async()=>{
 
 
-];
+try{
+
+const response = await api.get(
+    "/projects/"
+);
+
+
+setProjects(
+    response.data
+);
+
+
+}
+catch(error){
+
+console.log(error);
+
+}
+
+
+};
 
 
 
 
 
+const saveProject = async()=>{
 
-return (
+
+try{
+
+
+const data = {
+
+    name,
+    description,
+    technology
+
+};
+
+
+
+if(editId){
+
+
+await api.put(
+
+`/projects/${editId}`,
+
+data
+
+);
+
+
+}
+
+
+else{
+
+
+await api.post(
+
+"/projects/create",
+
+data
+
+);
+
+
+}
+
+
+
+
+setName("");
+
+setDescription("");
+
+setTechnology("");
+
+setEditId(null);
+
+
+
+loadProjects();
+
+
+}
+
+catch(error){
+
+
+console.log(error);
+
+
+alert("Operation failed");
+
+
+}
+
+
+};
+
+
+
+
+
+
+const editProject = (project)=>{
+
+
+setEditId(project.id);
+
+
+setName(project.name);
+
+
+setDescription(project.description);
+
+
+setTechnology(project.technology);
+
+
+};
+
+
+
+
+
+
+
+
+const deleteProject = async(id)=>{
+
+
+if(!confirm("Delete this project?")){
+
+return;
+
+}
+
+
+
+await api.delete(
+
+`/projects/${id}`
+
+);
+
+
+
+loadProjects();
+
+
+
+};
+
+
+
+
+
+
+
+
+
+
+return(
 
 <div>
 
 
-
-{/* HEADER */}
-
-
-<div
-
-className="
-flex
-justify-between
-items-center
-mb-6
-"
-
->
-
-
-
-<div>
-
-
-<h1
-
-className="
-text-2xl
-font-bold
-"
-
->
+<h1 className="text-2xl font-bold mb-6">
 
 Projects
-
 
 </h1>
 
 
 
-<p
-
-className="
-text-gray-500
-"
-
->
-
-Manage and organize your testing projects
-
-
-</p>
 
 
 
-</div>
+
+<div className="
+bg-white
+border
+rounded-xl
+p-5
+mb-6
+">
+
+
+<input
+
+value={name}
+
+onChange={(e)=>setName(e.target.value)}
+
+placeholder="Project name"
+
+className="border p-3 rounded-lg w-full mb-3"
+
+/>
+
+
+
+
+<input
+
+value={description}
+
+onChange={(e)=>setDescription(e.target.value)}
+
+placeholder="Description"
+
+className="border p-3 rounded-lg w-full mb-3"
+
+/>
+
+
+
+
+
+<input
+
+value={technology}
+
+onChange={(e)=>setTechnology(e.target.value)}
+
+placeholder="Technology"
+
+className="border p-3 rounded-lg w-full mb-3"
+
+/>
 
 
 
@@ -148,28 +277,35 @@ Manage and organize your testing projects
 
 <button
 
+onClick={saveProject}
+
 className="
 bg-blue-600
 text-white
-px-4
-py-2
+px-5
+py-3
 rounded-lg
-flex
-items-center
-gap-2
 "
 
 >
 
 
-<Plus size={18}/>
+{
 
+editId
 
-Create Project
+?
+
+"Update Project"
+
+:
+
+"Create Project"
+
+}
 
 
 </button>
-
 
 
 </div>
@@ -181,37 +317,23 @@ Create Project
 
 
 
-
-{/* GRID */}
-
-
-
-<div
-
-className="
+<div className="
 grid
 grid-cols-3
 gap-5
-"
-
->
-
+">
 
 
 {
-
 
 projects.map(
 
 (project)=>(
 
 
-
 <div
 
-
-key={project.name}
-
+key={project.id}
 
 className="
 bg-white
@@ -225,29 +347,11 @@ shadow-sm
 
 
 
+<FolderKanban/>
 
 
-<div
+<h2 className="font-bold mt-3">
 
-className="
-flex
-justify-between
-"
-
->
-
-
-<div>
-
-
-<h2
-
-className="
-font-semibold
-text-lg
-"
-
->
 
 {project.name}
 
@@ -256,114 +360,69 @@ text-lg
 
 
 
-<p
+<p className="text-gray-500">
 
-className="
-text-gray-500
-text-sm
-"
 
->
-
-{project.type}
+{project.description}
 
 
 </p>
 
 
-</div>
 
 
+<p className="text-sm mt-2">
 
 
-<MoreVertical size={18}/>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<div
-
-className="
-flex
-gap-2
-flex-wrap
-mt-5
-"
-
->
-
-
-{
-
-
-project.stack.map(
-
-(item)=>(
-
-
-<span
-
-key={item}
-
-className="
-bg-blue-50
-text-blue-600
-px-3
-py-1
-rounded-full
-text-xs
-"
-
->
-
-
-{item}
-
-
-</span>
-
-
-)
-
-)
-
-}
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<p
-
-className="
-text-sm
-text-gray-500
-mt-8
-"
-
->
-
-
-{project.updated}
+{project.technology}
 
 
 </p>
 
+
+
+
+
+
+<div className="flex gap-3 mt-5">
+
+
+
+<button
+
+onClick={()=>editProject(project)}
+
+className="text-blue-600"
+
+>
+
+<Edit/>
+
+
+</button>
+
+
+
+
+
+
+<button
+
+onClick={()=>deleteProject(project.id)}
+
+className="text-red-600"
+
+>
+
+
+<Trash/>
+
+
+</button>
+
+
+
+</div>
 
 
 
@@ -379,46 +438,13 @@ mt-8
 }
 
 
-
-{/* ADD CARD */}
-
-
-
-<div
-
-className="
-border
-border-dashed
-rounded-xl
-flex
-items-center
-justify-center
-text-gray-500
-min-h-52
-"
-
->
-
-
-+ New Project
-
-
 </div>
 
 
 
-
-
 </div>
-
-
-
-
-</div>
-
 
 );
-
 
 
 }
