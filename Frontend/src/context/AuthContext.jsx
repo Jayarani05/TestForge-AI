@@ -1,10 +1,9 @@
 import {
 
-    createContext,
-
-    useContext,
-
-    useState
+createContext,
+useContext,
+useState,
+useEffect
 
 } from "react";
 
@@ -13,147 +12,115 @@ import api from "../api/axios";
 
 
 
-const AuthContext = createContext();
+const AuthContext =
+createContext();
 
 
 
-export const AuthProvider = (
+export function AuthProvider({children}){
 
-    {children}
+
+const [user,setUser]=useState(null);
+
+
+const [loading,setLoading]=useState(true);
+
+
+
+const login = async(
+
+email,
+
+password
 
 )=>{
 
 
-    const [user,setUser] =
-        useState(null);
+const response =
+await api.post(
 
+"/auth/login",
 
+{
+email,
+password
+}
 
-    const login = async(
+);
 
-        email,
 
-        password
 
-    )=>{
+localStorage.setItem(
 
+"token",
 
-        const response =
+response.data.access_token
 
-            await api.post(
+);
 
-                "/auth/login",
 
-                {
-                    email,
-                    password
-                }
 
-            );
+await loadUser();
 
 
+return response.data;
 
-        localStorage.setItem(
+};
 
-            "token",
 
-            response.data.access_token
 
-        );
 
+const register = async(data)=>{
 
 
-        await loadUser();
+return await api.post(
 
+"/auth/register",
 
+data
 
-        return response.data;
+);
 
-    };
+};
 
 
 
 
+const loadUser = async()=>{
 
-    const loadUser = async()=>{
 
+try{
 
-        try{
 
+const response =
+await api.get(
 
-            const response =
+"/auth/me"
 
-                await api.get(
+);
 
-                    "/auth/me"
 
-                );
+setUser(response.data);
 
 
+}
 
-            setUser(
-                response.data
-            );
+catch(error){
 
-        }
 
-        catch(error){
+localStorage.removeItem(
+"token"
+);
 
 
-            setUser(null);
+setUser(null);
 
-        }
 
+}
 
-    };
 
+setLoading(false);
 
-
-
-
-    const logout = ()=>{
-
-
-        localStorage.removeItem(
-            "token"
-        );
-
-
-        setUser(null);
-
-    };
-
-
-
-
-
-    return (
-
-
-        <AuthContext.Provider
-
-
-            value={{
-
-                user,
-
-                login,
-
-                logout,
-
-                loadUser
-
-            }}
-
-        >
-
-
-            {children}
-
-
-        </AuthContext.Provider>
-
-    );
 
 };
 
@@ -161,10 +128,77 @@ export const AuthProvider = (
 
 
 
-export const useAuth = ()=>{
+const logout=()=>{
 
-    return useContext(
-        AuthContext
-    );
+
+localStorage.removeItem(
+"token"
+);
+
+
+setUser(null);
+
 
 };
+
+
+
+
+
+useEffect(()=>{
+
+
+loadUser();
+
+
+},[]);
+
+
+
+
+
+return (
+
+<AuthContext.Provider
+
+value={{
+
+user,
+
+login,
+
+register,
+
+logout,
+
+loading
+
+}}
+
+>
+
+
+{children}
+
+
+</AuthContext.Provider>
+
+
+);
+
+
+}
+
+
+
+
+
+export function useAuth(){
+
+
+return useContext(
+AuthContext
+);
+
+
+}
