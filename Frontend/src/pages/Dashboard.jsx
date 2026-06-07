@@ -1,124 +1,102 @@
-import { useEffect, useState } from "react";
+import {
 
-import api from "../api/axios";
+FolderKanban,
+TestTube,
+PlayCircle,
+Bug,
+Bot
 
-import StatCard from "../components/StatCard";
+} from "lucide-react";
+
+
+import StatCard from "../components/ui/StatCard";
+
+
 
 
 function Dashboard(){
 
 
-const [data,setData] = useState(null);
-
-
-
-useEffect(()=>{
-
-
-loadDashboard();
-
-
-},[]);
-
-
-
-
-
-const loadDashboard = async()=>{
-
-
-try{
-
-
-const response = await api.get(
-
-"/dashboard"
-
-);
-
-
-setData(
-
-response.data
-
-);
-
-
-}
-
-catch(error){
-
-
-console.log(error);
-
-
-}
-
-
-};
-
-
-
-
-
-if(!data){
-
-
 return (
 
-<div className="bg-black min-h-screen text-white p-10">
-
-Loading...
-
-</div>
-
-);
-
-}
+<div>
 
 
+{/* HEADER */}
 
 
+<div
+className="
+mb-6
+"
+>
 
-return (
 
-<div className="min-h-screen bg-black p-10">
+<h1
+className="
+text-2xl
+font-bold
+"
+>
 
-
-<h1 className="text-white text-4xl font-bold">
-
-Welcome {data.user.name} 👋
+Welcome back, Jayarani 👋
 
 </h1>
 
 
+<p
+className="
+text-gray-500
+"
+>
 
-<div className="
+Manage your AI powered QA automation workspace
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+{/* STATS */}
+
+
+<div
+className="
 grid
 grid-cols-4
-gap-6
-mt-10
-">
+gap-5
+mb-6
+"
+>
 
 
 <StatCard
 
-title="Projects"
+title="Total Projects"
 
-value={
-data.analytics.total_projects
-}
+value="24"
+
+icon={FolderKanban}
+
+change="+12% from last month"
 
 />
 
 
 <StatCard
 
-title="Generated Tests"
+title="Tests Generated"
 
-value={
-data.analytics.total_generations
-}
+value="3,562"
+
+icon={TestTube}
+
+change="+19% from last month"
 
 />
 
@@ -127,9 +105,11 @@ data.analytics.total_generations
 
 title="Executions"
 
-value={
-data.analytics.total_executions
-}
+value="1,287"
+
+icon={PlayCircle}
+
+change="+8% from last month"
 
 />
 
@@ -138,14 +118,249 @@ data.analytics.total_executions
 
 title="Bugs Found"
 
-value={
-data.analytics.bugs_found
-}
+value="182"
+
+icon={Bug}
+
+change="-6% from last month"
 
 />
 
 
 </div>
+
+
+
+
+
+
+
+
+
+<div
+className="
+grid
+grid-cols-3
+gap-5
+"
+>
+
+
+
+
+{/* PROJECTS */}
+
+
+<div
+className="
+bg-white
+border
+rounded-xl
+p-5
+col-span-2
+"
+>
+
+
+<h2
+className="
+font-semibold
+mb-4
+"
+>
+
+Recent Projects
+
+</h2>
+
+
+
+
+{
+
+[
+
+"E-Commerce Platform",
+
+"Mobile Banking App",
+
+"Inventory Management"
+
+].map(
+
+(project)=>(
+
+
+<div
+
+key={project}
+
+className="
+flex
+justify-between
+border-b
+py-3
+"
+
+>
+
+
+<div>
+
+
+<p className="font-medium">
+
+{project}
+
+</p>
+
+
+<p className="text-sm text-gray-500">
+
+Updated recently
+
+</p>
+
+
+</div>
+
+
+<span
+className="
+text-green-600
+text-sm
+"
+>
+
+Active
+
+</span>
+
+
+
+</div>
+
+
+)
+
+)
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+{/* AGENTS */}
+
+
+<div
+className="
+bg-white
+border
+rounded-xl
+p-5
+"
+>
+
+
+
+<h2
+className="
+font-semibold
+mb-4
+flex
+gap-2
+items-center
+"
+>
+
+
+<Bot size={18}/>
+
+
+AI Agents
+
+
+</h2>
+
+
+
+
+{
+
+[
+
+"Generator Agent",
+
+"Execution Agent",
+
+"Bug Analyzer",
+
+"Self Healing Agent"
+
+].map(
+
+(agent)=>(
+
+
+<div
+
+key={agent}
+
+className="
+flex
+justify-between
+py-3
+"
+
+>
+
+
+<span>
+
+{agent}
+
+</span>
+
+
+<span className="text-green-600">
+
+Online
+
+</span>
+
+
+
+</div>
+
+
+)
+
+)
+
+}
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+
 
 
 </div>
