@@ -18,7 +18,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Execution from "./pages/Execution";
 import Repository from "./pages/Repository";
 import Healing from "./pages/Healing";
-
+import CICD from "./pages/CICD";
 
 function App(){
 
@@ -158,6 +158,22 @@ element={
         </ProtectedRoute>
 
     }
+
+/>
+
+<Route
+
+path="/cicd"
+
+element={
+
+<ProtectedRoute>
+
+<CICD />
+
+</ProtectedRoute>
+
+}
 
 />
 
