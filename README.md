@@ -397,13 +397,14 @@ Includes:
 
 ---
 
-# 👥 Team Members      
+# 👥 Team Members
 
-Jayarani M       
-Harshini T     
-Hemadharshini M
-Hrithickram R   
-
+| Team Members |
+|-------------|
+| Jayarani M |
+| Harshini T |
+| Hemadharshini M |
+| Hrithickram R |
 ---
 
 # 📖 About
