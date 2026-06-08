@@ -3,62 +3,91 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 
-from app.agents.cicd_agent import (
-    CICDAgent
-)
+from app.agents.cicd_agent import CICDAgent
+
 
 
 
 router = APIRouter(
+
     prefix="/cicd",
+
     tags=["CI/CD"]
+
 )
 
 
 
-class CICDRequest(
-    BaseModel
-):
-
-    language: str
-
-    framework: str
-
-    tool: str
+agent = CICDAgent()
 
 
 
 
-@router.post(
-    "/generate"
-)
+
+class CICDRequest(BaseModel):
+
+    project_type:str
+
+    framework:str
+
+    tool:str
+
+    requirement:str
+
+
+
+
+
+
+
+@router.post("/generate")
+
 
 def generate_pipeline(
-    request: CICDRequest
+
+    request:CICDRequest
+
 ):
 
-
-    agent = CICDAgent()
 
 
     result = agent.generate(
 
-        request.framework,
 
-        request.language,
+        language=request.project_type,
 
-        request.tool
+        framework=request.framework,
+
+        tool=request.tool
+
 
     )
 
 
+
+
     return {
 
-        "status":
-        "success",
+        "status":"success",
 
 
-        "pipeline":
+        "project_type":
+
+        request.project_type,
+
+
+        "framework":
+
+        request.framework,
+
+
+        "tool":
+
+        request.tool,
+
+
+        "pipeline_code":
+
         result
 
     }

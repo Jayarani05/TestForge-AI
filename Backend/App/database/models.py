@@ -2,25 +2,86 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
-    Text,
-    DateTime,
-    ForeignKey
+    ForeignKey,
+    JSON,
+    DateTime
 )
 
-from sqlalchemy.orm import relationship
-
-from datetime import datetime
+from sqlalchemy.sql import func
 
 from app.database.connection import Base
 
 
 
-class User(
-    Base
-):
+
+class User(Base):
 
     __tablename__ = "users"
 
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    name = Column(
+        String
+    )
+
+    email = Column(
+        String,
+        unique=True,
+        index=True
+    )
+
+    hashed_password = Column(
+        String
+    )
+
+
+
+
+
+
+class Project(Base):
+
+    __tablename__ = "projects"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    name = Column(
+        String
+    )
+
+    description = Column(
+        String
+    )
+
+    technology = Column(
+        String
+    )
+
+    owner_id = Column(
+        Integer,
+        ForeignKey(
+            "users.id"
+        )
+    )
+
+
+
+
+
+
+
+
+class GenerationHistory(Base):
+
+    __tablename__ = "generation_history"
 
     id = Column(
         Integer,
@@ -29,53 +90,154 @@ class User(
     )
 
 
-    name = Column(
-        String(100)
+    user_id = Column(
+        Integer,
+        ForeignKey(
+            "users.id"
+        )
     )
 
 
-    email = Column(
-        String(150),
-        unique=True,
-        index=True
+    project_id = Column(
+        Integer,
+        ForeignKey(
+            "projects.id"
+        )
     )
 
 
-    password = Column(
-        String(255)
+    user_story = Column(
+        String
     )
 
 
-    role = Column(
-        String(50),
-        default="QA Engineer"
+    result = Column(
+        JSON
     )
 
 
     created_at = Column(
         DateTime,
-        default=datetime.utcnow
+        server_default=func.now()
     )
 
 
-    histories = relationship(
-        "GenerationHistory",
-        back_populates="owner"
+
+
+
+
+
+
+class ExecutionHistory(Base):
+
+    __tablename__ = "execution_history"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
     )
 
-    projects = relationship(
 
-    "Project",
+    user_id = Column(
+        Integer,
+        ForeignKey(
+            "users.id"
+        )
+    )
 
-    back_populates="owner"
 
-)
+    project_id = Column(
+        Integer,
+        ForeignKey(
+            "projects.id"
+        )
+    )
 
-class GenerationHistory(
-    Base
-):
 
-    __tablename__ = "generation_history"
+    result = Column(
+        JSON
+    )
+
+
+    created_at = Column(
+        DateTime,
+        server_default=func.now()
+    )
+
+
+class BugReport(Base):
+
+    __tablename__ = "bug_reports"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    user_id = Column(
+        Integer,
+        ForeignKey(
+            "users.id"
+        )
+    )
+
+    project_id = Column(
+        Integer,
+        ForeignKey(
+            "projects.id"
+        )
+    )
+
+    error = Column(
+        String
+    )
+
+    result = Column(
+        JSON
+    )
+
+    created_at = Column(
+        DateTime,
+        server_default=func.now()
+    )
+
+
+class RepositoryAnalysis(Base):
+
+    __tablename__ = "repository_analysis"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    user_id = Column(
+        Integer,
+        ForeignKey(
+            "users.id"
+        )
+    )
+
+    repo_url = Column(
+        String
+    )
+
+    result = Column(
+        JSON
+    )
+
+    created_at = Column(
+        DateTime,
+        server_default=func.now()
+    )
+
+
+class CICDHistory(Base):
+
+    __tablename__ = "cicd_history"
 
 
     id = Column(
@@ -86,127 +248,24 @@ class GenerationHistory(
 
 
     user_id = Column(
-
         Integer,
-
         ForeignKey(
             "users.id"
         )
-
     )
 
 
-    project_id = Column(
-
-        Integer,
-
-        ForeignKey(
-            "projects.id"
-        )
-
+    tool = Column(
+        String
     )
 
 
-    user_story = Column(
-        Text
-    )
-
-
-    generated_output = Column(
-        Text
+    result = Column(
+        JSON
     )
 
 
     created_at = Column(
-
         DateTime,
-
-        default=datetime.utcnow
-
+        server_default=func.now()
     )
-
-
-    owner = relationship(
-
-        "User",
-
-        back_populates="histories"
-
-    )
-
-
-    project = relationship(
-
-        "Project",
-
-        back_populates="generations"
-
-    )
-
-
-
-class Project(
-    Base
-):
-
-    __tablename__ = "projects"
-
-
-    id = Column(
-        Integer,
-        primary_key=True,
-        index=True
-    )
-
-
-    name = Column(
-        String(150)
-    )
-
-
-    description = Column(
-        Text
-    )
-
-
-    technology = Column(
-        String(100)
-    )
-
-
-    owner_id = Column(
-
-        Integer,
-
-        ForeignKey(
-            "users.id"
-        )
-
-    )
-
-
-    created_at = Column(
-
-        DateTime,
-
-        default=datetime.utcnow
-
-    )
-
-
-    owner = relationship(
-
-        "User",
-
-        back_populates="projects"
-
-    )
-
-
-    generations = relationship(
-
-    "GenerationHistory",
-
-    back_populates="project"
-
-)

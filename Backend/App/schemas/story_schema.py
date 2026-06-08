@@ -1,33 +1,41 @@
+from typing import (
+    Dict,
+    Any,
+    Optional
+)
 
-from typing import Dict, Any
-from typing import Optional
 from pydantic import BaseModel
+
+
 
 
 
 class UserStoryRequest(BaseModel):
 
-
     user_story: str
-
 
     output_type: str = "test_cases"
 
+    language: str
 
-    language: Optional[str] = None
-
-    framework: Optional[str] = None
+    framework: str
 
     project_context: Optional[
         Dict[str, Any]
     ] = None
 
+    project_id: int
 
-    project_id:int
+
+
 
 
 class UserStoryResponse(BaseModel):
+
     status: str
+
     message: str
+
     story: str
+
     agent_result: Dict[str, Any]

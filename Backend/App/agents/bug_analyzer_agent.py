@@ -1,5 +1,9 @@
-from app.llm_services.gemini_service import GeminiService
 import json
+
+from app.llm_services.gemini_service import (
+    GeminiService
+)
+
 
 
 class BugAnalyzerAgent:
@@ -11,6 +15,7 @@ class BugAnalyzerAgent:
 
 
 
+
     def analyze(
         self,
         execution_result
@@ -19,36 +24,42 @@ class BugAnalyzerAgent:
 
         if execution_result.get("passed"):
 
+
             return {
 
-                "bug_found": False,
+                "severity":"LOW",
 
-                "message":
+                "root_cause":
+                "No failure detected",
+
+                "possible_fix":
+                "No fix required",
+
+                "qa_recommendation":
                 "All tests passed"
 
             }
 
 
+
+
         prompt = f"""
 
-You are an expert QA automation engineer.
+You are a senior QA automation engineer.
 
-Analyze this failed test execution.
+Analyze the failed test execution.
 
 
-Execution Result:
+Failure:
 
 {execution_result}
 
 
-Return ONLY this JSON.
+Return ONLY valid JSON.
 
-Do not generate test cases.
-Do not add explanations.
-
+Format:
 
 {{
-"title":"",
 "severity":"",
 "root_cause":"",
 "possible_fix":"",
@@ -57,33 +68,37 @@ Do not add explanations.
 
 """
 
-        response = (
-            self.llm.generate_response(
-                prompt
-            )
+
+
+        response = self.llm.generate_response(
+            prompt
         )
+
+
 
         try:
 
-            parsed = json.loads(
-            response
+
+            return json.loads(
+                response
             )
+
 
         except Exception:
 
-            parsed = {
-            "raw_analysis":
-            response
+
+            return {
+
+                "severity":
+                "HIGH",
+
+                "root_cause":
+                response,
+
+                "possible_fix":
+                "Review failing code and logs",
+
+                "qa_recommendation":
+                "Add regression test coverage"
+
             }
-
-
-        return {
-
-            "bug_found":
-            True,
-
-
-            "analysis":
-            parsed
-
-        }

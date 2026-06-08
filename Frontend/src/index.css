@@ -1,0 +1,336 @@
+@import "tailwindcss";
+
+
+* {
+
+  box-sizing: border-box;
+
+}
+
+
+body {
+
+  margin: 0;
+
+  min-height: 100vh;
+
+  font-family:
+
+  Inter,
+
+  system-ui,
+
+  sans-serif;
+
+
+  background:
+
+  #f8fafc;
+
+
+  color:
+
+  #0f172a;
+
+}
+
+
+
+
+/* Scrollbar */
+
+
+::-webkit-scrollbar {
+
+  width: 8px;
+
+}
+
+
+::-webkit-scrollbar-thumb {
+
+  background:
+
+  #cbd5e1;
+
+
+  border-radius:
+
+  10px;
+
+}
+
+
+
+/* Common reusable styles */
+
+
+.page {
+
+
+  padding:
+
+  24px;
+
+
+}
+
+
+
+.card {
+
+
+  background:
+
+  white;
+
+
+  border:
+
+  1px solid #e5e7eb;
+
+
+  border-radius:
+
+  14px;
+
+
+  padding:
+
+  20px;
+
+
+  box-shadow:
+
+  0 1px 3px rgba(0,0,0,0.08);
+
+
+}
+
+
+
+
+.btn-primary {
+
+
+  background:
+
+  #2563eb;
+
+
+  color:white;
+
+
+  padding:
+
+  10px 18px;
+
+
+  border-radius:
+
+  10px;
+
+
+  font-weight:
+
+  500;
+
+
+}
+
+
+
+.input {
+
+
+  border:
+
+  1px solid #d1d5db;
+
+
+  border-radius:
+
+  10px;
+
+
+  padding:
+
+  10px 14px;
+
+
+  width:100%;
+
+
+}
+
+
+
+.badge {
+
+
+  padding:
+
+  4px 10px;
+
+
+  border-radius:
+
+  999px;
+
+
+  background:
+
+  #eef2ff;
+
+
+  color:
+
+  #2563eb;
+
+
+  font-size:
+
+  13px;
+
+
+}
+
+
+/* =====================
+   Final UI Polish
+===================== */
+
+
+button{
+
+    cursor:pointer;
+
+    transition:
+
+    all 0.2s ease;
+
+}
+
+
+
+button:hover{
+
+    transform:
+
+    translateY(-1px);
+
+}
+
+
+
+button:disabled{
+
+
+    opacity:0.6;
+
+
+    cursor:not-allowed;
+
+
+}
+
+
+
+
+input,
+textarea,
+select{
+
+
+    outline:none;
+
+
+    transition:
+
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+
+}
+
+
+
+
+
+input:focus,
+textarea:focus,
+select:focus{
+
+
+    border-color:
+
+    #2563eb;
+
+
+
+    box-shadow:
+
+    0 0 0 2px rgba(37,99,235,0.15);
+
+
+}
+
+
+
+
+.card-hover{
+
+
+    transition:
+
+    0.2s ease;
+
+
+}
+
+
+
+
+.card-hover:hover{
+
+
+    transform:
+
+    translateY(-3px);
+
+
+
+    box-shadow:
+
+    0 10px 25px rgba(0,0,0,0.08);
+
+
+}
+
+
+
+/* responsive images */
+
+
+img{
+
+
+    max-width:100%;
+
+
+}
+
+
+
+/* text selection */
+
+
+::selection{
+
+
+    background:
+
+    #dbeafe;
+
+
+}
