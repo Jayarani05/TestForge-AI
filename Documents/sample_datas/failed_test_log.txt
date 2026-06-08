@@ -1,0 +1,25 @@
+Test Name:
+test_user_login
+
+Status:
+FAILED
+
+
+Error:
+
+AssertionError:
+Expected status code 200 but received 500
+
+
+API:
+
+POST /api/v1/auth/login
+
+
+Reason:
+
+Database user lookup failed.
+
+JWT token generation returned exception.
+
+Internal Server Error occurred.

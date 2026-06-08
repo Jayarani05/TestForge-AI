@@ -1,0 +1,6 @@
+As a customer,
+I want to add products to my shopping cart,
+update item quantities,
+remove products,
+and complete checkout using online payment,
+so that I can purchase products successfully.
