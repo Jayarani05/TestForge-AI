@@ -397,10 +397,8 @@ Includes:
 
 ---
 
-# 👥 Team Members
+# 👥 Team Members      
 
- Name           
-    
 Jayarani M       
 Harshini T     
 Hemadharshini M
