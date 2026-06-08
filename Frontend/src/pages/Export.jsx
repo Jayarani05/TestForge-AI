@@ -1,12 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
-
-    FileText,
-    Table,
-    Code,
-    Download
-
+    Download,
+    FileText
 } from "lucide-react";
 
 
@@ -14,75 +10,95 @@ import api from "../api/axios";
 
 
 
-
 function Export(){
 
 
-const [loading,setLoading] = useState("");
+const [history,setHistory] = useState([]);
 
-const [file,setFile] = useState(null);
+const [selected,setSelected] = useState("");
+
+const [loading,setLoading] = useState(false);
+
+
+
+
+useEffect(()=>{
+
+    loadHistory();
+
+},[]);
 
 
 
 
 
-async function exportFile(type){
+async function loadHistory(){
+
+
+try{
+
+
+const response = await api.get(
+    "/history/"
+);
+
+
+setHistory(
+    response.data
+);
+
+
+if(response.data.length>0){
+
+setSelected(
+    response.data[0].id
+);
+
+}
+
+
+}
+
+catch(error){
+
+console.log(error);
+
+}
+
+}
+
+
+
+
+
+
+
+async function exportFile(){
+
+
+if(!selected){
+
+alert("Select history");
+
+return;
+
+}
 
 
 
 try{
 
 
-setLoading(type);
+setLoading(true);
 
 
 
-const response = await api.post(
+const response = await api.get(
 
-"/export",
-
-{
-
-export_type:type,
-
-
-data:{
-
-
-generated_test_cases:{
-
-
-functional:[
+`/export/${selected}`,
 
 {
-
-id:"TC001",
-
-title:"Login test",
-
-type:"functional",
-
-priority:"high"
-
-}
-
-]
-
-
-},
-
-
-code:
-
-"driver.find_element(By.ID,'login').click()",
-
-
-language:"python"
-
-
-}
-
-
+responseType:"blob"
 }
 
 );
@@ -90,16 +106,43 @@ language:"python"
 
 
 
-setFile(
+const url = window.URL.createObjectURL(
 
-response.data
+new Blob([response.data])
 
 );
 
 
 
-}
+const link = document.createElement("a");
 
+
+link.href = url;
+
+
+link.setAttribute(
+
+"download",
+
+`testforge-report-${selected}.pdf`
+
+);
+
+
+
+document.body.appendChild(
+    link
+);
+
+
+link.click();
+
+
+link.remove();
+
+
+
+}
 
 catch(error){
 
@@ -114,8 +157,7 @@ alert("Export failed");
 
 
 
-setLoading("");
-
+setLoading(false);
 
 
 }
@@ -128,70 +170,10 @@ setLoading("");
 
 
 
-const options=[
-
-
-
-{
-
-type:"pdf",
-
-title:"PDF Report",
-
-desc:"Complete QA report",
-
-icon:FileText
-
-},
-
-
-
-{
-
-type:"excel",
-
-title:"Excel Sheet",
-
-desc:"Generated test cases",
-
-icon:Table
-
-},
-
-
-
-{
-
-type:"code",
-
-title:"Code Export",
-
-desc:"Automation scripts",
-
-icon:Code
-
-}
-
-
-
-];
-
-
-
-
-
-
-
-
-return(
+return (
 
 <div>
 
-
-
-
-
-{/* HEADER */}
 
 
 <div className="mb-6">
@@ -206,7 +188,7 @@ Export Center
 
 <p className="text-gray-500">
 
-Download reports, test cases and automation files
+Download generated QA reports
 
 </p>
 
@@ -221,32 +203,7 @@ Download reports, test cases and automation files
 
 
 
-
-{/* CARDS */}
-
-
-<div className="grid grid-cols-3 gap-6">
-
-
-
-{
-
-
-options.map(
-
-(item)=>{
-
-
-const Icon=item.icon;
-
-
-
-return(
-
-
 <div
-
-key={item.type}
 
 className="
 bg-white
@@ -259,45 +216,85 @@ shadow-sm
 >
 
 
-
-
-<div
+<h2
 
 className="
-bg-blue-50
-text-blue-600
-w-fit
-p-3
+font-semibold
+flex
+gap-2
+items-center
+mb-5
+"
+
+>
+
+<FileText size={18}/>
+
+Select Generation
+
+
+</h2>
+
+
+
+
+
+
+<select
+
+
+value={selected}
+
+
+onChange={(e)=>setSelected(e.target.value)}
+
+
+className="
+w-full
+border
 rounded-lg
+p-3
 mb-5
 "
 
 >
 
 
-<Icon size={24}/>
+{
+
+history.map(
+
+item=>(
 
 
-</div>
+<option
+
+key={item.id}
+
+value={item.id}
+
+>
 
 
+{
+
+item.user_story?.slice(0,60)
+
+}
 
 
+</option>
 
 
-<h2 className="font-semibold text-lg">
+)
 
-{item.title}
+)
 
-</h2>
+}
 
 
+</select>
 
-<p className="text-gray-500 text-sm mt-2">
-
-{item.desc}
-
-</p>
 
 
 
@@ -308,14 +305,15 @@ mb-5
 
 <button
 
-onClick={()=>exportFile(item.type)}
+
+onClick={exportFile}
+
 
 className="
-mt-6
 bg-blue-600
 text-white
-px-4
-py-2
+px-5
+py-3
 rounded-lg
 flex
 gap-2
@@ -325,15 +323,12 @@ items-center
 >
 
 
-
-<Download size={16}/>
-
+<Download size={18}/>
 
 
 {
 
-
-loading===item.type
+loading
 
 ?
 
@@ -341,11 +336,10 @@ loading===item.type
 
 :
 
-"Export"
+"Download Report"
 
 
 }
-
 
 
 
@@ -358,124 +352,12 @@ loading===item.type
 </div>
 
 
-);
-
-
-}
-
-)
-
-}
-
 
 
 
 </div>
-
-
-
-
-
-
-
-
-
-
-{/* HISTORY */}
-
-
-<div
-
-className="
-bg-white
-border
-rounded-xl
-p-6
-mt-6
-"
-
->
-
-
-
-<h2 className="font-semibold mb-5">
-
-Recent Export
-
-</h2>
-
-
-
-
-
-
-{
-
-file
-
-?
-
-
-<div
-
-className="
-flex
-justify-between
-items-center
-"
-
->
-
-
-<span>
-
-Export generated successfully
-
-</span>
-
-
-
-<span className="text-green-600">
-
-Ready
-
-</span>
-
-
-
-</div>
-
-
-
-:
-
-
-<p className="text-gray-400">
-
-No exports yet
-
-</p>
-
-
-}
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
 
 );
-
 
 
 }

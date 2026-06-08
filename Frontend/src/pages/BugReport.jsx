@@ -1,11 +1,11 @@
 import { useState } from "react";
 
 import {
-
     Bug,
     AlertTriangle,
-    Lightbulb
-
+    Lightbulb,
+    CheckCircle,
+    Wrench
 } from "lucide-react";
 
 
@@ -13,9 +13,7 @@ import api from "../api/axios";
 
 
 
-
 function BugAnalyzer(){
-
 
 
 const [logs,setLogs] = useState("");
@@ -28,8 +26,16 @@ const [loading,setLoading] = useState(false);
 
 
 
-
 async function analyzeBug(){
+
+
+if(!logs.trim()){
+
+    alert("Paste failure logs");
+
+    return;
+
+}
 
 
 
@@ -60,11 +66,36 @@ error:logs
 
 
 
-setAnalysis(
 
-response.data.analysis
+let data = response.data.analysis;
 
-);
+
+// handle raw llm response
+
+if(data?.raw_analysis){
+
+try{
+
+data = JSON.parse(data.raw_analysis);
+
+}
+
+catch(e){
+
+data = {
+
+root_cause:data.raw_analysis
+
+}
+
+}
+
+}
+
+
+
+
+setAnalysis(data);
 
 
 
@@ -84,9 +115,7 @@ alert("Bug analysis failed");
 
 
 
-
 setLoading(false);
-
 
 
 }
@@ -98,12 +127,11 @@ setLoading(false);
 
 
 
+
+
 return (
 
 <div>
-
-
-
 
 
 {/* HEADER */}
@@ -145,10 +173,7 @@ Analyze failed executions and find root causes
 
 
 
-
-
 {/* INPUT */}
-
 
 
 <div
@@ -164,7 +189,6 @@ shadow-sm
 >
 
 
-
 <h2
 
 className="
@@ -177,12 +201,9 @@ mb-5
 
 >
 
-
 <Bug size={18}/>
 
-
 Failure Logs
-
 
 </h2>
 
@@ -200,22 +221,22 @@ value={logs}
 onChange={(e)=>setLogs(e.target.value)}
 
 
-placeholder="Paste failed execution logs here..."
+placeholder="Paste failed test logs..."
 
 
 className="
 w-full
 h-96
-bg-gray-900
-text-red-300
-font-mono
+border
 rounded-lg
 p-5
+font-mono
 resize-none
 "
 
 
 />
+
 
 
 
@@ -260,9 +281,6 @@ loading
 
 
 
-
-
-
 </div>
 
 
@@ -273,8 +291,8 @@ loading
 
 
 
-{/* OUTPUT */}
 
+{/* OUTPUT */}
 
 
 <div
@@ -303,15 +321,11 @@ items-center
 
 >
 
-
 <Lightbulb size={18}/>
-
 
 AI Diagnosis
 
-
 </h2>
-
 
 
 
@@ -326,61 +340,100 @@ analysis
 ?
 
 
+
 <div className="space-y-5">
 
+
+
+
+
+{/* SEVERITY */}
 
 
 <div
 
 className="
 border
-rounded-lg
+rounded-xl
+p-4
+flex
+items-center
+gap-3
+"
+
+>
+
+
+<AlertTriangle
+
+className="text-red-500"
+
+/>
+
+
+<div>
+
+
+<p className="text-gray-500 text-sm">
+
+Severity
+
+</p>
+
+
+<h3 className="
+font-bold
+text-red-600
+">
+
+{
+
+analysis.severity ||
+
+analysis.risk ||
+
+"HIGH"
+
+}
+
+</h3>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+{/* ROOT CAUSE */}
+
+
+<div
+
+className="
+border
+rounded-xl
 p-4
 "
 
 >
 
 
-<div
-
-className="
+<h3 className="
+font-semibold
 flex
 gap-2
-items-center
-text-red-600
-font-semibold
-"
+mb-2
+">
 
->
-
-
-<AlertTriangle size={18}/>
-
-
-{
-
-analysis.severity || "HIGH"
-
-}
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div>
-
-
-<h3 className="font-semibold">
+<Bug size={18}/>
 
 Root Cause
 
@@ -389,11 +442,17 @@ Root Cause
 
 <p className="text-gray-600">
 
+
 {
 
-analysis.root_cause
+analysis.root_cause ||
+
+analysis.cause ||
+
+"Not detected"
 
 }
+
 
 </p>
 
@@ -407,11 +466,28 @@ analysis.root_cause
 
 
 
+{/* FIX */}
 
-<div>
+
+<div
+
+className="
+border
+rounded-xl
+p-4
+"
+
+>
 
 
-<h3 className="font-semibold">
+<h3 className="
+font-semibold
+flex
+gap-2
+mb-2
+">
+
+<Wrench size={18}/>
 
 Possible Fix
 
@@ -420,11 +496,19 @@ Possible Fix
 
 <p className="text-gray-600">
 
+
 {
 
-analysis.possible_fix
+analysis.possible_fix ||
+
+analysis.fix ||
+
+analysis.solution ||
+
+"Not available"
 
 }
+
 
 </p>
 
@@ -438,38 +522,69 @@ analysis.possible_fix
 
 
 
+{/* RECOMMENDATION */}
 
-<div>
+
+<div
+
+className="
+border
+rounded-xl
+p-4
+"
+
+>
 
 
-<h3 className="font-semibold">
+<h3 className="
+font-semibold
+flex
+gap-2
+mb-2
+">
+
+<CheckCircle size={18}/>
 
 QA Recommendation
+
 
 </h3>
 
 
+
 <p className="text-gray-600">
+
 
 {
 
-analysis.qa_recommendation
+analysis.qa_recommendation ||
+
+analysis.recommendation ||
+
+analysis.recommendations ||
+
+"Add regression test coverage"
 
 }
+
 
 </p>
 
 
-</div>
-
-
-
-
 
 </div>
+
+
+
+
+
+
+</div>
+
 
 
 :
+
 
 
 <div
@@ -490,13 +605,12 @@ Bug analysis appears here
 </div>
 
 
+
 }
 
 
 
 
-
-
 </div>
 
 
@@ -504,20 +618,18 @@ Bug analysis appears here
 
 
 
-
 </div>
 
 
 
 
-
 </div>
+
 
 );
 
 
 }
-
 
 
 

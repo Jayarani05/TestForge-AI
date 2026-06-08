@@ -1,13 +1,19 @@
-from app.llm_services.gemini_service import GeminiService
-
 import json
+
+from app.llm_services.gemini_service import (
+    GeminiService
+)
+
 
 
 class BugAnalyzerAgent:
 
+
     def __init__(self):
 
         self.llm = GeminiService()
+
+
 
 
     def analyze(
@@ -15,29 +21,45 @@ class BugAnalyzerAgent:
         execution_result
     ):
 
+
         if execution_result.get("passed"):
 
+
             return {
-                "bug_found": False,
-                "message": "All tests passed"
+
+                "severity":"LOW",
+
+                "root_cause":
+                "No failure detected",
+
+                "possible_fix":
+                "No fix required",
+
+                "qa_recommendation":
+                "All tests passed"
+
             }
+
+
 
 
         prompt = f"""
 
-You are an expert QA automation engineer.
+You are a senior QA automation engineer.
 
-Analyze this failed test execution.
+Analyze the failed test execution.
 
-Execution Result:
+
+Failure:
 
 {execution_result}
 
 
-Return ONLY JSON:
+Return ONLY valid JSON.
+
+Format:
 
 {{
-"title":"",
 "severity":"",
 "root_cause":"",
 "possible_fix":"",
@@ -47,32 +69,36 @@ Return ONLY JSON:
 """
 
 
+
         response = self.llm.generate_response(
             prompt
         )
 
 
+
         try:
 
-            analysis = json.loads(
+
+            return json.loads(
                 response
             )
 
+
         except Exception:
 
-            analysis = {
-                "raw_analysis":
-                response
+
+            return {
+
+                "severity":
+                "HIGH",
+
+                "root_cause":
+                response,
+
+                "possible_fix":
+                "Review failing code and logs",
+
+                "qa_recommendation":
+                "Add regression test coverage"
+
             }
-
-
-
-        return {
-
-            "bug_found":
-            True,
-
-            "analysis":
-            analysis
-
-        }

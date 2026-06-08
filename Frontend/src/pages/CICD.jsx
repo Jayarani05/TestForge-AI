@@ -1,28 +1,50 @@
 import { useState } from "react";
 
 import {
+
     Rocket,
     Copy,
     Settings,
     CheckCircle
+
 } from "lucide-react";
 
+
 import api from "../api/axios";
+
+
 
 
 
 function CICD(){
 
 
-const [language,setLanguage] = useState("python");
+
+const [projectType,setProjectType] = useState("python");
 
 const [framework,setFramework] = useState("pytest");
 
 const [tool,setTool] = useState("github actions");
 
+
+const [requirement,setRequirement] = useState(
+
+`Create a CI/CD pipeline.
+
+Requirements:
+- Install dependencies
+- Run automated tests
+- Generate test reports
+- Trigger on push and pull request`
+
+);
+
+
 const [pipeline,setPipeline] = useState(null);
 
 const [loading,setLoading] = useState(false);
+
+
 
 
 
@@ -38,36 +60,46 @@ try{
 setLoading(true);
 
 
+
 const response = await api.post(
 
 "/cicd/generate",
 
 {
 
-language,
 
-framework,
+project_type: projectType,
 
-tool
+
+framework: framework,
+
+
+tool: tool,
+
+
+requirement: requirement
+
 
 }
+
 
 );
 
 
 
 console.log(
-    "PIPELINE RESPONSE",
-    response.data
+
+"CICD RESPONSE",
+
+response.data
+
 );
 
 
 
 setPipeline(
 
-response.data.pipeline_code ||
-response.data.pipeline ||
-response.data
+response.data.pipeline_code
 
 );
 
@@ -75,13 +107,16 @@ response.data
 
 }
 
+
 catch(error){
+
 
 
 console.log(error);
 
 
 alert("Pipeline generation failed");
+
 
 
 }
@@ -102,7 +137,9 @@ setLoading(false);
 
 
 
+
 const getPipelineText = ()=>{
+
 
 
 if(!pipeline){
@@ -113,17 +150,25 @@ return "";
 
 
 
-if(typeof pipeline === "string"){
+if(pipeline.pipeline_code){
 
-return pipeline;
+return pipeline.pipeline_code;
 
 }
 
 
 
-if(pipeline.pipeline_code){
+if(pipeline.raw_pipeline){
 
-return pipeline.pipeline_code;
+return pipeline.raw_pipeline;
+
+}
+
+
+
+if(typeof pipeline === "string"){
+
+return pipeline;
 
 }
 
@@ -138,6 +183,7 @@ null,
 2
 
 );
+
 
 
 };
@@ -175,11 +221,11 @@ alert("Copied");
 
 return(
 
+
 <div>
 
 
 
-{/* HEADER */}
 
 
 <div className="mb-6">
@@ -192,16 +238,15 @@ CI/CD Generator
 </h1>
 
 
+
 <p className="text-gray-500">
 
-Generate DevOps pipelines using AI
+Generate automated DevOps pipelines
 
 </p>
 
 
 </div>
-
-
 
 
 
@@ -220,10 +265,12 @@ Generate DevOps pipelines using AI
 
 
 
+
 {/* LEFT */}
 
 
 <div
+
 className="
 bg-white
 border
@@ -231,27 +278,24 @@ rounded-xl
 p-6
 shadow-sm
 "
+
 >
 
 
-<h2
-className="
+
+<h2 className="
 font-semibold
 flex
 gap-2
 items-center
 mb-5
-"
->
-
+">
 
 <Settings size={18}/>
 
-Pipeline Settings
-
+Pipeline Configuration
 
 </h2>
-
 
 
 
@@ -268,11 +312,12 @@ Project Type
 </label>
 
 
+
 <select
 
-value={language}
+value={projectType}
 
-onChange={(e)=>setLanguage(e.target.value)}
+onChange={(e)=>setProjectType(e.target.value)}
 
 className="
 w-full
@@ -298,6 +343,7 @@ Python Automation
 Java Automation
 
 </option>
+
 
 
 <option value="javascript">
@@ -345,7 +391,6 @@ mb-5
 >
 
 
-
 <option value="pytest">
 
 pytest
@@ -372,7 +417,6 @@ playwright
 junit
 
 </option>
-
 
 
 </select>
@@ -411,7 +455,6 @@ mb-5
 >
 
 
-
 <option value="github actions">
 
 GitHub Actions
@@ -428,7 +471,6 @@ Jenkins
 
 
 
-
 </select>
 
 
@@ -439,44 +481,32 @@ Jenkins
 
 
 
-<div
+
+<label className="text-sm">
+
+Requirement
+
+</label>
+
+
+
+<textarea
+
+value={requirement}
+
+onChange={(e)=>setRequirement(e.target.value)}
+
 className="
-bg-blue-50
+w-full
 border
-rounded-xl
+rounded-lg
 p-4
-text-sm
-mb-5
+h-40
+mt-2
+resize-none
 "
->
 
-
-<b>Configuration</b>
-
-
-<p>
-
-Language: {language}
-
-</p>
-
-
-<p>
-
-Framework: {framework}
-
-</p>
-
-
-<p>
-
-Tool: {tool}
-
-</p>
-
-
-
-</div>
+/>
 
 
 
@@ -494,6 +524,7 @@ onClick={generatePipeline}
 disabled={loading}
 
 className="
+mt-5
 bg-blue-600
 text-white
 px-5
@@ -508,6 +539,7 @@ items-center
 
 
 <Rocket size={18}/>
+
 
 
 {
@@ -525,9 +557,8 @@ loading
 }
 
 
+
 </button>
-
-
 
 
 
@@ -543,13 +574,12 @@ loading
 
 
 
-
-
 {/* RIGHT */}
 
 
 
 <div
+
 className="
 bg-white
 border
@@ -557,28 +587,27 @@ rounded-xl
 p-6
 shadow-sm
 "
+
 >
 
 
 
-<div
-className="
+
+
+<div className="
 flex
 justify-between
-mb-5
 items-center
-"
->
+mb-5
+">
 
 
-<h2
-className="
+
+<h2 className="
 font-semibold
 flex
 gap-2
-"
->
-
+">
 
 <CheckCircle size={18}/>
 
@@ -603,19 +632,15 @@ text-sm
 
 >
 
-
 <Copy size={16}/>
 
 Copy
-
 
 </button>
 
 
 
 </div>
-
-
 
 
 
@@ -632,33 +657,28 @@ pipeline
 ?
 
 
-<div
-className="
+
+<div className="
 border
 rounded-xl
 bg-gray-50
 p-5
 h-96
 overflow-auto
-"
->
+">
 
 
-<pre
-className="
+<pre className="
 text-sm
-whitespace-pre-wrap
 font-mono
-"
->
-
+whitespace-pre-wrap
+">
 
 {
 
 getPipelineText()
 
 }
-
 
 </pre>
 
@@ -671,19 +691,16 @@ getPipelineText()
 :
 
 
-<div
-className="
+
+<div className="
 h-96
 flex
 items-center
 justify-center
 text-gray-400
-"
->
-
+">
 
 Generated YAML appears here
-
 
 </div>
 
@@ -697,14 +714,17 @@ Generated YAML appears here
 
 
 
-
 </div>
 
 
 
 
 
+
+
+
 </div>
+
 
 
 
@@ -717,6 +737,7 @@ Generated YAML appears here
 
 
 }
+
 
 
 

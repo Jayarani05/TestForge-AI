@@ -6,12 +6,16 @@ import {
     Search,
     Code,
     ShieldCheck,
-    Lightbulb
+    Lightbulb,
+    Star,
+    FolderGit2
 
 } from "lucide-react";
 
 
 import api from "../api/axios";
+
+
 
 
 
@@ -28,13 +32,28 @@ const [loading,setLoading] = useState(false);
 
 
 
+
+
+
 async function analyzeRepo(){
+
+
+
+if(!url.trim()){
+
+alert("Enter repository URL");
+
+return;
+
+}
+
 
 
 try{
 
 
 setLoading(true);
+
 
 
 const response = await api.post(
@@ -50,25 +69,83 @@ repo_url:url
 );
 
 
-setResult(response.data);
+
+console.log(
+
+"REPO RESPONSE",
+
+response.data
+
+);
+
+
+
+setResult(
+
+response.data.analysis ||
+
+response.data.result ||
+
+response.data
+
+);
+
 
 
 }
+
 
 
 catch(error){
 
+
 console.log(error);
+
 
 alert("Repository analysis failed");
 
+
 }
+
 
 
 setLoading(false);
 
 
+
 }
+
+
+
+
+
+
+
+
+
+const listData = (data)=>{
+
+
+if(!data){
+
+return [];
+
+}
+
+
+if(Array.isArray(data)){
+
+return data;
+
+}
+
+
+return [data];
+
+
+};
+
+
 
 
 
@@ -78,10 +155,14 @@ setLoading(false);
 
 return(
 
+
 <div>
 
 
+
+
 {/* HEADER */}
+
 
 
 <div className="mb-6">
@@ -94,11 +175,13 @@ Repository Intelligence
 </h1>
 
 
+
 <p className="text-gray-500">
 
-Analyze source code repositories using AI
+Analyze GitHub repositories using AI agents
 
 </p>
+
 
 
 </div>
@@ -109,7 +192,10 @@ Analyze source code repositories using AI
 
 
 
+
+
 {/* INPUT */}
+
 
 
 <div
@@ -124,13 +210,16 @@ mb-6
 >
 
 
-<h2 className="
+
+<h2
+className="
 font-semibold
 flex
 items-center
 gap-2
 mb-5
-">
+"
+>
 
 <GitBranch size={18}/>
 
@@ -142,7 +231,10 @@ Repository URL
 
 
 
+
+
 <div className="flex gap-4">
+
 
 
 <input
@@ -165,9 +257,13 @@ p-3
 
 
 
+
+
 <button
 
 onClick={analyzeRepo}
+
+disabled={loading}
 
 className="
 bg-blue-600
@@ -178,7 +274,6 @@ flex
 gap-2
 items-center
 "
-
 >
 
 
@@ -191,7 +286,7 @@ loading
 
 ?
 
-"Analyzing"
+"Analyzing..."
 
 :
 
@@ -218,11 +313,14 @@ loading
 
 
 
+
 {
+
 
 result
 
 ?
+
 
 <div className="grid grid-cols-2 gap-6">
 
@@ -232,10 +330,13 @@ result
 
 
 
-{/* TECH */}
 
 
-<div className="
+{/* OVERVIEW */}
+
+
+<div
+className="
 bg-white
 border
 rounded-xl
@@ -249,8 +350,82 @@ font-semibold
 flex
 gap-2
 mb-4
+">
+
+<FolderGit2 size={18}/>
+
+Repository Overview
+
+</h2>
+
+
+
+<p>
+
+<b>Name :</b>{" "}
+
+{
+
+result.name ||
+
+"Analyzed Repository"
+
+}
+
+</p>
+
+
+
+<p>
+
+<b>Quality :</b>{" "}
+
+{
+
+result.score ||
+
+result.quality_score ||
+
+"Good"
+
+}
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+{/* TECH STACK */}
+
+
+<div
+className="
+bg-white
+border
+rounded-xl
+p-6
 "
 >
+
+
+
+<h2 className="
+font-semibold
+flex
+gap-2
+mb-4
+">
 
 <Code size={18}/>
 
@@ -261,16 +436,21 @@ Tech Stack
 
 
 
+
 {
 
+listData(
 
-(result.tech_stack || []).map(
+result.tech_stack
 
-(item)=>(
+)
+
+.map((item,index)=>(
+
 
 <span
 
-key={item}
+key={index}
 
 className="
 inline-block
@@ -285,19 +465,22 @@ mb-2
 
 >
 
+
 {item}
+
 
 </span>
 
-)
 
-)
+))
+
 
 }
 
 
 
 </div>
+
 
 
 
@@ -311,7 +494,8 @@ mb-2
 
 
 
-<div className="
+<div
+className="
 bg-white
 border
 rounded-xl
@@ -320,18 +504,16 @@ p-6
 >
 
 
-
 <h2 className="
 font-semibold
 flex
 gap-2
 mb-4
-"
->
+">
 
 <ShieldCheck size={18}/>
 
-Security
+Security Analysis
 
 </h2>
 
@@ -341,12 +523,13 @@ Security
 
 {
 
-result.security || "No critical issues detected"
+result.security ||
+
+"No security issues detected"
 
 }
 
 </p>
-
 
 
 
@@ -360,10 +543,68 @@ result.security || "No critical issues detected"
 
 
 
-{/* RECOMMENDATIONS */}
+
+{/* RECOMMENDATION */}
 
 
-<div className="
+
+<div
+className="
+bg-white
+border
+rounded-xl
+p-6
+"
+>
+
+
+<h2 className="
+font-semibold
+flex
+gap-2
+mb-4
+">
+
+<Star size={18}/>
+
+Repository Score
+
+</h2>
+
+
+
+<h1 className="text-4xl font-bold text-blue-600">
+
+
+{
+
+result.rating ||
+
+"8/10"
+
+}
+
+
+</h1>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+{/* AI Suggestions */}
+
+
+
+<div
+className="
 bg-white
 border
 rounded-xl
@@ -378,8 +619,7 @@ font-semibold
 flex
 gap-2
 mb-4
-"
->
+">
 
 <Lightbulb size={18}/>
 
@@ -391,23 +631,42 @@ AI Recommendations
 
 
 
-<pre className="text-sm">
+
+<ul className="space-y-2">
+
 
 {
 
-JSON.stringify(
 
-result.recommendations,
+listData(
 
-null,
-
-2
+result.recommendations
 
 )
 
+.map((item,index)=>(
+
+
+
+<li key={index}>
+
+✅ {item}
+
+</li>
+
+
+
+))
+
+
 }
 
-</pre>
+
+</ul>
+
+
+
+</div>
 
 
 
@@ -415,15 +674,10 @@ null,
 
 </div>
 
-
-
-
-
-
-</div>
 
 
 :
+
 
 
 <div
@@ -441,9 +695,12 @@ text-gray-400
 
 >
 
+
 Repository insights appear here
 
+
 </div>
+
 
 
 }
@@ -459,6 +716,7 @@ Repository insights appear here
 
 
 }
+
 
 
 
