@@ -1,7 +1,6 @@
 from openai import OpenAI
 
-from app.config import DEEPSEEK_API_KEY
-
+from app.config import settings
 
 class DeepSeekService:
 
@@ -9,8 +8,10 @@ class DeepSeekService:
     def __init__(self):
 
         self.client = OpenAI(
-            base_url="https://openrouter.ai/api/v1",
-            api_key=DEEPSEEK_API_KEY
+
+            api_key=settings.DEEPSEEK_API_KEY,
+
+            base_url="https://openrouter.ai/api/v1"
         )
 
 
@@ -20,53 +21,72 @@ class DeepSeekService:
     ):
 
 
+        prompt = f"""
+
+        You are a senior QA automation engineer.
+
+        Generate detailed test scenarios.
+
+        Requirement:
+
+        {requirement}
+
+
+        Include:
+
+        - Positive test cases
+        - Negative test cases
+        - Edge cases
+        - Security test cases
+
+        Return only test points.
+        """
+
+
         try:
 
+
             response = (
+
                 self.client
                 .chat
                 .completions
                 .create(
 
-                    model=
-                    "deepseek/deepseek-chat",
+                    model="deepseek/deepseek-chat",
 
                     messages=[
+
                         {
-                            "role":
-                            "system",
+                            "role": "system",
 
                             "content":
-                            "You are a senior QA security engineer"
+                            "You are an expert QA and security testing engineer."
                         },
 
 
                         {
-                            "role":
-                            "user",
+                            "role": "user",
 
-                            "content":
-                            f"""
-                            Generate QA test cases:
-
-                            {requirement}
-
-                            Focus on:
-                            security testing,
-                            edge cases,
-                            failures
-                            """
+                            "content": prompt
                         }
-                    ]
+
+                    ],
+
+
+                    temperature=0.3
                 )
+
             )
 
 
-            result = (
+            output = (
+
                 response
                 .choices[0]
                 .message
                 .content
+
             )
 
 
@@ -74,9 +94,10 @@ class DeepSeekService:
 
                 line.strip()
 
-                for line in result.split("\n")
+                for line in output.split("\n")
 
                 if line.strip()
+
             ]
 
 
@@ -85,28 +106,40 @@ class DeepSeekService:
                 "model":
                 "DeepSeek",
 
+
                 "status":
                 "success",
 
+
                 "tests":
                 tests
+
             }
 
 
+
         except Exception as error:
+
 
             return {
 
                 "model":
                 "DeepSeek",
 
+
                 "status":
                 "failed",
+
 
                 "error":
                 repr(error),
 
-                "tests":[
+
+                "tests":
+                [
+
                     "DeepSeek fallback activated"
+
                 ]
+
             }

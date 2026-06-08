@@ -1,6 +1,6 @@
 import google.generativeai as genai
 
-from app.config import GEMINI_API_KEY
+from app.config import settings
 
 
 class GeminiService:
@@ -9,7 +9,7 @@ class GeminiService:
     def __init__(self):
 
         genai.configure(
-            api_key=GEMINI_API_KEY
+            api_key=settings.GEMINI_API_KEY
         )
 
 
@@ -68,3 +68,28 @@ class GeminiService:
             "tests":
             tests
         }
+    
+    
+    def generate_response(
+    self,
+    prompt
+    ):
+
+        try:
+
+            response = (
+                self.model
+                .generate_content(
+                    prompt
+                )
+            )
+
+
+            return (
+                response.text
+            )
+
+
+        except Exception as e:
+
+            return str(e)
