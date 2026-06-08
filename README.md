@@ -1,4 +1,4 @@
-# 🚀 TestForge AI
+#  TestForge AI
 
 ### Agentic AI Powered QA Automation Platform
 
@@ -13,13 +13,13 @@ TestForge AI is an intelligent QA automation platform that leverages Agentic AI 
 
 ---
 
-# 📌 Project Overview
+#  Project Overview
 
 TestForge AI automates key QA engineering activities through a collection of specialized AI agents. By combining requirement understanding, multi-model reasoning, automated test generation, execution analysis, and bug diagnostics, the platform helps QA teams improve efficiency, coverage, and software quality.
 
 ---
 
-# 🎯 Problem Statement
+#  Problem Statement
 
 Software testing involves significant manual effort in:
 
@@ -36,27 +36,27 @@ TestForge AI addresses these challenges using Agentic AI workflows that automate
 
 ---
 
-# ✨ Features
+#  Features
 
 | Feature                    | Description                                           |
 | -------------------------- | ----------------------------------------------------- |
-| 🤖 Requirement Agent       | Understands user stories and testing scope            |
-| 🧠 Multi-LLM Engine        | Generates responses using Gemini, Llama, and DeepSeek |
-| ⚖️ Judge Agent             | Evaluates and selects the best AI response            |
-| 📝 Test Case Generator     | Creates positive, negative, and edge-case scenarios   |
-| 💻 Automation Generator    | Generates automation scripts                          |
-| ▶️ Test Execution Agent    | Executes generated automation tests                   |
-| 🐞 AI Bug Analyzer         | Performs root cause analysis on failures              |
-| 🔧 Self-Healing Agent      | Repairs broken automation scripts and locators        |
-| 📂 Repository Intelligence | Analyzes repositories and project structures          |
-| 🚀 CI/CD Generator         | Creates GitHub Actions and deployment pipelines       |
-| 📊 Dashboard Analytics     | Provides QA insights and project metrics              |
-| 📄 Export Center           | Exports reports and generated artifacts               |
-| 🔐 Authentication          | Secure JWT-based authentication                       |
+|  Requirement Agent       | Understands user stories and testing scope            |
+|  Multi-LLM Engine        | Generates responses using Gemini, Llama, and DeepSeek |
+|  Judge Agent             | Evaluates and selects the best AI response            |
+|  Test Case Generator     | Creates positive, negative, and edge-case scenarios   |
+|  Automation Generator    | Generates automation scripts                          |
+|  Test Execution Agent    | Executes generated automation tests                   |
+|  AI Bug Analyzer         | Performs root cause analysis on failures              |
+|  Self-Healing Agent      | Repairs broken automation scripts and locators        |
+|  Repository Intelligence | Analyzes repositories and project structures          |
+|  CI/CD Generator         | Creates GitHub Actions and deployment pipelines       |
+|  Dashboard Analytics     | Provides QA insights and project metrics              |
+|  Export Center           | Exports reports and generated artifacts               |
+|  Authentication          | Secure JWT-based authentication                       |
 
 ---
 
-# 🤖 AI Agents
+#  AI Agents
 
 ## Requirement Agent
 
@@ -172,7 +172,7 @@ Generates:
 
 ---
 
-# 🏗️ System Architecture
+#  System Architecture
 
 ```text
                     User Requirement
@@ -211,7 +211,7 @@ Generates:
 
 ---
 
-# ⚙️ Technology Stack
+#  Technology Stack
 
 ## Backend
 
@@ -241,7 +241,7 @@ Generates:
 
 ---
 
-# 📂 Project Structure
+#  Project Structure
 
 ```text
 TestForge-AI/
@@ -283,7 +283,7 @@ TestForge-AI/
 
 ---
 
-# 🔄 Workflow
+#  Workflow
 
 1. User submits a requirement or user story.
 2. Requirement Agent analyzes the request.
@@ -297,7 +297,7 @@ TestForge-AI/
 
 ---
 
-# 🚀 Installation
+#  Installation
 
 ## Backend Setup
 
@@ -340,7 +340,7 @@ http://localhost:5173
 
 ---
 
-# ▶️ Run Tests
+#  Run Tests
 
 ```bash
 pytest
@@ -348,7 +348,7 @@ pytest
 
 ---
 
-# 🎬 Demo Video
+#  Demo Video
 
 ### Project Demonstration
 
@@ -358,7 +358,7 @@ https://drive.google.com/drive/folders/1MMhRRGd6zoAp46JXAaSimzBJfuoONZvg
 
 ---
 
-# 📚 Documentation
+#  Documentation
 
 Available in:
 
@@ -375,7 +375,7 @@ Includes:
 
 ---
 
-# 🔒 Security
+#  Security
 
 * JWT Authentication
 * Protected API Endpoints
@@ -385,7 +385,7 @@ Includes:
 
 ---
 
-# 🔮 Future Enhancements
+#  Future Enhancements
 
 * Cloud Deployment
 * Real Browser Automation Execution
@@ -397,7 +397,7 @@ Includes:
 
 ---
 
-# 👥 Team Members
+#  Team Members
 
 | Team Members |
 |-------------|
@@ -407,6 +407,6 @@ Includes:
 | Hrithickram R |
 ---
 
-# 📖 About
+#  About
 
 TestForge AI demonstrates how Agentic AI and Multi-LLM collaboration can transform traditional software testing by automating requirement analysis, test generation, execution, bug analysis, repository intelligence, and DevOps workflows—enabling faster delivery and higher software quality.
