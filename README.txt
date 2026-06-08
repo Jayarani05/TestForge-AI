@@ -1,353 +1,138 @@
-#  TestForge AI
+# TestForge AI
 
-Agentic AI Powered QA Automation Platform - Convert requirements into optimized test cases, execute automation scripts, analyze bugs, repair failed tests, generate CI/CD pipelines, analyze repositories, and export QA reports using intelligent AI agents.
+## Project Overview
 
-Built with **React, FastAPI, Python, SQLite, Gemini, Llama, DeepSeek, and Agentic AI workflows**.
+TestForge AI is an Agentic AI-powered QA Automation Platform that transforms software requirements into optimized test cases, automation scripts, bug analysis reports, CI/CD pipelines, and QA insights using multiple AI agents.
 
-
-![Python](https://img.shields.io/badge/Python-3.10-blue)
-![FastAPI](https://img.shields.io/badge/FastAPI-Backend-green)
-![React](https://img.shields.io/badge/React-Frontend-blue)
-![SQLite](https://img.shields.io/badge/SQLite-Database-lightgrey)
-![AI](https://img.shields.io/badge/Agentic-AI-purple)
-![LLM](https://img.shields.io/badge/MultiLLM-Gemini%20%7C%20Llama%20%7C%20DeepSeek-orange)
-
+The platform leverages multiple Large Language Models (LLMs) and intelligent agent workflows to automate key stages of the Software Testing Lifecycle (STLC).
 
 ---
 
-# 📸 Project Screenshots
+## Problem Statement
 
-(Add screenshots here)
+Manual test design, execution, bug analysis, and automation development require significant effort and time from QA teams.
 
-```
-Output/screenshots/
-```
+TestForge AI automates these activities using Agentic AI, helping teams improve productivity, testing coverage, and software quality.
 
 ---
 
-#  System Architecture
+## Features
 
-TestForge AI follows an Agentic AI architecture where specialized AI agents collaborate to automate the complete QA engineering lifecycle.
-
-
-```
-                 User Requirement
-
-                        |
-                        v
-
-              Requirement Agent
-
-                        |
-                        v
-
-            Multi LLM Orchestrator
-
-
-        Gemini       Llama       DeepSeek
-
-            \          |          /
-
-                    Judge Agent
-
-                        |
-                        v
-
-             Optimized QA Response
-
-
-                        |
- ------------------------------------------------
- |              |              |                 |
-Test        Execution       Bug             DevOps
-Agent        Agent        Analyzer          Agent
-
-
-                        |
-                        v
-
-                 QA Automation Output
-```
-
+* AI-Powered Test Case Generation
+* Requirement Analysis Agent
+* Multi-LLM Response Generation
+* Judge Agent for Response Evaluation
+* Automation Script Generation
+* Test Execution Engine
+* AI Bug Analyzer
+* Self-Healing Test Automation
+* Repository Analysis
+* CI/CD Pipeline Generation
+* Project Context Awareness
+* QA Report Export
+* Dashboard Analytics
+* JWT Authentication
 
 ---
 
-#  Features
+## AI Techniques Used
 
-
-| Feature | Description |
-|---|---|
-|  Authentication | JWT secured user authentication |
-|  Dashboard | QA analytics overview |
-|  Project Management | Maintain QA projects separately |
-|  Requirement Agent | Understands user stories and requirements |
-|  Multi LLM Engine | Uses Gemini, Llama, and DeepSeek |
-|  Judge Agent | Selects highest quality AI response |
-|  Test Generator | Creates automation test scenarios |
-|  Test Execution | Executes generated test scripts |
-|  Bug Analyzer | Detects root cause of failures |
-|  Self Healing | Repairs broken Selenium locators |
-|  Repository Intelligence | Analyzes GitHub repositories |
-|  CI/CD Generator | Creates DevOps pipelines |
-|  Export Center | Generates QA reports |
-
+* Agentic AI Architecture
+* Multi-Agent Collaboration
+* Prompt Engineering
+* Chain-of-Thought Reasoning
+* Multi-LLM Orchestration
+* AI-Based Decision Making
+* Automated Code Generation
+* Root Cause Analysis
+* Self-Healing Automation
 
 ---
 
-#  AI Agents
+## Technology Stack
 
+### Backend
 
-## Requirement Agent
+* Python
+* FastAPI
+* SQLAlchemy
+* SQLite
+* JWT Authentication
 
-Analyzes:
+### Frontend
 
-- User stories
-- Requirements
-- Risks
-- Testing scope
+* React JS
+* Tailwind CSS
+* Axios
 
+### AI Models
 
----
+* Google Gemini
+* Llama
+* DeepSeek
 
-## Test Generation Agent
+### Testing & Automation
 
-Generates:
-
-- Positive tests
-- Negative tests
-- Edge cases
-- Security scenarios
-
-
----
-
-## Multi LLM Orchestrator
-
-
-Connected Models:
-
-- Google Gemini
-- Llama
-- DeepSeek
-
-
-Each model produces independent outputs.
-
+* Selenium
+* Pytest
 
 ---
 
-## Judge Agent
+## Project Structure
 
+```text
+TestForge-AI/
 
-Evaluates using:
-
-- Accuracy
-- Coverage
-- Code quality
-- Completeness
-
-
-Selects the best result.
-
-
----
-
-## Test Execution Agent
-
-Handles:
-
-- Running automation scripts
-- Capturing logs
-- Execution status
-
-
----
-
-## Bug Analyzer Agent
-
-Finds:
-
-- Severity
-- Root cause
-- Fix suggestion
-- QA recommendation
-
-
----
-
-## Self Healing Agent
-
-Automatically fixes:
-
-- Broken locators
-- DOM changes
-- Failed Selenium scripts
-
-
----
-
-## Repository Agent
-
-Analyzes:
-
-- Technology stack
-- Code structure
-- Security issues
-- Improvements
-
-
----
-
-## CI/CD Agent
-
-Generates:
-
-- GitHub Actions workflows
-- Test pipelines
-- Automation setup
-
-
----
-
-#  How It Works
-
-
-Example:
-
-
-User Input:
-
-
-```
-As a customer,
-I want to add products to cart,
-update quantity,
-remove products,
-and complete checkout.
+Backend/
+│
+├── app/
+│   ├── agents/
+│   ├── api/
+│   ├── database/
+│   ├── llm_services/
+│   ├── security/
+│   └── schemas/
+│
+Frontend/
+│
+├── src/
+│   ├── pages/
+│   ├── components/
+│   └── services/
+│
+Documents/
+│
+├── AI_USAGE.md
+├── DEMO.md
+└── TEST_CASES.md
+│
+Output/
+│
+├── reports/
+├── exports/
+└── screenshots/
+│
+README.md
 ```
 
+---
 
-Flow:
+## Workflow
 
-
-```
-Requirement
-
- ↓
-
-Requirement Agent
-
- ↓
-
-Gemini | Llama | DeepSeek
-
- ↓
-
-Judge Agent
-
- ↓
-
-Generated QA Test Cases
-
- ↓
-
-Execution + Analysis + Reports
-```
-
+1. User submits a requirement or user story.
+2. Requirement Agent analyzes the input.
+3. Gemini, Llama, and DeepSeek generate independent responses.
+4. Judge Agent evaluates and selects the best output.
+5. Test cases and automation scripts are generated.
+6. Execution Agent runs generated tests.
+7. Bug Analyzer identifies root causes and recommendations.
+8. Reports and analytics are generated for users.
 
 ---
 
-#  Tech Stack
+## Installation
 
-
-## Frontend
-
-- React JS
-- Tailwind CSS
-- Axios
-- Lucide React
-
-
-## Backend
-
-- Python
-- FastAPI
-- SQLAlchemy
-- JWT Authentication
-
-
-## Database
-
-- SQLite
-
-
-## AI / LLM
-
-- Gemini API
-- Llama
-- DeepSeek
-- Agentic AI Design
-
-
-## Testing
-
-- Pytest
-- Selenium
-
-
----
-
-#  Project Structure
-
-
-```
-TestForge-AI
-
-│
-├── Backend
-│
-│   └── app
-│        |
-│        ├── agents
-│        ├── api
-│        ├── database
-│        ├── security
-│        └── llm_services
-│
-│
-├── Frontend
-│
-│   └── src
-│        |
-│        ├── pages
-│        ├── components
-│        └── api
-│
-│
-├── Documents
-│
-│   ├── AI_USAGE.md
-│   ├── DEMO.md
-│   └── Test_Cases.md
-│
-│
-├── sample_data
-│
-├── Output
-│
-├── README.md
-│
-└── .gitignore
-```
-
-
----
-
-#  Quick Start
-
-
-## Backend Setup
-
+### Backend Setup
 
 ```bash
 cd Backend
@@ -361,19 +146,13 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
+Backend URL:
 
-Backend:
-
-
-```
+```text
 http://127.0.0.1:8000
 ```
 
-
----
-
-## Frontend Setup
-
+### Frontend Setup
 
 ```bash
 cd Frontend
@@ -383,147 +162,45 @@ npm install
 npm run dev
 ```
 
+Frontend URL:
 
-Frontend:
-
-
-```
+```text
 http://localhost:5173
 ```
 
-
 ---
 
-#  Sample Inputs
+## Demo Videos
 
+### Project Demonstration
 
-## Test Generator
-
-
-```
-Generate automation tests for ecommerce checkout workflow.
-```
-
-
----
-
-## Bug Analyzer
-
-
-```
-AssertionError:
-
-Expected status code 200 but received 500.
-
-JWT authentication failed.
-```
-
-
----
-
-## Self Healing
-
-
-Broken Code:
-
-
-```python
-driver.find_element(
-"id",
-"old-login-button"
-).click()
-```
-
-
-Updated DOM:
-
-
-```html
-<button id="new-login-button">
-Login
-</button>
-```
-
-
----
-
-#  Documentation
-
-
-Available in:
-
-```
-Documents/
-```
-
-
-Contains:
-
-- AI_USAGE.md
-- DEMO.md
-- Test_Cases.md
-
-
----
-
-#  Security
-
-
-- JWT Authentication
-- Protected APIs
-- Environment variables
-- User based authorization
-- Secure AI access
-
-
----
-
-#  Run Tests
-
-
-```bash
-pytest
-```
-
-
----
-
-#  Demo Video
-
-
-Watch Demo Video:
+Demo Video:
 
 https://drive.google.com/drive/folders/1MMhRRGd6zoAp46JXAaSimzBJfuoONZvg
 
+---
+
+## Future Enhancements
+
+* Cloud Deployment
+* Advanced Test Analytics
+* Additional LLM Integrations
+* Enterprise QA Management
+* Real-Time Collaboration
+* Browser-Based Test Execution
+* Enhanced Self-Healing Capabilities
 
 ---
 
-#  Contributors
+## Team Members
 
-
-| Name | Contribution |
-|---|---|
-| Jayarani M | Agentic AI Architecture & Full Stack Development |
-| Harshini T | AI Agent Development & Testing |
-| Hemadharshini M | Backend Development & Integration |
-| Hrithickram R | Frontend Development & UI Integration |
-
-
+* Jayarani M
+* Harshini T
+* Hemadharshini M
+* Hrithickram R
 
 ---
 
-#  Future Enhancements
+## About
 
-
-- Cloud deployment
-- Real browser automation execution
-- Advanced QA analytics
-- More LLM integrations
-- Enterprise test management
-
-
----
-
-#  About
-
-TestForge AI demonstrates how Agentic AI and Multi LLM collaboration can transform traditional QA automation by reducing manual testing effort and improving software quality.
+TestForge AI demonstrates how Agentic AI and Multi-LLM collaboration can modernize software testing by automating test generation, execution, bug analysis, and QA decision-making.
