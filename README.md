@@ -348,16 +348,6 @@ pytest
 
 ---
 
-# 📸 Screenshots
-
-Add project screenshots here:
-
-```text
-Output/screenshots/
-```
-
----
-
 # 🎬 Demo Video
 
 ### Project Demonstration
@@ -409,12 +399,12 @@ Includes:
 
 # 👥 Team Members
 
-| Name            | Role                                             |
-| --------------- | ------------------------------------------------ |
-| Jayarani M      | Agentic AI Architecture & Full Stack Development |
-| Harshini T      | AI Agent Development & Testing                   |
-| Hemadharshini M | Backend Development & Integration                |
-| Hrithickram R   | Frontend Development & UI Integration            |
+ Name           
+    
+Jayarani M       
+Harshini T     
+Hemadharshini M
+Hrithickram R   
 
 ---
 
