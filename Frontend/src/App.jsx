@@ -25,6 +25,7 @@ import Settings from "./pages/Settings";
 import BugReport from "./pages/BugReport";
 import NotFound from "./pages/NotFound";
 import History from "./pages/History";
+import Workflow from "./pages/Workflow";
 
 
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -108,6 +109,17 @@ element={
 path="/dashboard"
 
 element={<Dashboard />}
+
+/>
+
+
+
+
+<Route
+
+path="/workflow"
+
+element={<Workflow />}
 
 />
 

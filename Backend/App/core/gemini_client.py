@@ -4,7 +4,7 @@ from typing import Optional, Dict, Any
 from dotenv import load_dotenv
 
 import google.generativeai as genai
-from google.api_core.exceptions import GoogleAPIError, InvalidArgument
+from google.api_core.exceptions import GoogleAPIError, InvalidArgument, PermissionDenied
 
 
 # Load environment variables
@@ -172,6 +172,16 @@ class GeminiAIClient:
             logger.error(f"Invalid argument in API call: {str(e)}")
             raise ValueError(
                 f"Invalid API parameters: {str(e)}"
+            )
+        
+        except PermissionDenied as e:
+            logger.error(
+                f"API Permission Denied: {str(e)}. "
+                "Ensure Gemini API is enabled in your Google Cloud project with proper access. "
+                "Steps to fix: 1) Go to Google Cloud Console 2) Enable Generative Language API 3) Check billing"
+            )
+            raise RuntimeError(
+                f"Gemini API access denied. Enable the Generative Language API in your Google Cloud project. {str(e)}"
             )
         
         except GoogleAPIError as e:

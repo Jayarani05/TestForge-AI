@@ -153,16 +153,32 @@ def generate_test_cases(
         )
 
         # Check if generation was successful
+        # Note: fallback mode returns status="success" but mode="fallback"
         if result.get("status") != "success":
             logger.warning(f"Test generation failed: {result.get('error')}")
+            
+            # Provide helpful error messages for API issues
+            error_msg = result.get("error", "Failed to generate test cases")
+            if "access denied" in error_msg.lower() or "permission" in error_msg.lower():
+                raise HTTPException(
+                    status_code=503,
+                    detail="Gemini AI API is not available. Please ensure it's enabled in your Google Cloud project. "
+                           "Using fallback test cases for development. To fix: "
+                           "1) Go to Google Cloud Console, 2) Enable Generative Language API, 3) Set up billing"
+                )
+            
             raise HTTPException(
                 status_code=500,
-                detail=result.get("error", "Failed to generate test cases")
+                detail=error_msg
             )
 
         # Log success
         test_count = len(result.get("test_cases", []))
-        logger.info(f"Successfully generated {test_count} test cases")
+        mode = result.get("mode", "normal")
+        if mode == "fallback":
+            logger.info(f"Generated {test_count} test cases using fallback mode (API unavailable)")
+        else:
+            logger.info(f"Successfully generated {test_count} test cases")
 
         # Prepare response
         response = TestGenerationResponse(
@@ -178,6 +194,15 @@ def generate_test_cases(
         raise
     except Exception as e:
         logger.error(f"Error in test generation endpoint: {str(e)}", exc_info=True)
+        
+        # Provide helpful error message
+        error_details = str(e)
+        if "access denied" in error_details.lower() or "permission" in error_details.lower():
+            raise HTTPException(
+                status_code=503,
+                detail="Gemini AI service is unavailable. Please enable it in Google Cloud Project settings."
+            )
+        
         raise HTTPException(
             status_code=500,
             detail="Failed to generate test cases due to an internal error"

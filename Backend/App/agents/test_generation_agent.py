@@ -11,6 +11,65 @@ from app.core import generate_ai_response
 logger = logging.getLogger(__name__)
 
 
+def _get_mock_test_cases() -> List[Dict[str, Any]]:
+    """
+    Generate mock test cases for testing/fallback when API is unavailable.
+    """
+    return [
+        {
+            "id": "TC_001",
+            "title": "Verify feature loads successfully",
+            "description": "Verify that the feature loads without errors",
+            "steps": [
+                "Navigate to the feature page",
+                "Observe the page load"
+            ],
+            "expected_result": "Feature page loads successfully without errors",
+            "priority": "High",
+            "category": "positive"
+        },
+        {
+            "id": "TC_002",
+            "title": "Verify feature with valid inputs",
+            "description": "Test feature with valid input data",
+            "steps": [
+                "Navigate to the feature page",
+                "Enter valid input data",
+                "Submit the form/action"
+            ],
+            "expected_result": "Feature processes input and displays success message",
+            "priority": "High",
+            "category": "positive"
+        },
+        {
+            "id": "TC_003",
+            "title": "Verify feature with invalid inputs",
+            "description": "Test feature with invalid or empty inputs",
+            "steps": [
+                "Navigate to the feature page",
+                "Enter invalid/empty data",
+                "Attempt to submit"
+            ],
+            "expected_result": "Feature displays error message and validates inputs",
+            "priority": "Medium",
+            "category": "negative"
+        },
+        {
+            "id": "TC_004",
+            "title": "Verify feature with edge case data",
+            "description": "Test feature with boundary/edge case values",
+            "steps": [
+                "Navigate to the feature page",
+                "Enter boundary value data (min, max, etc.)",
+                "Submit and observe behavior"
+            ],
+            "expected_result": "Feature handles edge cases gracefully",
+            "priority": "Medium",
+            "category": "edge_case"
+        }
+    ]
+
+
 class TestCase:
     """Represents a single test case"""
 
@@ -124,11 +183,38 @@ class TestGenerationAgent:
             }
 
         except Exception as e:
-            logger.error(f"Error generating test cases: {str(e)}")
+            error_msg = str(e)
+            logger.error(f"Error generating test cases: {error_msg}")
+            
+            # Check if it's an API permission issue
+            if "access denied" in error_msg.lower() or "permission" in error_msg.lower():
+                logger.warning(
+                    "Gemini API access denied. Ensure the API is enabled in your Google Cloud project. "
+                    "Using fallback mock test cases for development."
+                )
+                mock_cases = _get_mock_test_cases()
+                return {
+                    "status": "success",
+                    "message": "Generated test cases using fallback mode (API unavailable)",
+                    "test_cases": mock_cases,
+                    "summary": {
+                        "total": len(mock_cases),
+                        "positive": len([tc for tc in mock_cases if tc.get("category") == "positive"]),
+                        "negative": len([tc for tc in mock_cases if tc.get("category") == "negative"]),
+                        "edge_cases": len([tc for tc in mock_cases if tc.get("category") == "edge_case"]),
+                        "categories": {
+                            "positive": [tc for tc in mock_cases if tc.get("category") == "positive"],
+                            "negative": [tc for tc in mock_cases if tc.get("category") == "negative"],
+                            "edge_cases": [tc for tc in mock_cases if tc.get("category") == "edge_case"]
+                        }
+                    },
+                    "mode": "fallback"
+                }
+            
             return {
                 "status": "error",
                 "message": "Failed to generate test cases",
-                "error": str(e)
+                "error": error_msg
             }
 
     def _extract_repo_info(self, repo_context: Dict[str, Any]) -> str:

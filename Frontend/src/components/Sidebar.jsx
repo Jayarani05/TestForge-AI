@@ -67,6 +67,18 @@ function Sidebar(){
 
         {
 
+            name:"Workflow",
+
+            path:"/workflow",
+
+            icon:Rocket
+
+        },
+
+
+
+        {
+
             name:"Test Generator",
 
             path:"/generate",
