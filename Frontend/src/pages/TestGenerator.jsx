@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 import {
     Bot,
     Sparkles,
@@ -13,6 +15,11 @@ import {
 } from "lucide-react";
 
 import api from "../api/axios";
+
+import {
+    getRepoContext,
+    saveGeneratedTests
+} from "../services/workflowService";
 
 
 
@@ -78,6 +85,8 @@ text-gray-600
 function TestGenerator(){
 
 
+const navigate = useNavigate();
+
 const [projects,setProjects]=useState([]);
 
 const [projectId,setProjectId]=useState("");
@@ -91,6 +100,8 @@ const [framework,setFramework]=useState("selenium");
 const [result,setResult]=useState(null);
 
 const [loading,setLoading]=useState(false);
+
+const [repoContext,setRepoContext]=useState(null);
 
 
 
@@ -124,6 +135,10 @@ javascript:[
 useEffect(()=>{
 
 loadProjects();
+
+setRepoContext(
+getRepoContext()
+);
 
 },[]);
 
@@ -166,6 +181,22 @@ console.log(err);
 
 
 
+
+
+const extractTests = (agentResult)=>{
+
+const sections =
+agentResult?.generated_test_cases?.result ||
+{};
+
+return [
+...(sections.positive_tests || []),
+...(sections.negative_tests || []),
+...(sections.security_tests || []),
+...(sections.edge_cases || [])
+];
+
+};
 
 
 const generateTests=async()=>{
@@ -213,7 +244,7 @@ language,
 
 framework,
 
-project_context:{}
+project_context:repoContext || {}
 
 }
 
@@ -221,10 +252,12 @@ project_context:{}
 
 
 
-setResult(
+const agentResult = res.data.agent_result;
 
-res.data.agent_result
+setResult(agentResult);
 
+saveGeneratedTests(
+extractTests(agentResult)
 );
 
 
@@ -284,6 +317,51 @@ Generate QA test cases using AI Agents
 
 
 
+
+
+<div className="
+border
+rounded-xl
+p-4
+bg-white
+mb-6
+flex
+items-center
+justify-between
+">
+
+<div>
+
+<b>
+Repository Context
+</b>
+
+<p className="text-sm text-gray-500 mt-1">
+{
+repoContext
+?
+`${repoContext.project_name || "Analyzed repository"} - ${repoContext.framework || repoContext.language || "context ready"}`
+:
+"Analyze a repository first to enrich generated tests"
+}
+</p>
+
+</div>
+
+<button
+onClick={()=>navigate("/repository")}
+className="
+border
+px-4
+py-2
+rounded-lg
+text-sm
+"
+>
+Repository
+</button>
+
+</div>
 
 
 <div className="
@@ -549,6 +627,27 @@ Generated Output
 
 </h2>
 
+
+{
+result
+?
+<button
+onClick={()=>navigate("/automation")}
+className="
+mb-5
+bg-blue-600
+text-white
+px-4
+py-2
+rounded-lg
+text-sm
+"
+>
+Continue to Automation
+</button>
+:
+null
+}
 
 
 

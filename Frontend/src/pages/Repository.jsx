@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 import {
 
     GitBranch,
@@ -15,12 +17,16 @@ import {
 
 import api from "../api/axios";
 
+import { saveRepoContext } from "../services/workflowService";
+
 
 
 
 
 function Repository(){
 
+
+const navigate = useNavigate();
 
 const [url,setUrl] = useState("");
 
@@ -80,15 +86,14 @@ response.data
 
 
 
-setResult(
-
+const analysis =
 response.data.analysis ||
-
 response.data.result ||
+response.data;
 
-response.data
+saveRepoContext(analysis);
 
-);
+setResult(analysis);
 
 
 
@@ -367,6 +372,7 @@ Repository Overview
 {
 
 result.name ||
+result.project_name ||
 
 "Analyzed Repository"
 
@@ -385,6 +391,9 @@ result.name ||
 result.score ||
 
 result.quality_score ||
+`${result.total_files || 0} files`
+
+||
 
 "Good"
 
@@ -441,7 +450,12 @@ Tech Stack
 
 listData(
 
-result.tech_stack
+result.tech_stack ||
+[
+result.language,
+result.framework,
+...(result.dependencies || []).slice(0,6)
+].filter(Boolean)
 
 )
 
@@ -640,7 +654,25 @@ AI Recommendations
 
 listData(
 
-result.recommendations
+result.recommendations ||
+[
+result.api_endpoints?.length
+?
+`${result.api_endpoints.length} API endpoints detected for test coverage`
+:
+null,
+result.classes?.length
+?
+`${result.classes.length} classes found for automation context`
+:
+null,
+result.functions?.length
+?
+`${result.functions.length} functions available for unit and integration tests`
+:
+null,
+"Repository context saved for test generation"
+].filter(Boolean)
 
 )
 
@@ -665,6 +697,45 @@ result.recommendations
 </ul>
 
 
+
+</div>
+
+
+<div className="
+bg-white
+border
+rounded-xl
+p-6
+col-span-2
+flex
+items-center
+justify-between
+">
+
+<div>
+
+<h2 className="font-semibold">
+Workflow Ready
+</h2>
+
+<p className="text-gray-500 text-sm mt-1">
+Use this repository context to generate QA test cases.
+</p>
+
+</div>
+
+<button
+onClick={()=>navigate("/generate")}
+className="
+bg-blue-600
+text-white
+px-5
+py-3
+rounded-lg
+"
+>
+Continue to Test Generation
+</button>
 
 </div>
 

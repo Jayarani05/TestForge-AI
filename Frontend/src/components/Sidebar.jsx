@@ -6,6 +6,7 @@ import {
     LayoutDashboard,
     FolderKanban,
     Bot,
+    FileCode,
     PlayCircle,
     Code,
     Bug,
@@ -71,6 +72,18 @@ function Sidebar(){
             path:"/generate",
 
             icon:Bot
+
+        },
+
+
+
+        {
+
+            name:"Automation",
+
+            path:"/automation",
+
+            icon:FileCode
 
         },
 

@@ -15,6 +15,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
 import TestGenerator from "./pages/TestGenerator";
+import Automation from "./pages/Automation";
 import Execution from "./pages/Execution";
 import Repository from "./pages/Repository";
 import Healing from "./pages/Healing";
@@ -130,6 +131,16 @@ element={<Projects />}
 path="/generate"
 
 element={<TestGenerator />}
+
+/>
+
+
+
+<Route
+
+path="/automation"
+
+element={<Automation />}
 
 />
 

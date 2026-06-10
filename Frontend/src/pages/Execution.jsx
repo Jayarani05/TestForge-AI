@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
     Play,
@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 
 import api from "../api/axios";
+
+import { getAutomationCode } from "../services/workflowService";
 
 
 
@@ -23,6 +25,22 @@ const [result,setResult] = useState(null);
 
 const [loading,setLoading] = useState(false);
 
+
+useEffect(()=>{
+
+const savedAutomation = getAutomationCode();
+
+if(savedAutomation){
+
+setCode(
+savedAutomation.code ||
+savedAutomation.generated_code ||
+""
+);
+
+}
+
+},[]);
 
 
 
@@ -441,6 +459,50 @@ result.execution_result.execution_time
 
 
 
+<div className="
+grid
+grid-cols-2
+gap-5
+mb-8
+">
+
+<div className="
+border
+rounded-xl
+p-5
+">
+<CheckCircle className="text-green-600"/>
+<p className="text-gray-500 mt-2">
+Passed
+</p>
+<b>
+{
+result.execution_result.passed_tests ??
+(result.execution_result.passed ? 1 : 0)
+}
+</b>
+</div>
+
+<div className="
+border
+rounded-xl
+p-5
+">
+<XCircle className="text-red-600"/>
+<p className="text-gray-500 mt-2">
+Failed
+</p>
+<b>
+{
+result.execution_result.failed_tests ??
+(result.execution_result.passed ? 0 : 1)
+}
+</b>
+</div>
+
+</div>
+
+
 {/* BUG */}
 
 
@@ -660,6 +722,38 @@ result.bug_analysis.bug_found
 
 </b>
 
+
+</div>
+
+
+<div className="
+pt-2
+">
+
+<h2 className="
+font-bold
+mb-3
+">
+Logs
+</h2>
+
+<pre className="
+bg-gray-950
+text-green-400
+rounded-xl
+p-5
+h-64
+overflow-auto
+text-sm
+whitespace-pre-wrap
+">
+{
+result.execution_result.logs ||
+result.execution_result.output ||
+result.execution_result.error ||
+"No logs returned"
+}
+</pre>
 
 </div>
 
