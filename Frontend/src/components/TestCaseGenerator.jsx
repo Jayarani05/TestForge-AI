@@ -1,154 +1,487 @@
 import { useState } from "react";
-import { generateTestCases } from "../api/workflowApi";
+import { api } from "../api/axios";
 import Loader from "./Loader";
 import "./TestCaseGenerator.css";
 
+
 export default function TestCaseGenerator({
-  repoContext,
-  onGenerationComplete,
-  onLoading,
+    repoContext,
+    onGenerationComplete,
+    onLoading,
 }) {
-  const [userStory, setUserStory] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [testCases, setTestCases] = useState(null);
 
-  const handleGenerate = async () => {
-    if (!userStory.trim()) {
-      setError("Please enter a user story");
-      return;
-    }
+    const [userStory, setUserStory] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [testCases, setTestCases] = useState(null);
 
-    if (!repoContext) {
-      setError("Please analyze a repository first");
-      return;
-    }
 
-    setLoading(true);
-    setError("");
-    onLoading?.(true);
 
-    try {
-      const result = await generateTestCases(repoContext, userStory.trim());
+    const handleGenerate = async () => {
 
-      if (result.status === "error") {
-        setError(result.error || "Failed to generate test cases");
-        return;
-      }
+        if (!userStory.trim()) {
 
-      setTestCases(result);
-      onGenerationComplete?.(result);
-    } catch (err) {
-      setError(err.error || err.message || "Failed to generate test cases");
-    } finally {
-      setLoading(false);
-      onLoading?.(false);
-    }
-  };
+            setError("Please enter a user story");
+            return;
 
-  return (
-    <div className="test-case-generator">
-      <div className="generator-card">
-        <h2>Test Case Generator</h2>
-        <p className="subtitle">Generate QA test cases from your user story</p>
+        }
 
-        {!repoContext && (
-          <div className="warning-message">
-            ⚠️ Please analyze a repository first to get started
-          </div>
-        )}
 
-        <div className="input-group">
-          <label>User Story</label>
-          <textarea
-            placeholder="Example: As a user, I want to login with my email and password so that I can access the dashboard..."
-            value={userStory}
-            onChange={(e) => {
-              setUserStory(e.target.value);
-              setError("");
-            }}
-            disabled={loading || !repoContext}
-            className={error ? "textarea-error" : ""}
-            rows={6}
-          />
-          {error && <span className="error-message">{error}</span>}
+
+        setLoading(true);
+        setError("");
+        onLoading?.(true);
+
+
+
+        try {
+
+
+            const payload = {
+
+
+                repo_context: {
+
+                    project_name:
+                        repoContext?.project_name ||
+                        "TestForge AI",
+
+
+                    language:
+                        repoContext?.language ||
+                        "Python",
+
+
+                    framework:
+                        repoContext?.framework ||
+                        "FastAPI",
+
+
+                    total_files:
+                        repoContext?.total_files ||
+                        0,
+
+
+                    structure:
+                        repoContext?.structure ||
+                        [],
+
+
+                    dependencies:
+                        repoContext?.dependencies ||
+                        []
+
+                },
+
+
+
+                user_story:
+                    userStory.trim(),
+
+
+
+                language:
+                    "English"
+
+            };
+
+
+
+
+
+            console.log(
+                "SENDING TEST PAYLOAD:",
+                JSON.stringify(
+                    payload,
+                    null,
+                    2
+                )
+            );
+
+
+
+
+
+            const response = await api.post(
+
+                "/tests/generate",
+
+                payload
+
+            );
+
+
+
+
+            const result = response.data;
+
+
+
+
+            console.log(
+                "TEST RESPONSE:",
+                result
+            );
+
+
+
+
+
+            setTestCases(result);
+
+
+
+
+            onGenerationComplete?.(
+                result
+            );
+
+
+
+        }
+
+
+        catch (err) {
+
+
+
+            console.log(
+
+                "BACKEND ERROR:",
+
+                JSON.stringify(
+                    err.response?.data,
+                    null,
+                    2
+                )
+
+            );
+
+
+
+
+
+            let message =
+                "Failed to generate test cases";
+
+
+
+
+            const detail =
+                err.response?.data?.detail;
+
+
+
+
+
+            if (Array.isArray(detail)) {
+
+
+                message = detail
+
+                    .map(
+
+                        e =>
+
+                            `${e.loc?.join(".")} : ${e.msg}`
+
+                    )
+
+                    .join("\n");
+
+
+            }
+
+
+            else if (typeof detail === "string") {
+
+
+                message = detail;
+
+
+            }
+
+
+            else if (err.message) {
+
+
+                message = err.message;
+
+            }
+
+
+
+
+
+            setError(message);
+
+
+        }
+
+
+
+        finally {
+
+
+            setLoading(false);
+
+            onLoading?.(false);
+
+
+        }
+
+
+    };
+
+
+
+
+
+
+
+    return (
+
+        <div className="test-case-generator">
+
+
+            <div className="generator-card">
+
+
+
+                <h2>
+                    Test Case Generator
+                </h2>
+
+
+
+                <p className="subtitle">
+                    Generate QA test cases from user story
+                </p>
+
+
+
+
+                <div className="input-group">
+
+
+                    <label>
+                        User Story
+                    </label>
+
+
+
+                    <textarea
+
+                        placeholder="As a user, I want registration functionality..."
+
+                        value={userStory}
+
+
+                        onChange={(e)=>{
+
+                            setUserStory(
+                                e.target.value
+                            );
+
+                            setError("");
+
+                        }}
+
+
+                        disabled={loading}
+
+                        rows={6}
+
+                    />
+
+
+
+
+                    {
+                        error &&
+
+                        <pre className="error-message">
+
+                            {error}
+
+                        </pre>
+                    }
+
+
+                </div>
+
+
+
+
+
+                <button
+
+                    onClick={handleGenerate}
+
+                    disabled={
+                        loading ||
+                        !userStory.trim()
+                    }
+
+                    className="generate-btn"
+
+                >
+
+
+                    {
+
+                        loading
+
+                        ?
+
+                        <>
+
+                            <Loader />
+
+                            Generating...
+
+                        </>
+
+                        :
+
+                        "Generate Test Cases"
+
+                    }
+
+
+                </button>
+
+
+
+
+
+
+                {
+
+                    testCases?.test_cases &&
+
+
+                    <div className="test-cases-results">
+
+
+
+                        <h3>
+                            Generated Test Cases
+                        </h3>
+
+
+
+
+                        {
+
+                        testCases.test_cases.map(
+
+                        (tc,index)=>(
+
+
+                            <div
+                                key={index}
+                                className="test-case-card"
+                            >
+
+
+                                <h4>
+
+                                    {tc.id}
+
+                                    {" - "}
+
+                                    {tc.title}
+
+                                </h4>
+
+
+
+
+                                <p>
+                                    {tc.description}
+                                </p>
+
+
+
+
+                                <b>
+                                    Priority:
+                                </b>
+
+                                {" "}
+
+                                {tc.priority}
+
+
+
+
+                                <h5>
+                                    Steps
+                                </h5>
+
+
+
+                                <ol>
+
+
+                                {
+
+                                tc.steps?.map(
+
+                                (step,i)=>(
+
+                                    <li key={i}>
+
+                                        {step}
+
+                                    </li>
+
+                                ))
+
+                                }
+
+
+                                </ol>
+
+
+
+
+
+                                <h5>
+                                    Expected Result
+                                </h5>
+
+
+
+                                <p>
+
+                                    {tc.expected_result}
+
+                                </p>
+
+
+
+                            </div>
+
+
+                        ))
+
+                        }
+
+
+                    </div>
+
+
+                }
+
+
+            </div>
+
+
         </div>
 
-        <button
-          onClick={handleGenerate}
-          disabled={loading || !userStory.trim() || !repoContext}
-          className="generate-btn"
-        >
-          {loading ? (
-            <>
-              <Loader size={16} style={{ marginRight: "8px" }} />
-              Generating...
-            </>
-          ) : (
-            "Generate Test Cases"
-          )}
-        </button>
+    );
 
-        {testCases && testCases.test_cases && (
-          <div className="test-cases-results">
-            <div className="results-header">
-              <h3>Generated Test Cases</h3>
-              <div className="summary-stats">
-                <div className="stat">
-                  <span className="stat-label">Total</span>
-                  <span className="stat-value">{testCases.summary?.total || 0}</span>
-                </div>
-                <div className="stat positive">
-                  <span className="stat-label">Positive</span>
-                  <span className="stat-value">{testCases.summary?.positive || 0}</span>
-                </div>
-                <div className="stat negative">
-                  <span className="stat-label">Negative</span>
-                  <span className="stat-value">{testCases.summary?.negative || 0}</span>
-                </div>
-                <div className="stat edge">
-                  <span className="stat-label">Edge Cases</span>
-                  <span className="stat-value">{testCases.summary?.edge_cases || 0}</span>
-                </div>
-              </div>
-            </div>
 
-            <div className="test-cases-grid">
-              {testCases.test_cases.map((testCase, idx) => (
-                <div
-                  key={idx}
-                  className={`test-case-card category-${testCase.category}`}
-                >
-                  <div className="card-header">
-                    <span className="test-id">{testCase.id}</span>
-                    <span className={`priority priority-${testCase.priority.toLowerCase()}`}>
-                      {testCase.priority}
-                    </span>
-                    <span className="category-badge">{testCase.category}</span>
-                  </div>
-
-                  <h4>{testCase.title}</h4>
-                  <p className="description">{testCase.description}</p>
-
-                  <div className="steps">
-                    <span className="steps-label">Steps:</span>
-                    <ol>
-                      {testCase.steps.map((step, stepIdx) => (
-                        <li key={stepIdx}>{step}</li>
-                      ))}
-                    </ol>
-                  </div>
-
-                  <div className="expected-result">
-                    <span className="label">Expected Result:</span>
-                    <p>{testCase.expected_result}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
 }

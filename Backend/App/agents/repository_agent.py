@@ -6,10 +6,7 @@ import stat
 
 from git import Repo
 
-from app.llm_services.gemini_service import (
-    GeminiService
-)
-
+from app.llm_services.gemini_service import GeminiService
 
 
 class RepositoryAgent:
@@ -18,8 +15,6 @@ class RepositoryAgent:
     def __init__(self):
 
         self.llm = GeminiService()
-
-
 
 
 
@@ -32,7 +27,6 @@ class RepositoryAgent:
         temp_dir = tempfile.mkdtemp()
 
 
-
         try:
 
 
@@ -42,14 +36,50 @@ class RepositoryAgent:
             )
 
 
-            project_files=[]
+            project_files = []
+
+            dependencies = []
 
 
 
-            for root,dirs,files in os.walk(temp_dir):
+            for root, dirs, files in os.walk(temp_dir):
 
 
                 for file in files:
+
+
+                    path = os.path.join(
+                        root,
+                        file
+                    )
+
+
+                    # dependencies
+
+                    if file in [
+                        "package.json",
+                        "requirements.txt",
+                        "pom.xml"
+                    ]:
+
+                        try:
+
+                            with open(
+                                path,
+                                "r",
+                                encoding="utf-8",
+                                errors="ignore"
+                            ) as f:
+
+                                dependencies.append(
+                                    f.read()[:2000]
+                                )
+
+                        except:
+
+                            pass
+
+
 
 
                     if file.endswith(
@@ -64,36 +94,37 @@ class RepositoryAgent:
                     ):
 
 
-                        path=os.path.join(
-                            root,
-                            file
-                        )
+                        try:
 
 
-                        with open(
-                            path,
-                            "r",
-                            encoding="utf-8",
-                            errors="ignore"
-                        ) as f:
+                            with open(
+                                path,
+                                "r",
+                                encoding="utf-8",
+                                errors="ignore"
+                            ) as f:
 
 
-                            content=f.read()[:3000]
+                                content = f.read()[:3000]
 
 
 
-                        project_files.append(
+                            project_files.append(
 
-                            {
+                                {
 
-                            "file":file,
+                                    "file": file,
 
-                            "content":content
+                                    "content": content
 
-                            }
+                                }
 
-                        )
+                            )
 
+
+                        except:
+
+                            pass
 
 
 
@@ -102,50 +133,62 @@ class RepositoryAgent:
 
             prompt=f"""
 
-You are a senior software architect,
-security engineer and QA lead.
+You are TestForge AI Repository Intelligence Agent.
 
-Analyze this GitHub repository.
+Analyze this software project for QA automation.
 
 
-Files:
+SOURCE FILES:
 
 {project_files}
 
 
-Return ONLY valid JSON.
 
-No markdown.
+DEPENDENCIES:
 
-Format exactly:
+{dependencies}
+
+
+
+Return ONLY JSON.
+
+
+Format:
 
 
 {{
 
-"name":"Repository name",
+"project_name":"",
 
-"tech_stack":[
-"React",
-"FastAPI",
-"Python"
-],
+"language":"",
+
+"framework":"",
+
+"total_files":0,
+
+
+"tech_stack":[],
+
+"dependencies":[],
+
+"api_endpoints":[],
+
+"functions":[],
+
+"classes":[],
+
 
 "security":
-"Security summary",
+"",
 
 "rating":
-"8/10",
+"",
 
-"recommendations":[
+"test_strategy":
+"",
 
-"Improve test coverage",
 
-"Add CI/CD pipeline",
-
-"Improve error handling"
-
-]
-
+"recommendations":[]
 }}
 
 
@@ -153,11 +196,9 @@ Format exactly:
 
 
 
-
-            response=self.llm.generate_response(
+            response = self.llm.generate_response(
                 prompt
             )
-
 
 
 
@@ -169,34 +210,69 @@ Format exactly:
                 )
 
 
-            except Exception:
+            except:
 
 
                 return {
 
 
-                    "name":"Repository Analysis",
+                    "project_name":
+                    "Repository Analysis",
 
 
-                    "tech_stack":[
-                        "Detected from source code"
-                    ],
+                    "language":
+                    "Detected",
+
+
+                    "framework":
+                    "Detected",
+
+
+                    "total_files":
+                    len(project_files),
+
+
+                    "tech_stack":
+                    [],
+
+
+                    "dependencies":
+                    [],
+
+
+                    "api_endpoints":
+                    [],
+
+
+                    "functions":
+                    [],
+
+
+                    "classes":
+                    [],
+
 
 
                     "security":
-                    "Analysis generated successfully",
+                    "Completed",
 
 
                     "rating":
                     "8/10",
 
 
-                    "recommendations":[
+
+                    "test_strategy":
+                    "Generate unit, integration and UI tests",
+
+
+
+                    "recommendations":
+                    [
                         response
                     ]
 
                 }
-
 
 
 
@@ -219,7 +295,6 @@ Format exactly:
 
 
                 func(path)
-
 
 
 

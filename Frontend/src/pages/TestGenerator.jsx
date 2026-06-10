@@ -1,993 +1,552 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { api } from "../api/axios";
+import Loader from "../components/Loader";
+import "../components/TestCaseGenerator.css";
 
-import { useNavigate } from "react-router-dom";
 
-import {
-    Bot,
-    Sparkles,
-    Cpu,
-    Database,
-    FileText,
-    CheckCircle,
-    XCircle,
-    Shield,
-    AlertTriangle
-} from "lucide-react";
 
-import api from "../api/axios";
+function TestCaseGenerator({
+    repoContext,
+    onGenerationComplete,
+    onLoading,
+}) {
 
-import {
-    getRepoContext,
-    saveGeneratedTests
-} from "../services/workflowService";
 
+    const [userStory, setUserStory] = useState("");
 
+    const [loading, setLoading] = useState(false);
 
-function TestCard({test}){
+    const [error, setError] = useState("");
 
-return(
+    const [testCases, setTestCases] = useState(null);
 
-<div className="
-border
-rounded-xl
-p-4
-mb-3
-shadow-sm
-bg-white
-">
 
-<div className="
-flex
-justify-between
-items-center
-">
 
-<b>
-{test.id}
-</b>
+    const handleGenerate = async () => {
 
 
-<span className="
-text-sm
-font-semibold
-">
+        if (!userStory.trim()) {
 
-{test.priority}
+            setError(
+                "Please enter a user story"
+            );
 
-</span>
+            return;
 
+        }
 
-</div>
 
 
-<p className="
-text-sm
-mt-2
-text-gray-600
-">
+        setLoading(true);
 
-{test.title}
+        setError("");
 
-</p>
+        onLoading?.(true);
 
 
-</div>
 
-);
+        try {
 
-}
 
+            const payload = {
 
 
+                repo_context: {
 
+                    project_name:
+                        repoContext?.project_name ||
+                        "TestForge AI",
 
 
-function TestGenerator(){
+                    language:
+                        repoContext?.language ||
+                        "Python",
 
 
-const navigate = useNavigate();
+                    framework:
+                        repoContext?.framework ||
+                        "FastAPI",
 
-const [projects,setProjects]=useState([]);
 
-const [projectId,setProjectId]=useState("");
+                    total_files:
+                        repoContext?.total_files ||
+                        0
 
-const [story,setStory]=useState("");
+                },
 
-const [language,setLanguage]=useState("python");
 
-const [framework,setFramework]=useState("selenium");
 
-const [result,setResult]=useState(null);
+                user_story:
+                    userStory.trim(),
 
-const [loading,setLoading]=useState(false);
 
-const [repoContext,setRepoContext]=useState(null);
 
+                language:
+                    "English"
 
 
+            };
 
-const frameworks={
 
-python:[
-"selenium",
-"pytest",
-"playwright"
-],
 
-java:[
-"selenium",
-"junit",
-"testng"
-],
 
-javascript:[
-"playwright",
-"jest",
-"cypress"
-]
+            console.log(
 
-};
+                "Sending Payload:",
 
+                JSON.stringify(
+                    payload,
+                    null,
+                    2
+                )
 
+            );
 
 
 
-useEffect(()=>{
 
-loadProjects();
 
-setRepoContext(
-getRepoContext()
-);
+            const response = await api.post(
 
-},[]);
+                "/tests/generate",
 
+                payload
 
+            );
 
 
 
-const loadProjects=async()=>{
 
-try{
+            const data = response.data;
 
-const res=await api.get(
-"/projects/"
-);
 
 
-setProjects(res.data);
+            console.log(
 
+                "Response:",
 
-if(res.data.length>0){
+                data
 
-setProjectId(
-res.data[0].id
-);
+            );
 
-}
 
 
-}
 
-catch(err){
+            setTestCases(data);
 
-console.log(err);
 
-}
 
-};
+            onGenerationComplete?.(
 
+                data
 
+            );
 
 
 
+        }
 
 
-const extractTests = (agentResult)=>{
+        catch(error){
 
-const sections =
-agentResult?.generated_test_cases?.result ||
-{};
 
-return [
-...(sections.positive_tests || []),
-...(sections.negative_tests || []),
-...(sections.security_tests || []),
-...(sections.edge_cases || [])
-];
 
-};
+            console.error(
 
+                "Generation failed:",
 
-const generateTests=async()=>{
+                error
 
+            );
 
-if(!projectId){
 
-alert("Select project");
 
-return;
+            let message =
+                "Failed to generate tests";
 
-}
 
 
-if(!story){
+            const detail =
+                error.response?.data?.detail;
 
-alert("Enter requirement");
 
-return;
 
-}
 
+            if(Array.isArray(detail)){
 
 
-try{
+                message = detail
 
+                    .map(
 
-setLoading(true);
+                        item => item.msg
 
+                    )
 
+                    .join(", ");
 
-const res=await api.post(
 
-"/tests/generate",
+            }
 
-{
 
-project_id:Number(projectId),
+            else if(
 
-user_story:story,
+                typeof detail === "string"
 
-output_type:"test_cases",
+            ){
 
-language,
 
-framework,
+                message = detail;
 
-project_context:repoContext || {}
 
-}
+            }
 
-);
 
+            else if(
 
+                error.message
 
-const agentResult = res.data.agent_result;
+            ){
 
-setResult(agentResult);
 
-saveGeneratedTests(
-extractTests(agentResult)
-);
+                message = error.message;
 
 
+            }
 
-}
 
-catch(err){
 
-console.log(err);
+            setError(message);
 
-alert("Generation failed");
 
-}
 
+        }
 
 
-setLoading(false);
 
+        finally{
 
-};
 
+            setLoading(false);
 
 
+            onLoading?.(false);
 
 
+        }
 
 
+    };
 
 
 
-return(
 
-<div>
 
 
-<h1 className="
-text-2xl
-font-bold
-">
 
-AI Test Generator
+    return (
 
-</h1>
 
+        <div className="test-case-generator">
 
-<p className="
-text-gray-500
-mb-6
-">
 
-Generate QA test cases using AI Agents
+            <div className="generator-card">
 
-</p>
 
 
+                <h2>
 
+                    Test Case Generator
 
+                </h2>
 
 
 
+                <p className="subtitle">
 
-<div className="
-border
-rounded-xl
-p-4
-bg-white
-mb-6
-flex
-items-center
-justify-between
-">
+                    Generate QA test cases from user story
 
-<div>
+                </p>
 
-<b>
-Repository Context
-</b>
 
-<p className="text-sm text-gray-500 mt-1">
-{
-repoContext
-?
-`${repoContext.project_name || "Analyzed repository"} - ${repoContext.framework || repoContext.language || "context ready"}`
-:
-"Analyze a repository first to enrich generated tests"
-}
-</p>
 
-</div>
 
-<button
-onClick={()=>navigate("/repository")}
-className="
-border
-px-4
-py-2
-rounded-lg
-text-sm
-"
->
-Repository
-</button>
 
-</div>
+                <textarea
 
 
-<div className="
-grid
-grid-cols-2
-gap-6
-">
+                    value={userStory}
 
 
+                    onChange={
 
+                        (e)=>
 
+                        setUserStory(
 
+                            e.target.value
 
+                        )
 
+                    }
 
-{/* INPUT */}
 
+                    placeholder="As a user, I want login functionality..."
 
-<div className="
-border
-rounded-xl
-p-6
-bg-white
-">
 
+                    rows={6}
 
-<h2 className="
-font-bold
-flex
-gap-2
-mb-5
-">
+                />
 
-<Sparkles/>
 
-Requirement
 
-</h2>
 
 
 
+                {
+                    error &&
 
+                    <p className="error-message">
 
-<select
+                        {error}
 
-value={projectId}
+                    </p>
 
-onChange={(e)=>setProjectId(e.target.value)}
+                }
 
-className="
-border
-p-3
-rounded-lg
-w-full
-mb-4
-"
 
->
 
 
-{
-projects.map(p=>(
 
-<option
 
-key={p.id}
+                <button
 
-value={p.id}
 
->
+                    className="generate-btn"
 
-{p.name}
 
-</option>
+                    disabled={
 
-))
+                        loading ||
 
-}
+                        !userStory.trim()
 
+                    }
 
-</select>
 
+                    onClick={handleGenerate}
 
+                >
 
 
+                    {
 
+                        loading
 
-<textarea
+                        ?
 
-value={story}
+                        <>
 
-onChange={(e)=>setStory(e.target.value)}
+                            <Loader />
 
-placeholder="Enter user story"
+                            Generating...
 
-className="
-border
-rounded-lg
-p-4
-w-full
-h-72
-"
+                        </>
 
-/>
 
+                        :
 
+                        "Generate Test Cases"
 
 
+                    }
 
 
+                </button>
 
 
-<div className="
-grid
-grid-cols-2
-gap-4
-mt-4
-">
 
 
 
-<select
 
-value={language}
 
-onChange={(e)=>{
 
-let value=e.target.value;
 
-setLanguage(value);
+                {
 
-setFramework(
-frameworks[value][0]
-);
 
-}}
+                    testCases?.test_cases && (
 
-className="border p-3"
 
->
+                    <div className="test-cases-results">
 
 
-<option value="python">
-Python
-</option>
 
-<option value="java">
-Java
-</option>
+                        <h3>
 
-<option value="javascript">
-Javascript
-</option>
+                            Generated Test Cases
 
+                        </h3>
 
-</select>
 
 
 
 
+                        {
 
+                        testCases.test_cases.map(
 
-<select
+                        (tc,index)=>(
 
-value={framework}
 
-onChange={(e)=>setFramework(e.target.value)}
+                        <div
 
-className="border p-3"
+                            key={index}
 
->
+                            className="test-case-card"
 
+                        >
 
-{
 
-frameworks[language].map(f=>(
 
-<option key={f}>
 
-{f}
+                            <h4>
 
-</option>
 
-))
+                                {tc.id}
 
-}
 
+                                {" - "}
 
-</select>
 
+                                {tc.title}
 
-</div>
 
+                            </h4>
 
 
 
 
 
+                            <p>
 
+                                {tc.description}
 
-<button
+                            </p>
 
-onClick={generateTests}
 
-className="
-mt-5
-bg-blue-600
-text-white
-px-5
-py-3
-rounded-lg
-flex
-gap-2
-"
 
->
 
-<Bot/>
 
+                            <p>
 
-{
-loading
-?
-"Generating..."
-:
-"Generate Tests"
-}
 
+                                Priority:
 
-</button>
 
+                                {" "}
 
 
-</div>
+                                {tc.priority}
 
 
+                            </p>
 
 
 
 
 
 
+                            <h5>
 
-{/* OUTPUT */}
+                                Steps
 
+                            </h5>
 
-<div className="
-border
-rounded-xl
-p-6
-bg-white
-overflow-auto
-h-[700px]
-">
 
 
-<h2 className="
-font-bold
-mb-5
-">
 
-Generated Output
 
-</h2>
 
+                            <ol>
 
-{
-result
-?
-<button
-onClick={()=>navigate("/automation")}
-className="
-mb-5
-bg-blue-600
-text-white
-px-4
-py-2
-rounded-lg
-text-sm
-"
->
-Continue to Automation
-</button>
-:
-null
-}
 
+                                {
 
+                                tc.steps?.map(
 
+                                (step,i)=>(
 
-{
 
-result
+                                <li key={i}>
 
-?
+                                    {step}
 
+                                </li>
 
-<div className="space-y-5">
 
+                                ))
 
+                                }
 
 
+                            </ol>
 
 
 
 
 
-<div className="
-grid
-grid-cols-2
-gap-4
-">
 
 
+                            <h5>
 
-<div className="
-border
-rounded-xl
-p-4
-">
+                                Expected Result
 
+                            </h5>
 
-<Cpu/>
 
 
-<p className="text-gray-500">
 
-Selected AI
+                            <p>
 
-</p>
+                                {tc.expected_result}
 
+                            </p>
 
-<b>
 
-{
-result.judge_result?.selected_model
-||
-"AI Agent"
-}
 
-</b>
 
 
-</div>
+                        </div>
 
 
+                        ))
 
+                        }
 
 
+                    </div>
 
 
-<div className="
-border
-rounded-xl
-p-4
-">
+                    )
 
 
-<Database/>
+                }
 
 
-<p className="text-gray-500">
 
-Framework
 
-</p>
+            </div>
 
 
-<b>
+        </div>
 
-{framework}
 
-</b>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* REQUIREMENTS */}
-
-
-
-<div className="
-border
-rounded-xl
-p-5
-bg-gray-50
-">
-
-
-<h3 className="
-font-bold
-flex
-gap-2
-mb-3
-">
-
-<FileText/>
-
-Requirement Analysis
-
-</h3>
-
-
-
-
-
-<ul className="
-list-disc
-ml-5
-text-sm
-">
-
-{
-
-result.requirement_intelligence
-?.functional_requirements
-?.map((item,i)=>(
-
-<li key={i}>
-
-{item}
-
-</li>
-
-))
-
-}
-
-</ul>
-
-
-
-
-
-
-
-<h3 className="
-font-bold
-mt-5
-flex
-gap-2
-">
-
-<AlertTriangle/>
-
-Risks
-
-</h3>
-
-
-{
-
-result.requirement_intelligence
-?.risk_analysis
-?.risks
-?.map((risk,i)=>(
-
-
-<div
-
-key={i}
-
-className="
-bg-red-50
-p-3
-rounded-lg
-mt-2
-text-sm
-"
-
->
-
-{risk}
-
-</div>
-
-
-))
-
-}
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* TEST SECTIONS */}
-
-
-{
-
-[
-
-[
-"positive_tests",
-<CheckCircle/>,
-"Positive Tests"
-],
-
-
-[
-"negative_tests",
-<XCircle/>,
-"Negative Tests"
-],
-
-
-[
-"security_tests",
-<Shield/>,
-"Security Tests"
-],
-
-
-[
-"edge_cases",
-<AlertTriangle/>,
-"Edge Cases"
-]
-
-
-].map(section=>(
-
-
-<div key={section[0]}>
-
-
-<h3 className="
-font-bold
-flex
-gap-2
-mb-3
-">
-
-{section[1]}
-
-{section[2]}
-
-</h3>
-
-
-
-{
-
-result.generated_test_cases
-?.result
-?.[section[0]]
-?.map(test=>(
-
-<TestCard
-
-key={test.id}
-
-test={test}
-
-/>
-
-))
-
-}
-
-
-</div>
-
-
-))
-
-}
-
-
-
-
-
-
-</div>
-
-
-:
-
-
-<div className="
-h-96
-flex
-items-center
-justify-center
-text-gray-400
-">
-
-AI generated tests appear here
-
-</div>
+    );
 
 
 }
 
 
 
-</div>
-
-
-
-</div>
-
-
-</div>
-
-);
-
-}
-
-
-export default TestGenerator;
+export default TestCaseGenerator;

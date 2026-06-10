@@ -1,95 +1,350 @@
 import { api } from "./axios";
 
-// Repository Analyzer API
+
+
+// ===============================
+// Repository Analyzer
+// ===============================
+
 export const analyzeRepository = async (repoUrl) => {
-  try {
-    const response = await api.post("/repository/analyze", {
-      repo_url: repoUrl,
-    });
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
+
+
+    try {
+
+
+        const response = await api.post(
+
+            "/repository/analyze",
+
+            {
+                repo_url: repoUrl
+            }
+
+        );
+
+
+        return response.data;
+
+
+    }
+
+
+    catch (error) {
+
+
+        console.error(
+            "Repository Analysis Error:",
+            error
+        );
+
+
+        throw error;
+
+
+    }
+
 };
 
-// Test Generation API
-export const generateTestCases = async (repoContext, userStory, projectId = null) => {
-  try {
-    const response = await api.post("/tests/generate", {
-      repo_context: repoContext,
-      user_story: userStory,
-      project_id: projectId,
-    });
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
+
+
+
+
+
+
+// ===============================
+// Test Case Generation
+// ===============================
+
+
+export const generateTestCases = async (
+
+    repoContext,
+
+    userStory
+
+) => {
+
+
+    try {
+
+
+        const payload = {
+
+
+            repo_context: {
+
+
+                project_name:
+
+                    repoContext?.project_name ||
+
+                    "TestForge AI",
+
+
+
+
+                language:
+
+                    repoContext?.language ||
+
+                    "Python",
+
+
+
+
+                framework:
+
+                    repoContext?.framework ||
+
+                    "FastAPI",
+
+
+
+
+                total_files:
+
+                    repoContext?.total_files ||
+
+                    0,
+
+
+
+
+                dependencies:
+
+                    repoContext?.dependencies ||
+
+                    [],
+
+
+
+
+                api_endpoints:
+
+                    repoContext?.api_endpoints ||
+
+                    []
+
+
+            },
+
+
+
+
+
+            user_story:
+
+                userStory,
+
+
+
+
+            language:
+
+                "English"
+
+
+        };
+
+
+
+
+
+
+        console.log(
+
+            "FINAL TEST GENERATION PAYLOAD:",
+
+            JSON.stringify(
+
+                payload,
+
+                null,
+
+                2
+
+            )
+
+        );
+
+
+
+
+
+
+
+        const response = await api.post(
+
+
+            "/tests/generate",
+
+
+            payload
+
+
+        );
+
+
+
+
+
+
+        console.log(
+
+            "TEST GENERATION RESPONSE:",
+
+            response.data
+
+        );
+
+
+
+
+
+        return response.data;
+
+
+
+    }
+
+
+    catch (error) {
+
+
+        console.error(
+
+            "Generate Test Case API Error:",
+
+            error.response?.data ||
+
+            error.message
+
+        );
+
+
+
+
+
+        throw {
+
+
+            error:
+
+
+                error.response?.data?.detail ||
+
+                error.message ||
+
+                "Test generation failed"
+
+
+        };
+
+
+    }
+
+
 };
 
-// Automation Generation API
-export const generateAutomation = async (repoContext, testCases, projectName = "TestProject") => {
-  try {
-    const response = await api.post("/automation/generate", {
-      repo_context: repoContext,
-      test_cases: testCases,
-      project_name: projectName,
-    });
+
+
+
+
+
+
+
+
+// ===============================
+// Automation Generation
+// ===============================
+
+
+export const generateAutomation = async (
+
+    repoContext,
+
+    testCases
+
+) => {
+
+
+
+    const response = await api.post(
+
+
+        "/automation/generate",
+
+
+        {
+
+
+            repo_context:
+
+                repoContext || {},
+
+
+
+
+            test_cases:
+
+                testCases || []
+
+
+        }
+
+
+    );
+
+
+
+
     return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
+
+
+
 };
 
-// Test Execution API
-export const runTests = async (testFilePath, framework = null, timeout = 300) => {
-  try {
-    const response = await api.post("/tests/run", {
-      test_file_path: testFilePath,
-      framework: framework,
-      timeout: timeout,
-    });
+
+
+
+
+
+
+
+
+// ===============================
+// Test Execution
+// ===============================
+
+
+export const executeTests = async () => {
+
+
+    const response = await api.post(
+
+        "/tests/run"
+
+    );
+
+
+
     return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
+
+
 };
 
-// Get supported frameworks
-export const getTestFrameworks = async () => {
-  try {
-    const response = await api.get("/tests/frameworks");
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
+// ===============================
+// Test Execution
+// ===============================
 
-// Get automation frameworks
-export const getAutomationFrameworks = async () => {
-  try {
-    const response = await api.get("/automation/frameworks");
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
 
-// Get templates
-export const getTestTemplates = async () => {
-  try {
-    const response = await api.get("/tests/templates");
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
+export const runTests = async () => {
 
-// Get generated files
-export const getGeneratedFiles = async () => {
-  try {
-    const response = await api.get("/automation/generated-files");
+    const response = await api.post(
+        "/tests/run"
+    );
+
+
     return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
+
 };
