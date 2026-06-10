@@ -221,11 +221,19 @@ class RepositoryAnalysis(Base):
         )
     )
 
+    project_id = Column(
+        Integer,
+        ForeignKey(
+            "projects.id"
+        ),
+        nullable=True
+    )
+
     repo_url = Column(
         String
     )
 
-    result = Column(
+    analysis_result = Column(
         JSON
     )
 

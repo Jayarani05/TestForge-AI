@@ -52,9 +52,6 @@ from fastapi.responses import JSONResponse
 
 from app.api import bug
 
-
-from app.api.repository import router as repo_router
-
 app = FastAPI(
     title="TestForge AI",
     description="AI Agentic QA Automation Platform",
@@ -161,11 +158,6 @@ app.include_router(
 
 app.include_router(
     bug.router,
-    prefix="/api/v1"
-)
-
-app.include_router(
-    repo_router,
     prefix="/api/v1"
 )
 
