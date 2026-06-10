@@ -1,74 +1,22 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
-    Bot,
-    Sparkles,
-    Cpu,
-    Database,
-    FileText,
-    CheckCircle,
-    XCircle,
-    Shield,
-    AlertTriangle
-} from "lucide-react";
+    useLocation,
+    useNavigate
+} from "react-router-dom";
+
 
 import api from "../api/axios";
 
 
+import {
 
-function TestCard({test}){
+    FileText,
+    Wand2,
+    FolderGit2,
+    Code2
 
-return(
-
-<div className="
-border
-rounded-xl
-p-4
-mb-3
-shadow-sm
-bg-white
-">
-
-<div className="
-flex
-justify-between
-items-center
-">
-
-<b>
-{test.id}
-</b>
-
-
-<span className="
-text-sm
-font-semibold
-">
-
-{test.priority}
-
-</span>
-
-
-</div>
-
-
-<p className="
-text-sm
-mt-2
-text-gray-600
-">
-
-{test.title}
-
-</p>
-
-
-</div>
-
-);
-
-}
+} from "lucide-react";
 
 
 
@@ -78,173 +26,269 @@ text-gray-600
 function TestGenerator(){
 
 
-const [projects,setProjects]=useState([]);
 
-const [projectId,setProjectId]=useState("");
+const location = useLocation();
 
-const [story,setStory]=useState("");
-
-const [language,setLanguage]=useState("python");
-
-const [framework,setFramework]=useState("selenium");
-
-const [result,setResult]=useState(null);
-
-const [loading,setLoading]=useState(false);
+const navigate = useNavigate();
 
 
 
 
-const frameworks={
+// ============================
+// DATA FROM REPOSITORY PAGE
+// ============================
 
-python:[
-"selenium",
-"pytest",
-"playwright"
-],
 
-java:[
-"selenium",
-"junit",
-"testng"
-],
+const repository =
+location.state?.repository;
 
-javascript:[
-"playwright",
-"jest",
-"cypress"
-]
 
-};
+
+const repoUrl =
+location.state?.repo_url;
 
 
 
 
 
-useEffect(()=>{
-
-loadProjects();
-
-},[]);
 
 
 
+const [story,setStory] =
+useState("");
 
 
-const loadProjects=async()=>{
 
-try{
+const [tests,setTests] =
+useState(null);
 
-const res=await api.get(
-"/projects/"
+
+
+const [loading,setLoading] =
+useState(false);
+
+
+
+
+
+
+
+
+
+
+
+// ============================
+// GENERATE TEST CASES
+// ============================
+
+
+async function generateTests(){
+
+
+
+if(!story.trim()){
+
+
+alert(
+"Enter user story"
 );
 
 
-setProjects(res.data);
-
-
-if(res.data.length>0){
-
-setProjectId(
-res.data[0].id
-);
-
-}
-
-
-}
-
-catch(err){
-
-console.log(err);
-
-}
-
-};
-
-
-
-
-
-
-
-const generateTests=async()=>{
-
-
-if(!projectId){
-
-alert("Select project");
-
 return;
 
-}
-
-
-if(!story){
-
-alert("Enter requirement");
-
-return;
 
 }
+
+
+
+
 
 
 
 try{
+
 
 
 setLoading(true);
 
 
 
-const res=await api.post(
+
+
+const payload = {
+
+
+user_story:
+story,
+
+
+
+output_type:
+"test_cases",
+
+
+
+language:
+"python",
+
+
+
+framework:
+"pytest",
+
+
+
+project_id:
+0,
+
+
+
+
+
+project_context:{
+
+
+
+repo_url:
+repoUrl,
+
+
+
+
+repository_analysis:{
+
+
+name:
+repository?.name,
+
+
+
+tech_stack:
+repository?.tech_stack,
+
+
+
+security:
+repository?.security,
+
+
+
+rating:
+repository?.rating
+
+
+},
+
+
+
+
+
+
+source_code:
+
+repository?.repo_context
+
+
+}
+
+
+};
+
+
+
+
+
+
+
+console.log(
+
+"SENDING QA DATA",
+
+payload
+
+);
+
+
+
+
+
+
+
+const response =
+await api.post(
 
 "/tests/generate",
 
-{
-
-project_id:Number(projectId),
-
-user_story:story,
-
-output_type:"test_cases",
-
-language,
-
-framework,
-
-project_context:{}
-
-}
+payload
 
 );
 
 
 
-setResult(
 
-res.data.agent_result
 
+
+
+
+console.log(
+
+"GENERATED",
+
+response.data
+
+);
+
+
+
+
+
+
+
+
+setTests(
+
+response.data.agent_result
+
+);
+
+
+
+
+
+
+}
+
+
+
+catch(error){
+
+
+
+console.log(error);
+
+
+
+alert(
+"Test generation failed"
 );
 
 
 
 }
 
-catch(err){
 
-console.log(err);
 
-alert("Generation failed");
-
-}
 
 
 
 setLoading(false);
 
 
-};
+
+}
+
+
+
 
 
 
@@ -257,25 +301,142 @@ setLoading(false);
 
 return(
 
+
 <div>
 
 
-<h1 className="
+
+
+
+
+
+
+
+{/* ================= HEADER ================= */}
+
+
+<h1
+
+className="
 text-2xl
 font-bold
-">
+mb-6
+"
+
+>
+
 
 AI Test Generator
+
 
 </h1>
 
 
-<p className="
-text-gray-500
-mb-6
-">
 
-Generate QA test cases using AI Agents
+
+
+
+
+
+
+
+
+
+
+{/* ================= REPO CARD ================= */}
+
+
+<div
+
+className="
+bg-white
+border
+rounded-xl
+p-6
+mb-6
+"
+
+>
+
+
+
+<h2
+
+className="
+font-semibold
+flex
+gap-2
+mb-3
+"
+
+>
+
+
+
+<FolderGit2 size={18}/>
+
+
+
+Loaded Repository
+
+
+
+</h2>
+
+
+
+
+
+
+<p>
+
+
+<b>Name :</b>{" "}
+
+
+{
+
+
+repository?.name
+
+||
+
+"Repository Loaded"
+
+
+}
+
+
+</p>
+
+
+
+
+
+
+
+<p>
+
+
+<b>Tech Stack :</b>{" "}
+
+
+
+{
+
+
+repository
+?.tech_stack
+?.join(", ")
+
+||
+
+"Detected"
+
+
+}
+
+
 
 </p>
 
@@ -286,11 +447,36 @@ Generate QA test cases using AI Agents
 
 
 
-<div className="
-grid
-grid-cols-2
-gap-6
-">
+<p>
+
+
+<b>Files Loaded :</b>{" "}
+
+
+{
+
+
+repository
+?.repo_context
+?.length
+
+||
+
+0
+
+
+}
+
+
+
+</p>
+
+
+
+
+
+
+</div>
 
 
 
@@ -299,72 +485,54 @@ gap-6
 
 
 
-{/* INPUT */}
 
 
-<div className="
+
+
+
+
+{/* ================= USER STORY ================= */}
+
+
+<div
+
+className="
+bg-white
 border
 rounded-xl
 p-6
-bg-white
-">
-
-
-<h2 className="
-font-bold
-flex
-gap-2
-mb-5
-">
-
-<Sparkles/>
-
-Requirement
-
-</h2>
-
-
-
-
-
-<select
-
-value={projectId}
-
-onChange={(e)=>setProjectId(e.target.value)}
-
-className="
-border
-p-3
-rounded-lg
-w-full
-mb-4
 "
 
 >
 
 
-{
-projects.map(p=>(
 
-<option
 
-key={p.id}
 
-value={p.id}
+<h2
+
+className="
+font-semibold
+flex
+gap-2
+mb-3
+"
 
 >
 
-{p.name}
 
-</option>
-
-))
-
-}
+<FileText size={18}/>
 
 
-</select>
+
+User Story
+
+
+
+</h2>
+
+
+
 
 
 
@@ -373,109 +541,45 @@ value={p.id}
 
 <textarea
 
+
 value={story}
 
-onChange={(e)=>setStory(e.target.value)}
-
-placeholder="Enter user story"
-
-className="
-border
-rounded-lg
-p-4
-w-full
-h-72
-"
-
-/>
 
 
+onChange={
 
+(e)=>setStory(
 
+e.target.value
 
-
-
-
-<div className="
-grid
-grid-cols-2
-gap-4
-mt-4
-">
-
-
-
-<select
-
-value={language}
-
-onChange={(e)=>{
-
-let value=e.target.value;
-
-setLanguage(value);
-
-setFramework(
-frameworks[value][0]
-);
-
-}}
-
-className="border p-3"
-
->
-
-
-<option value="python">
-Python
-</option>
-
-<option value="java">
-Java
-</option>
-
-<option value="javascript">
-Javascript
-</option>
-
-
-</select>
-
-
-
-
-
-
-<select
-
-value={framework}
-
-onChange={(e)=>setFramework(e.target.value)}
-
-className="border p-3"
-
->
-
-
-{
-
-frameworks[language].map(f=>(
-
-<option key={f}>
-
-{f}
-
-</option>
-
-))
+)
 
 }
 
 
-</select>
 
 
-</div>
+placeholder="
+Example:
+
+As a user I want login using email and password
+so that I can access my dashboard.
+"
+
+
+
+
+className="
+border
+rounded-lg
+w-full
+h-36
+p-3
+"
+
+
+/>
+
 
 
 
@@ -486,10 +590,17 @@ frameworks[language].map(f=>(
 
 <button
 
+
+
 onClick={generateTests}
 
+
+
+disabled={loading}
+
+
+
 className="
-mt-5
 bg-blue-600
 text-white
 px-5
@@ -497,23 +608,44 @@ py-3
 rounded-lg
 flex
 gap-2
+items-center
+mt-4
 "
+
 
 >
 
-<Bot/>
+
+
+<Wand2 size={18}/>
+
+
+
 
 
 {
+
+
 loading
+
 ?
-"Generating..."
+
+"Generating Test Cases..."
+
 :
-"Generate Tests"
+
+"Generate Test Cases"
+
+
 }
 
 
+
+
 </button>
+
+
+
 
 
 
@@ -527,25 +659,52 @@ loading
 
 
 
-{/* OUTPUT */}
 
 
-<div className="
+
+
+
+
+
+{/* ================= RESULT ================= */}
+
+
+{
+
+
+tests &&
+
+
+
+<div
+
+className="
+bg-white
 border
 rounded-xl
 p-6
-bg-white
-overflow-auto
-h-[700px]
-">
+mt-6
+"
+
+>
 
 
-<h2 className="
+
+
+
+<h2
+
+className="
+text-xl
 font-bold
 mb-5
-">
+"
 
-Generated Output
+>
+
+
+Generated Test Cases
+
 
 </h2>
 
@@ -553,342 +712,193 @@ Generated Output
 
 
 
-{
 
-result
 
-?
-
-
-<div className="space-y-5">
-
-
-
-
-
-
-
-
-
-<div className="
-grid
-grid-cols-2
-gap-4
-">
-
-
-
-<div className="
-border
-rounded-xl
-p-4
-">
-
-
-<Cpu/>
-
-
-<p className="text-gray-500">
-
-Selected AI
-
-</p>
-
-
-<b>
-
-{
-result.judge_result?.selected_model
-||
-"AI Agent"
-}
-
-</b>
-
-
-</div>
-
-
-
-
-
-
-
-<div className="
-border
-rounded-xl
-p-4
-">
-
-
-<Database/>
-
-
-<p className="text-gray-500">
-
-Framework
-
-</p>
-
-
-<b>
-
-{framework}
-
-</b>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* REQUIREMENTS */}
-
-
-
-<div className="
-border
-rounded-xl
-p-5
-bg-gray-50
-">
-
-
-<h3 className="
-font-bold
-flex
-gap-2
-mb-3
-">
-
-<FileText/>
-
-Requirement Analysis
-
-</h3>
-
-
-
-
-
-<ul className="
-list-disc
-ml-5
-text-sm
-">
-
-{
-
-result.requirement_intelligence
-?.functional_requirements
-?.map((item,i)=>(
-
-<li key={i}>
-
-{item}
-
-</li>
-
-))
-
-}
-
-</ul>
-
-
-
-
-
-
-
-<h3 className="
-font-bold
-mt-5
-flex
-gap-2
-">
-
-<AlertTriangle/>
-
-Risks
-
-</h3>
-
-
-{
-
-result.requirement_intelligence
-?.risk_analysis
-?.risks
-?.map((risk,i)=>(
 
 
 <div
 
-key={i}
+className="
+bg-gray-100
+rounded-lg
+p-5
+"
+
+>
+
+
+
+
+<pre
 
 className="
-bg-red-50
-p-3
-rounded-lg
-mt-2
+whitespace-pre-wrap
 text-sm
 "
 
 >
 
-{risk}
-
-</div>
-
-
-))
-
-}
-
-
-</div>
-
-
-
-
-
-
-
-
-
-{/* TEST SECTIONS */}
 
 
 {
 
-[
 
-[
-"positive_tests",
-<CheckCircle/>,
-"Positive Tests"
-],
+typeof tests.generated_test_cases
+===
+"object"
 
+?
 
-[
-"negative_tests",
-<XCircle/>,
-"Negative Tests"
-],
+JSON.stringify(
 
+tests.generated_test_cases,
 
-[
-"security_tests",
-<Shield/>,
-"Security Tests"
-],
+null,
 
+2
 
-[
-"edge_cases",
-<AlertTriangle/>,
-"Edge Cases"
-]
-
-
-].map(section=>(
-
-
-<div key={section[0]}>
-
-
-<h3 className="
-font-bold
-flex
-gap-2
-mb-3
-">
-
-{section[1]}
-
-{section[2]}
-
-</h3>
-
-
-
-{
-
-result.generated_test_cases
-?.result
-?.[section[0]]
-?.map(test=>(
-
-<TestCard
-
-key={test.id}
-
-test={test}
-
-/>
-
-))
-
-}
-
-
-</div>
-
-
-))
-
-}
-
-
-
-
-
-
-</div>
+)
 
 
 :
 
 
-<div className="
-h-96
-flex
-items-center
-justify-center
-text-gray-400
-">
+tests.generated_test_cases
 
-AI generated tests appear here
-
-</div>
 
 
 }
 
 
 
+</pre>
+
+
+
+
+
 </div>
 
 
 
-</div>
 
 
-</div>
+
+
+
+
+
+
+{/* CONVERT BUTTON */}
+
+
+<button
+
+
+onClick={()=>{
+
+
+navigate(
+
+"/code-generation",
+
+{
+
+state:{
+
+
+repo_url:
+
+repoUrl,
+
+
+
+repository:
+
+repository,
+
+
+
+user_story:
+
+story,
+
+
+
+test_cases:
+
+tests.generated_test_cases
+
+
+}
+
+
+}
+
 
 );
 
+
+
+}}
+
+
+
+className="
+mt-6
+bg-green-600
+text-white
+px-6
+py-3
+rounded-lg
+flex
+gap-2
+items-center
+"
+
+
+>
+
+
+
+<Code2 size={18}/>
+
+
+
+Convert To Code
+
+
+
+</button>
+
+
+
+
+
+
+</div>
+
+
 }
+
+
+
+
+
+
+
+
+
+</div>
+
+
+);
+
+
+}
+
+
+
 
 
 export default TestGenerator;

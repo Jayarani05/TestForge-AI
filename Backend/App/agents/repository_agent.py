@@ -32,9 +32,12 @@ class RepositoryAgent:
         temp_dir = tempfile.mkdtemp()
 
 
-
         try:
 
+
+            # =====================
+            # CLONE REPOSITORY
+            # =====================
 
             Repo.clone_from(
                 repo_url,
@@ -42,11 +45,25 @@ class RepositoryAgent:
             )
 
 
-            project_files=[]
+
+            project_files = []
 
 
 
-            for root,dirs,files in os.walk(temp_dir):
+
+            # =====================
+            # READ SOURCE CODE
+            # =====================
+
+
+            for root,dirs,files in os.walk(
+                temp_dir
+            ):
+
+
+                if ".git" in root:
+                    continue
+
 
 
                 for file in files:
@@ -59,66 +76,93 @@ class RepositoryAgent:
                             ".js",
                             ".jsx",
                             ".ts",
-                            ".tsx"
+                            ".tsx",
+                            ".html",
+                            ".css"
                         )
                     ):
 
 
-                        path=os.path.join(
+                        path = os.path.join(
                             root,
                             file
                         )
 
 
-                        with open(
-                            path,
-                            "r",
-                            encoding="utf-8",
-                            errors="ignore"
-                        ) as f:
+
+                        try:
 
 
-                            content=f.read()[:3000]
+                            with open(
+                                path,
+                                "r",
+                                encoding="utf-8",
+                                errors="ignore"
+                            ) as f:
 
 
-
-                        project_files.append(
-
-                            {
-
-                            "file":file,
-
-                            "content":content
-
-                            }
-
-                        )
+                                content = (
+                                    f.read()[:4000]
+                                )
 
 
 
+                            project_files.append(
+
+                                {
+
+                                "file":
+                                file,
 
 
+                                "path":
+                                path.replace(
+                                    temp_dir,
+                                    ""
+                                ),
+
+
+                                "content":
+                                content
+
+                                }
+
+                            )
+
+
+
+                        except Exception:
+
+                            pass
+
+
+
+
+
+
+
+
+            # =====================
+            # GEMINI ANALYSIS
+            # =====================
 
 
             prompt=f"""
 
-You are a senior software architect,
-security engineer and QA lead.
+You are TestForge AI Repository Agent.
 
-Analyze this GitHub repository.
+Analyze this software repository.
 
 
-Files:
+SOURCE FILES:
 
 {project_files}
 
 
-Return ONLY valid JSON.
 
-No markdown.
+Return ONLY JSON.
 
-Format exactly:
-
+Format:
 
 {{
 
@@ -126,37 +170,32 @@ Format exactly:
 
 "tech_stack":[
 "React",
-"FastAPI",
-"Python"
+"FastAPI"
 ],
 
 "security":
-"Security summary",
+"security analysis",
 
 "rating":
 "8/10",
 
 "recommendations":[
-
-"Improve test coverage",
-
-"Add CI/CD pipeline",
-
-"Improve error handling"
-
+"Improve tests"
 ]
 
 }}
-
 
 """
 
 
 
-
-            response=self.llm.generate_response(
-                prompt
+            response = (
+                self.llm
+                .generate_response(
+                    prompt
+                )
             )
+
 
 
 
@@ -164,7 +203,7 @@ Format exactly:
             try:
 
 
-                return json.loads(
+                analysis = json.loads(
                     response
                 )
 
@@ -172,19 +211,19 @@ Format exactly:
             except Exception:
 
 
-                return {
+                analysis = {
 
-
-                    "name":"Repository Analysis",
+                    "name":
+                    "Repository Analysis",
 
 
                     "tech_stack":[
-                        "Detected from source code"
+                        "Detected from code"
                     ],
 
 
                     "security":
-                    "Analysis generated successfully",
+                    "Completed",
 
 
                     "rating":
@@ -201,8 +240,26 @@ Format exactly:
 
 
 
+            # IMPORTANT
+            # send cloned repo context forward
+
+
+            analysis[
+                "repo_context"
+            ] = project_files
+
+
+
+            return analysis
+
+
+
+
+
+
 
         finally:
+
 
 
             def remove_readonly(

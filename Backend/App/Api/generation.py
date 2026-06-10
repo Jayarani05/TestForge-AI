@@ -1,12 +1,10 @@
 from fastapi import (
     APIRouter,
-    Depends,
-    HTTPException
+    Depends
 )
 
 
 from sqlalchemy.orm import Session
-
 
 
 from app.agents.qa_agent import (
@@ -14,11 +12,9 @@ from app.agents.qa_agent import (
 )
 
 
-
 from app.schemas.story_schema import (
     UserStoryRequest
 )
-
 
 
 from app.database.session import (
@@ -26,28 +22,14 @@ from app.database.session import (
 )
 
 
-
 from app.database.history_repository import (
     save_generation
 )
 
 
-
 from app.security.auth import (
-
     get_current_user
-
 )
-
-
-
-from app.database.models import (
-
-    Project
-
-)
-
-
 
 
 
@@ -56,9 +38,7 @@ from app.database.models import (
 router = APIRouter(
 
     tags=[
-
         "Test Generation"
-
     ]
 
 )
@@ -66,107 +46,34 @@ router = APIRouter(
 
 
 
+
 @router.post(
-
     "/tests/generate"
-
 )
-
-
-
-
-
 def generate_tests(
-
 
     request: UserStoryRequest,
 
 
-
-    db: Session = Depends(
-
+    db:Session = Depends(
         get_db
-
     ),
 
 
-
     current_user = Depends(
-
         get_current_user
-
     )
-
 
 ):
 
 
 
-    # verify project ownership
-
-
-    project = (
-
-
-        db.query(
-
-            Project
-
-        )
-
-
-        .filter(
-
-
-            Project.id == request.project_id,
-
-
-
-            Project.owner_id == current_user.id
-
-
-        )
-
-
-        .first()
-
-
-    )
-
-
-
-
-
-
-    if not project:
-
-
-
-        raise HTTPException(
-
-            status_code=404,
-
-
-            detail="Project not found"
-
-        )
-
-
-
-
-
-
-
-
-
-    # Run QA Agent
+    # =============================
+    # QA AGENT PIPELINE
+    # =============================
 
 
     agent = QAAgent()
-
-
-
-
 
 
 
@@ -194,32 +101,33 @@ def generate_tests(
 
 
 
+    # save only if project exists
+
+    try:
 
 
+        if request.project_id:
 
 
-    # Save generation history
+            save_generation(
+
+                db,
+
+                current_user.id,
+
+                request.project_id,
+
+                request.user_story,
+
+                result
+
+            )
 
 
-    save_generation(
+    except Exception:
 
 
-        db,
-
-
-        current_user.id,
-
-
-        request.project_id,
-
-
-        request.user_story,
-
-
-        result
-
-
-    )
+        pass
 
 
 
@@ -236,17 +144,14 @@ def generate_tests(
         "success",
 
 
-
         "message":
 
-        "QA Agent executed successfully",
-
+        "Repository based QA generation completed",
 
 
         "story":
 
         request.user_story,
-
 
 
         "agent_result":

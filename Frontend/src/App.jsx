@@ -24,7 +24,7 @@ import Settings from "./pages/Settings";
 import BugReport from "./pages/BugReport";
 import NotFound from "./pages/NotFound";
 import History from "./pages/History";
-
+import CodeGeneration from "./pages/CodeGeneration";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 
@@ -133,7 +133,13 @@ element={<TestGenerator />}
 
 />
 
+<Route
 
+path="/code-generation"
+
+element={<CodeGeneration/>}
+
+/>
 
 
 

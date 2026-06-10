@@ -6,21 +6,33 @@ from sqlalchemy.orm import (
 )
 
 
-DATABASE_URL = (
-    "sqlite:///./testforge.db"
-)
+# ==============================
+# DATABASE URL
+# ==============================
 
+DATABASE_URL = "sqlite:///./testforge.db"
+
+
+
+# ==============================
+# ENGINE
+# ==============================
 
 engine = create_engine(
 
     DATABASE_URL,
 
     connect_args={
-        "check_same_thread":False
+        "check_same_thread": False
     }
 
 )
 
+
+
+# ==============================
+# SESSION
+# ==============================
 
 SessionLocal = sessionmaker(
 
@@ -33,4 +45,28 @@ SessionLocal = sessionmaker(
 )
 
 
+
+# ==============================
+# BASE MODEL
+# ==============================
+
 Base = declarative_base()
+
+
+
+# ==============================
+# DB DEPENDENCY
+# ==============================
+
+def get_db():
+
+    db = SessionLocal()
+
+    try:
+
+        yield db
+
+
+    finally:
+
+        db.close()

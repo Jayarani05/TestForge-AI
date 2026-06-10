@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 import {
 
     GitBranch,
@@ -8,7 +10,8 @@ import {
     ShieldCheck,
     Lightbulb,
     Star,
-    FolderGit2
+    FolderGit2,
+    Rocket
 
 } from "lucide-react";
 
@@ -20,6 +23,9 @@ import api from "../api/axios";
 
 
 function Repository(){
+
+
+const navigate = useNavigate();
 
 
 const [url,setUrl] = useState("");
@@ -34,16 +40,21 @@ const [loading,setLoading] = useState(false);
 
 
 
+// ==============================
+// ANALYZE REPOSITORY
+// ==============================
+
 
 async function analyzeRepo(){
 
 
-
 if(!url.trim()){
+
 
 alert("Enter repository URL");
 
 return;
+
 
 }
 
@@ -80,13 +91,20 @@ response.data
 
 
 
-setResult(
+
+const repoResult =
 
 response.data.analysis ||
 
 response.data.result ||
 
-response.data
+response.data;
+
+
+
+setResult(
+
+repoResult
 
 );
 
@@ -94,15 +112,19 @@ response.data
 
 }
 
-
-
 catch(error){
 
 
 console.log(error);
 
 
-alert("Repository analysis failed");
+
+alert(
+
+"Repository analysis failed"
+
+);
+
 
 
 }
@@ -133,11 +155,15 @@ return [];
 }
 
 
+
 if(Array.isArray(data)){
+
 
 return data;
 
+
 }
+
 
 
 return [data];
@@ -155,14 +181,13 @@ return [data];
 
 return(
 
-
 <div>
 
 
 
 
-{/* HEADER */}
 
+{/* HEADER */}
 
 
 <div className="mb-6">
@@ -178,7 +203,9 @@ Repository Intelligence
 
 <p className="text-gray-500">
 
+
 Analyze GitHub repositories using AI agents
+
 
 </p>
 
@@ -194,11 +221,11 @@ Analyze GitHub repositories using AI agents
 
 
 
-{/* INPUT */}
-
+{/* INPUT CARD */}
 
 
 <div
+
 className="
 bg-white
 border
@@ -207,11 +234,12 @@ p-6
 shadow-sm
 mb-6
 "
+
 >
 
 
-
 <h2
+
 className="
 font-semibold
 flex
@@ -219,14 +247,17 @@ items-center
 gap-2
 mb-5
 "
+
 >
+
 
 <GitBranch size={18}/>
 
+
 Repository URL
 
-</h2>
 
+</h2>
 
 
 
@@ -239,11 +270,23 @@ Repository URL
 
 <input
 
+
 value={url}
 
-onChange={(e)=>setUrl(e.target.value)}
+
+onChange={
+
+(e)=>setUrl(
+
+e.target.value
+
+)
+
+}
+
 
 placeholder="https://github.com/user/project"
+
 
 className="
 flex-1
@@ -252,7 +295,9 @@ rounded-lg
 p-3
 "
 
+
 />
+
 
 
 
@@ -261,9 +306,12 @@ p-3
 
 <button
 
+
 onClick={analyzeRepo}
 
+
 disabled={loading}
+
 
 className="
 bg-blue-600
@@ -274,13 +322,17 @@ flex
 gap-2
 items-center
 "
+
+
 >
 
 
 <Search size={18}/>
 
 
+
 {
+
 
 loading
 
@@ -292,7 +344,9 @@ loading
 
 "Analyze"
 
+
 }
+
 
 
 </button>
@@ -303,8 +357,6 @@ loading
 
 
 </div>
-
-
 
 
 
@@ -330,31 +382,29 @@ result
 
 
 
-
-
 {/* OVERVIEW */}
 
 
 <div
+
 className="
 bg-white
 border
 rounded-xl
 p-6
 "
+
 >
 
 
-<h2 className="
-font-semibold
-flex
-gap-2
-mb-4
-">
+<h2 className="font-semibold flex gap-2 mb-4">
+
 
 <FolderGit2 size={18}/>
 
+
 Repository Overview
+
 
 </h2>
 
@@ -364,6 +414,7 @@ Repository Overview
 
 <b>Name :</b>{" "}
 
+
 {
 
 result.name ||
@@ -372,13 +423,17 @@ result.name ||
 
 }
 
+
 </p>
+
 
 
 
 <p>
 
+
 <b>Quality :</b>{" "}
+
 
 {
 
@@ -390,12 +445,12 @@ result.quality_score ||
 
 }
 
+
 </p>
 
 
 
 </div>
-
 
 
 
@@ -410,26 +465,26 @@ result.quality_score ||
 
 
 <div
+
 className="
 bg-white
 border
 rounded-xl
 p-6
 "
+
 >
 
 
 
-<h2 className="
-font-semibold
-flex
-gap-2
-mb-4
-">
+<h2 className="font-semibold flex gap-2 mb-4">
+
 
 <Code size={18}/>
 
+
 Tech Stack
+
 
 </h2>
 
@@ -437,7 +492,9 @@ Tech Stack
 
 
 
+
 {
+
 
 listData(
 
@@ -445,12 +502,16 @@ result.tech_stack
 
 )
 
-.map((item,index)=>(
+.map(
+
+(item,index)=>(
 
 
 <span
 
+
 key={index}
+
 
 className="
 inline-block
@@ -463,6 +524,7 @@ mr-2
 mb-2
 "
 
+
 >
 
 
@@ -472,7 +534,9 @@ mb-2
 </span>
 
 
-))
+)
+
+)
 
 
 }
@@ -489,37 +553,38 @@ mb-2
 
 
 
-
 {/* SECURITY */}
 
 
-
 <div
+
 className="
 bg-white
 border
 rounded-xl
 p-6
 "
+
 >
 
 
-<h2 className="
-font-semibold
-flex
-gap-2
-mb-4
-">
+
+<h2 className="font-semibold flex gap-2 mb-4">
+
 
 <ShieldCheck size={18}/>
 
+
 Security Analysis
+
 
 </h2>
 
 
 
+
 <p>
+
 
 {
 
@@ -528,6 +593,7 @@ result.security ||
 "No security issues detected"
 
 }
+
 
 </p>
 
@@ -544,32 +610,33 @@ result.security ||
 
 
 
-{/* RECOMMENDATION */}
-
+{/* SCORE */}
 
 
 <div
+
 className="
 bg-white
 border
 rounded-xl
 p-6
 "
+
 >
 
 
-<h2 className="
-font-semibold
-flex
-gap-2
-mb-4
-">
+
+<h2 className="font-semibold flex gap-2 mb-4">
+
 
 <Star size={18}/>
 
+
 Repository Score
 
+
 </h2>
+
 
 
 
@@ -582,7 +649,9 @@ result.rating ||
 
 "8/10"
 
+
 }
+
 
 
 </h1>
@@ -599,11 +668,11 @@ result.rating ||
 
 
 
-{/* AI Suggestions */}
-
+{/* AI RECOMMENDATIONS */}
 
 
 <div
+
 className="
 bg-white
 border
@@ -611,19 +680,18 @@ rounded-xl
 p-6
 col-span-2
 "
+
 >
 
 
-<h2 className="
-font-semibold
-flex
-gap-2
-mb-4
-">
+<h2 className="font-semibold flex gap-2 mb-4">
+
 
 <Lightbulb size={18}/>
 
+
 AI Recommendations
+
 
 </h2>
 
@@ -631,8 +699,8 @@ AI Recommendations
 
 
 
-
 <ul className="space-y-2">
+
 
 
 {
@@ -644,19 +712,25 @@ result.recommendations
 
 )
 
-.map((item,index)=>(
+.map(
+
+(item,index)=>(
 
 
 
 <li key={index}>
 
+
 ✅ {item}
+
 
 </li>
 
 
 
-))
+)
+
+)
 
 
 }
@@ -672,11 +746,107 @@ result.recommendations
 
 
 
+
+
+
+
+{/* GENERATE TEST BUTTON */}
+
+
+<div
+
+className="
+bg-white
+border
+rounded-xl
+p-6
+col-span-2
+flex
+justify-end
+"
+
+>
+
+
+<button
+
+
+onClick={()=>{
+
+
+navigate(
+
+"/generate",
+
+{
+
+state:{
+
+
+repository:result,
+
+
+repo_url:url
+
+
+}
+
+
+}
+
+
+);
+
+
+}}
+
+
+
+className="
+bg-green-600
+text-white
+px-6
+py-3
+rounded-lg
+flex
+items-center
+gap-2
+"
+
+
+>
+
+
+
+<Rocket size={18}/>
+
+
+
+Generate Tests
+
+
+
+</button>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
 </div>
 
 
 
 :
+
+
 
 
 
@@ -703,8 +873,8 @@ Repository insights appear here
 
 
 
-}
 
+}
 
 
 

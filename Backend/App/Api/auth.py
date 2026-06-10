@@ -4,24 +4,33 @@ from fastapi import (
     HTTPException
 )
 
-from pydantic import BaseModel
-
 from sqlalchemy.orm import Session
 
-from app.database.session import (
+from pydantic import BaseModel
+
+
+from app.database.connection import (
     get_db
 )
+
 
 from app.database.models import (
     User
 )
 
+
 from app.security.auth import (
+
     hash_password,
+
     verify_password,
+
     create_token,
+
     get_current_user
+
 )
+
 
 
 router = APIRouter(
@@ -31,10 +40,15 @@ router = APIRouter(
 
 
 
+# =============================
+# SCHEMAS
+# =============================
+
+
 class RegisterRequest(BaseModel):
 
-    name: str
     email: str
+
     password: str
 
 
@@ -42,131 +56,229 @@ class RegisterRequest(BaseModel):
 class LoginRequest(BaseModel):
 
     email: str
+
     password: str
 
 
 
 
+# =============================
+# REGISTER
+# =============================
+
 
 @router.post("/register")
 def register(
-    request: RegisterRequest,
+
+    data: RegisterRequest,
+
     db: Session = Depends(get_db)
+
 ):
 
+
     existing = (
+
         db.query(User)
+
         .filter(
-            User.email == request.email
+            User.email == data.email
         )
+
         .first()
+
     )
+
 
 
     if existing:
 
         raise HTTPException(
+
             status_code=400,
-            detail="Email already exists"
+
+            detail="User already exists"
+
         )
 
 
-    hashed = hash_password(
-        request.password
+
+    new_user = User(
+
+        email=data.email,
+
+
+        hashed_password=hash_password(
+
+            data.password
+
+        )
+
     )
 
 
-    user = User(
-        name=request.name,
-        email=request.email,
-        hashed_password=hashed
+
+    db.add(
+        new_user
     )
 
-
-    db.add(user)
 
     db.commit()
 
-    db.refresh(user)
+
+    db.refresh(
+        new_user
+    )
+
 
 
     return {
+
         "message":
-        "User registered successfully"
+        "Registered successfully",
+
+
+        "email":
+        new_user.email
+
     }
 
 
 
 
 
+# =============================
+# LOGIN
+# =============================
 
 
 @router.post("/login")
 def login(
-    request: LoginRequest,
+
+    data: LoginRequest,
+
+
     db: Session = Depends(get_db)
+
 ):
 
+
     user = (
+
         db.query(User)
+
         .filter(
-            User.email == request.email
+
+            User.email == data.email
+
         )
+
         .first()
+
     )
+
 
 
     if not user:
 
+
         raise HTTPException(
+
             status_code=401,
+
             detail="Invalid credentials"
+
         )
+
 
 
     if not verify_password(
-        request.password,
+
+        data.password,
+
+
         user.hashed_password
+
     ):
 
+
         raise HTTPException(
+
             status_code=401,
+
             detail="Invalid credentials"
+
         )
 
 
+
+
     token = create_token(
+
         {
-            "user_id": user.id
+
+            "sub":
+            user.email
+
         }
+
     )
 
 
+
     return {
-        "access_token": token,
-        "token_type": "Bearer"
+
+
+        "access_token":
+        token,
+
+
+        "token_type":
+        "bearer",
+
+
+        "user":{
+
+            "id":
+            user.id,
+
+
+            "email":
+            user.email
+
+        }
+
     }
 
 
 
 
 
+# =============================
+# CURRENT USER
+# =============================
 
 
 @router.get("/me")
-def profile(
-    current_user=Depends(get_current_user)
+def get_me(
+
+    current_user = Depends(
+
+        get_current_user
+
+    )
+
 ):
+
 
     return {
 
-        "id":
-        current_user.id,
 
-        "name":
-        current_user.name,
+        "authenticated":
+        True,
 
-        "email":
-        current_user.email
+
+        "user":
+        current_user
 
     }

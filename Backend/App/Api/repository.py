@@ -1,68 +1,133 @@
-from fastapi import APIRouter, Depends
+from fastapi import (
+    APIRouter,
+    Depends
+)
+
 from sqlalchemy.orm import Session
 
-from app.database.session import get_db
+
+from app.database.session import (
+    get_db
+)
+
 
 from app.security.auth import (
     get_current_user
 )
 
+
 from app.database.models import (
     RepositoryAnalysis
 )
+
 
 from app.agents.repository_agent import (
     RepositoryAgent
 )
 
 
+
+
+# IMPORTANT - main.py imports this
 router = APIRouter(
+
     prefix="/repository",
-    tags=["Repository"]
+
+    tags=[
+        "Repository"
+    ]
+
 )
 
 
 
-@router.post("/analyze")
+
+
+@router.post(
+    "/analyze"
+)
 def analyze_repository(
-    request:dict,
-    db:Session=Depends(get_db),
-    current_user=Depends(get_current_user)
+
+    request: dict,
+
+    db: Session = Depends(
+        get_db
+    ),
+
+    current_user = Depends(
+        get_current_user
+    )
+
 ):
+
+
+    repo_url = request.get(
+        "repo_url"
+    )
+
+
 
     agent = RepositoryAgent()
 
 
+
     result = agent.analyze(
-        request.get(
-            "repo_url"
-        )
+
+        repo_url
+
     )
 
+
+
+
+    # save history
 
     repo = RepositoryAnalysis(
 
-        user_id=current_user.id,
+        user_id =
+        current_user.id,
 
-        repo_url=request.get(
-            "repo_url"
-        ),
 
-        result=result
+        repo_url =
+        repo_url,
+
+
+        result =
+        result
+
     )
 
 
-    db.add(repo)
+
+    db.add(
+        repo
+    )
+
 
     db.commit()
 
 
 
+
+
     return {
 
-        "status":"success",
 
-        "analysis":result
+        "status":
+        "success",
+
+
+        "repo_url":
+        repo_url,
+
+
+        # contains:
+        # name
+        # tech_stack
+        # repo_context
+
+        "analysis":
+        result
 
     }
 
@@ -70,22 +135,44 @@ def analyze_repository(
 
 
 
-@router.get("/history")
-def repo_history(
-    db:Session=Depends(get_db),
-    current_user=Depends(get_current_user)
+
+
+
+
+@router.get(
+    "/history"
+)
+def repository_history(
+
+
+    db:Session = Depends(
+        get_db
+    ),
+
+
+    current_user = Depends(
+        get_current_user
+    )
+
+
 ):
 
+
+
     return (
+
         db.query(
             RepositoryAnalysis
         )
 
         .filter(
+
             RepositoryAnalysis.user_id
             ==
             current_user.id
+
         )
 
         .all()
+
     )
