@@ -1,19 +1,8 @@
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 
-from app.database.session import get_db
-
-from app.security.auth import (
-    get_current_user
-)
-
-from app.database.models import (
-    RepositoryAnalysis
-)
-
-from app.agents.repository_agent import (
-    RepositoryAgent
-)
+from app.services.github_service import clone_repository
+from app.services.repo_analyzer import analyze_repository
 
 
 router = APIRouter(
@@ -22,70 +11,31 @@ router = APIRouter(
 )
 
 
+class RepoRequest(BaseModel):
+    repo_url: str
+
 
 @router.post("/analyze")
-def analyze_repository(
-    request:dict,
-    db:Session=Depends(get_db),
-    current_user=Depends(get_current_user)
-):
+def analyze_repo(request: RepoRequest):
 
-    agent = RepositoryAgent()
+    try:
 
-
-    result = agent.analyze(
-        request.get(
-            "repo_url"
-        )
-    )
-
-
-    repo = RepositoryAnalysis(
-
-        user_id=current_user.id,
-
-        repo_url=request.get(
-            "repo_url"
-        ),
-
-        result=result
-    )
-
-
-    db.add(repo)
-
-    db.commit()
-
-
-
-    return {
-
-        "status":"success",
-
-        "analysis":result
-
-    }
-
-
-
-
-
-@router.get("/history")
-def repo_history(
-    db:Session=Depends(get_db),
-    current_user=Depends(get_current_user)
-):
-
-    return (
-        db.query(
-            RepositoryAnalysis
+        path = clone_repository(
+            request.repo_url
         )
 
-        .filter(
-            RepositoryAnalysis.user_id
-            ==
-            current_user.id
+        result = analyze_repository(
+            path
         )
 
-        .all()
-    )
+        return {
+            "success": True,
+            "data": result
+        }
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
