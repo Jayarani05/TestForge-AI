@@ -42,6 +42,10 @@ from app.api.dashboard import (
     router as dashboard_router
 )
 
+from app.api.test_generation import (
+    router as test_generation_router
+)
+
 from fastapi.middleware.cors import (
     CORSMiddleware
 )
@@ -51,6 +55,7 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from app.api import bug
+from app.api import test_generation
 
 app = FastAPI(
     title="TestForge AI",
@@ -154,6 +159,11 @@ app.include_router(
 
     prefix="/api/v1"
 
+)
+
+app.include_router(
+    test_generation_router,
+    prefix="/api/v1"
 )
 
 app.include_router(
