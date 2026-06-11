@@ -1,3 +1,5 @@
+import re
+
 from app.llm_services.gemini_service import (
     GeminiService
 )
@@ -12,6 +14,8 @@ class CodeAgent:
     def __init__(self):
 
         self.llm = GeminiService()
+
+
 
 
 
@@ -35,31 +39,37 @@ class CodeAgent:
 
 
 
+
         prompt = f"""
 
-You are TestForge AI Code Generation Agent.
+You are TestForge AI Automation Code Agent.
 
-Convert the generated QA test cases into
-real executable automation test scripts.
+You are a senior SDET engineer.
+
+Your job:
+Convert MANUAL QA TEST CASES into REAL executable automation scripts.
 
 
-========================
+
+===========================
 PROJECT CONTEXT
-========================
+===========================
 
 {repo_context}
 
 
-========================
+
+===========================
 TEST CASES
-========================
+===========================
 
 {test_cases}
 
 
-========================
-OUTPUT CONFIG
-========================
+
+===========================
+TARGET
+===========================
 
 Language:
 {language}
@@ -70,20 +80,115 @@ Framework:
 
 
 
-Generate:
+
+
+Generate complete automation code.
+
+
+
+STRICT RULES:
+
+
+1. Do NOT copy test cases as comments.
+
+2. Create separate test function for each test case.
+
+3. Function names should match test scenarios.
+
+4. Implement:
 
 - imports
-- setup code
-- test functions
+- driver setup
+- browser launch
+- test actions
+- validations
 - assertions
 - teardown
 
 
-Rules:
+5. Positive tests:
+Validate successful workflows.
 
-Return ONLY executable code.
-No explanation.
+
+6. Negative tests:
+Validate error handling.
+
+
+7. Edge cases:
+Validate boundary scenarios.
+
+
+8. NEVER write:
+
+assert True
+
+
+9. Every test must contain meaningful assertions.
+
+
+10. Use:
+
+pytest
+
+selenium webdriver
+
+
+11. Use class:
+
+TestGeneratedFlow
+
+
+12. Include:
+
+setup_method()
+
+teardown_method()
+
+
+
+Example format:
+
+
+import pytest
+
+from selenium import webdriver
+
+
+class TestGeneratedFlow:
+
+
+    def setup_method(self):
+
+        self.driver = webdriver.Chrome()
+
+
+
+    def teardown_method(self):
+
+        self.driver.quit()
+
+
+
+
+    def test_login_success(self):
+
+        driver = self.driver
+
+        driver.get("APP_URL")
+
+        # actions here
+
+        assert condition
+
+
+
+
+Return ONLY python code.
+
 No markdown.
+
+No explanation.
+
 
 """
 
@@ -91,16 +196,77 @@ No markdown.
 
 
 
-        result = (
+        response = self.llm.generate_response(
 
-            self.llm.generate_response(
-
-                prompt
-
-            )
+            prompt
 
         )
 
 
 
-        return result
+
+
+
+        clean = self.clean_code(
+
+            response
+
+        )
+
+
+
+
+
+        return {
+
+            "status":"success",
+
+            "framework":framework,
+
+            "language":language,
+
+            "code":clean
+
+        }
+
+
+
+
+
+
+
+
+
+    def clean_code(
+
+        self,
+
+        code
+
+    ):
+
+
+
+
+        code = code.replace(
+
+            "```python",
+
+            ""
+
+        )
+
+
+
+        code = code.replace(
+
+            "```",
+
+            ""
+
+        )
+
+
+
+
+        return code.strip()

@@ -1,20 +1,26 @@
 import { useState } from "react";
 
 import {
+
     Play,
     CheckCircle,
     XCircle,
     Clock,
     Bug,
     Activity
+
 } from "lucide-react";
+
 
 import api from "../api/axios";
 
 
 
 
+
+
 function Execution(){
+
 
 
 const [code,setCode] = useState("");
@@ -28,58 +34,115 @@ const [loading,setLoading] = useState(false);
 
 
 
+
+
+
+// ===============================
+// RUN TEST EXECUTION
+// ===============================
+
+
 const runTest = async()=>{
+
 
 
 if(!code.trim()){
 
-alert("Enter automation code");
 
-return;
+    alert(
+        "Enter automation code"
+    );
+
+
+    return;
 
 }
+
+
 
 
 
 try{
 
 
+
 setLoading(true);
+
 
 
 const response = await api.post(
 
-"/execution/run",
+    "/execution/run",
 
-{
+    {
 
-code:code
+        code:code
 
-}
+    }
 
 );
 
 
 
-setResult(response.data);
+
+console.log(
+
+    "EXECUTION RESULT",
+
+    response.data
+
+);
+
+
+
+
+setResult(
+
+    response.data
+
+);
 
 
 
 }
+
+
 
 catch(error){
 
 
-console.log(error);
 
-alert("Execution failed");
+console.log(
+
+    "EXECUTION ERROR",
+
+    error
+
+);
+
+
+
+alert(
+
+    "Execution failed"
+
+);
+
 
 
 }
 
 
 
+
+finally{
+
+
 setLoading(false);
+
+
+}
+
 
 
 
@@ -92,9 +155,12 @@ setLoading(false);
 
 
 
+
 return(
 
+
 <div>
+
 
 
 
@@ -108,6 +174,8 @@ Test Execution
 </h1>
 
 
+
+
 <p className="
 text-gray-500
 mb-8
@@ -116,6 +184,7 @@ mb-8
 Run automated tests and analyze execution results
 
 </p>
+
 
 
 
@@ -136,16 +205,16 @@ gap-8
 
 
 
-
-{/* LEFT SIDE */}
+{/* ================= LEFT ================= */}
 
 
 <div className="
+bg-white
 border
 rounded-xl
 p-6
-bg-white
 ">
+
 
 
 
@@ -161,13 +230,23 @@ Automation Code
 
 
 
+
+
 <textarea
+
 
 value={code}
 
+
 onChange={(e)=>setCode(e.target.value)}
 
-placeholder="Paste your pytest / automation code here..."
+
+
+placeholder="
+Paste generated pytest selenium code here...
+"
+
+
 
 className="
 w-full
@@ -179,7 +258,9 @@ font-mono
 resize-none
 "
 
+
 />
+
 
 
 
@@ -188,9 +269,13 @@ resize-none
 
 <button
 
+
 onClick={runTest}
 
+
 disabled={loading}
+
+
 
 className="
 mt-5
@@ -204,10 +289,13 @@ gap-2
 items-center
 "
 
+
+
 >
 
 
 <Play size={18}/>
+
 
 
 {
@@ -222,10 +310,14 @@ loading
 
 "Run Test"
 
+
 }
 
 
+
 </button>
+
+
 
 
 
@@ -239,16 +331,18 @@ loading
 
 
 
-{/* RIGHT SIDE */}
+{/* ================= RIGHT ================= */}
 
 
 
 <div className="
+bg-white
 border
 rounded-xl
 p-6
-bg-white
 ">
+
+
 
 
 
@@ -259,9 +353,12 @@ gap-2
 mb-6
 ">
 
+
 <Activity/>
 
+
 Execution Result
+
 
 </h2>
 
@@ -270,11 +367,18 @@ Execution Result
 
 
 
+
+
+
 {
+
 
 result
 
+
 ?
+
+
 
 <div>
 
@@ -282,8 +386,9 @@ result
 
 
 
-{/* TOP CARDS */}
 
+
+{/* STATUS CARDS */}
 
 
 <div className="
@@ -297,31 +402,39 @@ mb-8
 
 
 
+
+
+
 <div className="
 border
 rounded-xl
 p-5
 ">
 
+
 <Clock/>
 
-<p className="
-text-gray-500
-mt-2
-">
+
+<p className="text-gray-500 mt-2">
 
 Status
 
 </p>
 
 
+
 <b>
 
+
 {
-result.execution_result.status
+
+result.execution_result?.status
+
 }
 
+
 </b>
+
 
 
 </div>
@@ -333,6 +446,8 @@ result.execution_result.status
 
 
 
+
+
 <div className="
 border
 rounded-xl
@@ -340,9 +455,10 @@ p-5
 ">
 
 
+
 {
 
-result.execution_result.passed
+result.execution_result?.passed
 
 ?
 
@@ -356,21 +472,22 @@ result.execution_result.passed
 
 
 
-<p className="
-text-gray-500
-mt-2
-">
+
+<p className="text-gray-500 mt-2">
 
 Result
 
 </p>
 
 
+
+
 <b>
+
 
 {
 
-result.execution_result.passed
+result.execution_result?.passed
 
 ?
 
@@ -380,10 +497,12 @@ result.execution_result.passed
 
 "FAILED"
 
+
 }
 
 
 </b>
+
 
 
 
@@ -407,29 +526,31 @@ p-5
 <Clock/>
 
 
-<p className="
-text-gray-500
-mt-2
-">
+<p className="text-gray-500 mt-2">
 
 Time
 
 </p>
 
 
+
 <b>
 
+
 {
-result.execution_result.execution_time
+
+result.execution_result?.execution_time
+
+||
+"-"
+
+
 }
+
 
 </b>
 
 
-</div>
-
-
-
 
 </div>
 
@@ -439,9 +560,20 @@ result.execution_result.execution_time
 
 
 
+</div>
 
 
-{/* BUG */}
+
+
+
+
+
+
+
+
+
+
+{/* BUG ANALYZER */}
 
 
 
@@ -453,6 +585,9 @@ mb-6
 ">
 
 
+
+
+
 <h2 className="
 font-bold
 flex
@@ -460,48 +595,152 @@ gap-2
 mb-4
 ">
 
+
 <Bug/>
 
+
 Bug Analysis
+
 
 </h2>
 
 
 
+
+
+
 <p className="
 font-semibold
+mb-4
 ">
+
+
 
 {
 
-result.bug_analysis.bug_found
+result.execution_result?.passed
 
 ?
 
-"Bug detected"
+"✅ No Bugs Found"
 
 :
 
-"No bugs detected 🎉"
+"🐞 Bug Detected"
+
 
 }
+
+
 
 </p>
 
 
 
-<p className="
-text-gray-500
-mt-2
-">
+
+
+
+
+
 
 {
 
-result.bug_analysis.message
+!result.execution_result?.passed &&
+
+
+
+<div className="
+space-y-3
+">
+
+
+
+<p>
+
+<b>Severity : </b>
+
+
+{
+
+result.bug_analysis?.severity
 
 }
 
+
 </p>
+
+
+
+
+
+
+<p>
+
+<b>Root Cause : </b>
+
+
+{
+
+result.bug_analysis?.root_cause
+
+}
+
+
+</p>
+
+
+
+
+
+
+
+<p>
+
+<b>Possible Fix : </b>
+
+
+{
+
+result.bug_analysis?.possible_fix
+
+}
+
+
+</p>
+
+
+
+
+
+
+
+<p>
+
+<b>QA Recommendation : </b>
+
+
+{
+
+result.bug_analysis?.qa_recommendation
+
+}
+
+
+</p>
+
+
+
+
+
+</div>
+
+
+
+}
+
+
+
+
 
 
 
@@ -515,13 +754,13 @@ result.bug_analysis.message
 
 
 
-
-{/* CLEAN SUMMARY */}
+{/* LOGS */}
 
 
 
 <div className="
-border
+bg-gray-900
+text-green-400
 rounded-xl
 p-5
 ">
@@ -530,58 +769,47 @@ p-5
 
 <h2 className="
 font-bold
-mb-5
+mb-3
+text-white
 ">
 
-Execution Summary
+Logs
 
 </h2>
 
 
 
 
-
-<div className="
-space-y-4
+<pre className="
+whitespace-pre-wrap
+text-sm
 ">
 
 
-
-
-
-
-<div className="
-flex
-justify-between
-border-b
-pb-3
-">
-
-
-<span className="text-gray-500">
-
-Status
-
-</span>
-
-
-<b>
 
 {
 
-result.execution_result.passed
 
-?
+result.execution_result?.logs
 
-"Success"
+||
 
-:
+result.execution_result?.errors
 
-"Failed"
+||
+
+"No logs"
+
+
 
 }
 
-</b>
+
+
+</pre>
+
+
+
 
 
 </div>
@@ -593,96 +821,13 @@ result.execution_result.passed
 
 
 
-
-<div className="
-flex
-justify-between
-border-b
-pb-3
-">
-
-
-<span className="text-gray-500">
-
-Execution Time
-
-</span>
-
-
-<b>
-
-{
-result.execution_result.execution_time
-}
-
-</b>
-
-
 </div>
 
 
-
-
-
-
-
-
-<div className="
-flex
-justify-between
-border-b
-pb-3
-">
-
-
-<span className="text-gray-500">
-
-Bug Found
-
-</span>
-
-
-<b>
-
-{
-
-result.bug_analysis.bug_found
-
-?
-
-"Yes"
 
 :
 
-"No"
 
-}
-
-</b>
-
-
-</div>
-
-
-
-
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-</div>
-
-
-:
 
 
 <div className="
@@ -693,9 +838,12 @@ justify-center
 text-gray-400
 ">
 
+
 Run tests to see execution report
 
+
 </div>
+
 
 
 }
@@ -703,9 +851,6 @@ Run tests to see execution report
 
 
 
-</div>
-
-
 
 
 </div>
@@ -713,12 +858,23 @@ Run tests to see execution report
 
 
 
+
 </div>
+
+
+
+
+
+</div>
+
+
 
 );
 
 
 }
+
+
 
 
 

@@ -23,6 +23,7 @@ import {
 
 
 
+
 function TestGenerator(){
 
 
@@ -53,19 +54,11 @@ location.state?.repo_url;
 
 
 
+const [story,setStory] = useState("");
 
-const [story,setStory] =
-useState("");
+const [tests,setTests] = useState(null);
 
-
-
-const [tests,setTests] =
-useState(null);
-
-
-
-const [loading,setLoading] =
-useState(false);
+const [loading,setLoading] = useState(false);
 
 
 
@@ -105,6 +98,7 @@ return;
 
 
 
+
 try{
 
 
@@ -116,6 +110,7 @@ setLoading(true);
 
 
 const payload = {
+
 
 
 user_story:
@@ -145,6 +140,7 @@ project_id:
 
 
 
+
 project_context:{
 
 
@@ -162,15 +158,12 @@ name:
 repository?.name,
 
 
-
 tech_stack:
 repository?.tech_stack,
 
 
-
 security:
 repository?.security,
-
 
 
 rating:
@@ -184,9 +177,11 @@ repository?.rating
 
 
 
+
 source_code:
 
 repository?.repo_context
+
 
 
 }
@@ -214,6 +209,7 @@ payload
 
 
 
+
 const response =
 await api.post(
 
@@ -222,6 +218,7 @@ await api.post(
 payload
 
 );
+
 
 
 
@@ -245,11 +242,27 @@ response.data
 
 
 
+
+// ============================
+// UPDATED FIX
+// ============================
+
+
+const result =
+
+response.data.agent_result;
+
+
+
+
+
 setTests(
 
-response.data.agent_result
+result
 
 );
+
+
 
 
 
@@ -264,12 +277,21 @@ catch(error){
 
 
 
-console.log(error);
+console.log(
+
+"TEST ERROR",
+
+error
+
+);
+
 
 
 
 alert(
+
 "Test generation failed"
+
 );
 
 
@@ -281,11 +303,19 @@ alert(
 
 
 
+finally{
+
+
 setLoading(false);
+
+
+}
+
 
 
 
 }
+
 
 
 
@@ -310,11 +340,6 @@ return(
 
 
 
-
-
-{/* ================= HEADER ================= */}
-
-
 <h1
 
 className="
@@ -325,9 +350,7 @@ mb-6
 
 >
 
-
 AI Test Generator
-
 
 </h1>
 
@@ -340,10 +363,7 @@ AI Test Generator
 
 
 
-
-
-
-{/* ================= REPO CARD ================= */}
+{/* Repository Info */}
 
 
 <div
@@ -372,16 +392,14 @@ mb-3
 >
 
 
-
 <FolderGit2 size={18}/>
-
 
 
 Loaded Repository
 
 
-
 </h2>
+
 
 
 
@@ -394,21 +412,17 @@ Loaded Repository
 <b>Name :</b>{" "}
 
 
+
 {
 
-
-repository?.name
-
-||
+repository?.name ||
 
 "Repository Loaded"
-
 
 }
 
 
 </p>
-
 
 
 
@@ -437,38 +451,6 @@ repository
 }
 
 
-
-</p>
-
-
-
-
-
-
-
-
-<p>
-
-
-<b>Files Loaded :</b>{" "}
-
-
-{
-
-
-repository
-?.repo_context
-?.length
-
-||
-
-0
-
-
-}
-
-
-
 </p>
 
 
@@ -486,12 +468,8 @@ repository
 
 
 
+{/* USER STORY */}
 
-
-
-
-
-{/* ================= USER STORY ================= */}
 
 
 <div
@@ -504,8 +482,6 @@ p-6
 "
 
 >
-
-
 
 
 
@@ -524,14 +500,10 @@ mb-3
 <FileText size={18}/>
 
 
-
 User Story
 
 
-
 </h2>
-
-
 
 
 
@@ -543,7 +515,6 @@ User Story
 
 
 value={story}
-
 
 
 onChange={
@@ -558,14 +529,10 @@ e.target.value
 
 
 
-
 placeholder="
-Example:
-
 As a user I want login using email and password
 so that I can access my dashboard.
 "
-
 
 
 
@@ -576,6 +543,7 @@ w-full
 h-36
 p-3
 "
+
 
 
 />
@@ -595,9 +563,7 @@ p-3
 onClick={generateTests}
 
 
-
 disabled={loading}
-
 
 
 className="
@@ -625,26 +591,21 @@ mt-4
 
 {
 
-
 loading
 
 ?
 
-"Generating Test Cases..."
+"Generating..."
 
 :
 
 "Generate Test Cases"
 
-
 }
 
 
 
-
 </button>
-
-
 
 
 
@@ -659,14 +620,7 @@ loading
 
 
 
-
-
-
-
-
-
-
-{/* ================= RESULT ================= */}
+{/* RESULT */}
 
 
 {
@@ -687,7 +641,6 @@ mt-6
 "
 
 >
-
 
 
 
@@ -714,8 +667,6 @@ Generated Test Cases
 
 
 
-
-
 <div
 
 className="
@@ -725,7 +676,6 @@ p-5
 "
 
 >
-
 
 
 
@@ -739,15 +689,8 @@ text-sm
 >
 
 
-
 {
 
-
-typeof tests.generated_test_cases
-===
-"object"
-
-?
 
 JSON.stringify(
 
@@ -760,19 +703,10 @@ null,
 )
 
 
-:
-
-
-tests.generated_test_cases
-
-
-
 }
 
 
-
 </pre>
-
 
 
 
@@ -787,12 +721,8 @@ tests.generated_test_cases
 
 
 
-
-
-{/* CONVERT BUTTON */}
-
-
 <button
+
 
 
 onClick={()=>{
@@ -803,6 +733,7 @@ navigate(
 "/code-generation",
 
 {
+
 
 state:{
 
@@ -827,7 +758,8 @@ story,
 
 test_cases:
 
-tests.generated_test_cases
+tests?.generated_test_cases
+
 
 
 }
@@ -857,6 +789,7 @@ items-center
 "
 
 
+
 >
 
 
@@ -864,9 +797,7 @@ items-center
 <Code2 size={18}/>
 
 
-
 Convert To Code
-
 
 
 </button>
@@ -887,8 +818,6 @@ Convert To Code
 
 
 
-
-
 </div>
 
 
@@ -896,7 +825,6 @@ Convert To Code
 
 
 }
-
 
 
 
