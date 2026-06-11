@@ -39,6 +39,7 @@ const navigate = useNavigate();
 
 
 
+
 // ============================
 // DATA FROM REPOSITORY PAGE
 // ============================
@@ -57,12 +58,15 @@ location.state?.repo_url;
 
 
 
+const [story,setStory] =
+useState("");
 
-const [story,setStory] = useState("");
+const [tests,setTests] =
+useState(null);
 
-const [tests,setTests] = useState(null);
+const [loading,setLoading] =
+useState(false);
 
-const [loading,setLoading] = useState(false);
 
 
 
@@ -100,7 +104,6 @@ return;
 
 
 
-
 try{
 
 
@@ -115,25 +118,20 @@ setLoading(true);
 const payload = {
 
 
-
 user_story:
 story,
-
 
 
 output_type:
 "test_cases",
 
 
-
 language:
 "python",
 
 
-
 framework:
 "pytest",
-
 
 
 project_id:
@@ -142,16 +140,11 @@ project_id:
 
 
 
-
-
-
 project_context:{
-
 
 
 repo_url:
 repoUrl,
-
 
 
 
@@ -180,7 +173,6 @@ repository?.rating
 
 
 
-
 source_code:
 
 repository?.repo_context
@@ -188,6 +180,7 @@ repository?.repo_context
 
 
 }
+
 
 
 };
@@ -245,7 +238,6 @@ response.data
 
 
 
-
 const result =
 
 response.data.agent_result;
@@ -270,6 +262,37 @@ result
 
 
 // ============================
+// SAVE TEST CASES FOR EXPORT
+// ============================
+
+
+localStorage.setItem(
+
+"testCases",
+
+
+JSON.stringify(
+
+result?.generated_test_cases || result,
+
+null,
+
+2
+
+)
+
+);
+
+
+
+
+
+
+
+
+
+
+// ============================
 // SAVE HISTORY
 // ============================
 
@@ -277,7 +300,9 @@ result
 saveHistory({
 
 
-type:"Test Generation",
+type:
+
+"Test Generation",
 
 
 
@@ -287,11 +312,9 @@ title:
 
 
 
-
 description:
 
 story,
-
 
 
 
@@ -303,6 +326,7 @@ status:
 
 
 data:{
+
 
 
 repository:
@@ -334,8 +358,6 @@ result?.generated_test_cases
 
 
 });
-
-
 
 
 
@@ -400,15 +422,9 @@ setLoading(false);
 
 
 
-
-
-
-
 return(
 
-
 <div>
-
 
 
 
@@ -439,7 +455,8 @@ AI Test Generator
 
 
 
-{/* Repository Info */}
+
+{/* REPOSITORY INFO */}
 
 
 <div
@@ -453,7 +470,6 @@ mb-6
 "
 
 >
-
 
 
 
@@ -482,7 +498,6 @@ Loaded Repository
 
 
 
-
 <p>
 
 
@@ -492,12 +507,12 @@ Loaded Repository
 
 {
 
-
 repository?.name ||
 
 "Repository Loaded"
 
 }
+
 
 
 </p>
@@ -512,7 +527,6 @@ repository?.name ||
 
 
 <b>Tech Stack :</b>{" "}
-
 
 
 
@@ -531,14 +545,13 @@ repository
 }
 
 
-
 </p>
 
 
 
 
-
 </div>
+
 
 
 
@@ -564,7 +577,6 @@ p-6
 
 
 
-
 <h2
 
 className="
@@ -584,6 +596,7 @@ User Story
 
 
 </h2>
+
 
 
 
@@ -638,12 +651,10 @@ p-3
 <button
 
 
-
 onClick={generateTests}
 
 
 disabled={loading}
-
 
 
 className="
@@ -658,15 +669,10 @@ items-center
 mt-4
 "
 
-
 >
 
 
-
-
 <Wand2 size={18}/>
-
-
 
 
 
@@ -687,14 +693,14 @@ loading
 }
 
 
-
 </button>
 
 
 
 
-
 </div>
+
+
 
 
 
@@ -713,8 +719,6 @@ loading
 tests &&
 
 
-
-
 <div
 
 className="
@@ -726,6 +730,7 @@ mt-6
 "
 
 >
+
 
 
 
@@ -765,7 +770,6 @@ p-5
 
 
 
-
 <pre
 
 className="
@@ -774,7 +778,6 @@ text-sm
 "
 
 >
-
 
 
 {
@@ -800,10 +803,7 @@ null,
 
 
 
-
 </div>
-
-
 
 
 
@@ -858,6 +858,7 @@ tests?.generated_test_cases
 }
 
 
+
 }
 
 
@@ -882,19 +883,13 @@ gap-2
 items-center
 "
 
-
-
 >
-
-
 
 
 <Code2 size={18}/>
 
 
-
 Convert To Code
-
 
 
 </button>
@@ -907,9 +902,7 @@ Convert To Code
 </div>
 
 
-
 }
-
 
 
 
