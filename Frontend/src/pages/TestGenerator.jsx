@@ -9,6 +9,9 @@ import {
 import api from "../api/axios";
 
 
+import { saveHistory } from "../services/historyService";
+
+
 import {
 
     FileText,
@@ -17,6 +20,7 @@ import {
     Code2
 
 } from "lucide-react";
+
 
 
 
@@ -68,8 +72,6 @@ const [loading,setLoading] = useState(false);
 
 
 
-
-
 // ============================
 // GENERATE TEST CASES
 // ============================
@@ -109,6 +111,7 @@ setLoading(true);
 
 
 
+
 const payload = {
 
 
@@ -135,6 +138,7 @@ framework:
 
 project_id:
 0,
+
 
 
 
@@ -177,7 +181,6 @@ repository?.rating
 
 
 
-
 source_code:
 
 repository?.repo_context
@@ -188,6 +191,7 @@ repository?.repo_context
 
 
 };
+
 
 
 
@@ -226,7 +230,6 @@ payload
 
 
 
-
 console.log(
 
 "GENERATED",
@@ -243,14 +246,10 @@ response.data
 
 
 
-// ============================
-// UPDATED FIX
-// ============================
-
-
 const result =
 
 response.data.agent_result;
+
 
 
 
@@ -261,6 +260,81 @@ setTests(
 result
 
 );
+
+
+
+
+
+
+
+
+
+// ============================
+// SAVE HISTORY
+// ============================
+
+
+saveHistory({
+
+
+type:"Test Generation",
+
+
+
+title:
+
+"AI QA Test Cases Generated",
+
+
+
+
+description:
+
+story,
+
+
+
+
+status:
+
+"Completed",
+
+
+
+
+data:{
+
+
+repository:
+
+repository?.name || "Repository",
+
+
+
+repo_url:
+
+repoUrl,
+
+
+
+user_story:
+
+story,
+
+
+
+test_cases:
+
+result?.generated_test_cases
+
+
+
+}
+
+
+
+});
+
 
 
 
@@ -303,6 +377,8 @@ alert(
 
 
 
+
+
 finally{
 
 
@@ -328,11 +404,11 @@ setLoading(false);
 
 
 
-
 return(
 
 
 <div>
+
 
 
 
@@ -380,6 +456,7 @@ mb-6
 
 
 
+
 <h2
 
 className="
@@ -415,6 +492,7 @@ Loaded Repository
 
 {
 
+
 repository?.name ||
 
 "Repository Loaded"
@@ -429,10 +507,12 @@ repository?.name ||
 
 
 
+
 <p>
 
 
 <b>Tech Stack :</b>{" "}
+
 
 
 
@@ -451,8 +531,8 @@ repository
 }
 
 
-</p>
 
+</p>
 
 
 
@@ -471,7 +551,6 @@ repository
 {/* USER STORY */}
 
 
-
 <div
 
 className="
@@ -482,6 +561,7 @@ p-6
 "
 
 >
+
 
 
 
@@ -517,9 +597,9 @@ User Story
 value={story}
 
 
-onChange={
+onChange={(e)=>
 
-(e)=>setStory(
+setStory(
 
 e.target.value
 
@@ -545,7 +625,6 @@ p-3
 "
 
 
-
 />
 
 
@@ -566,6 +645,7 @@ onClick={generateTests}
 disabled={loading}
 
 
+
 className="
 bg-blue-600
 text-white
@@ -583,6 +663,7 @@ mt-4
 
 
 
+
 <Wand2 size={18}/>
 
 
@@ -590,6 +671,7 @@ mt-4
 
 
 {
+
 
 loading
 
@@ -601,11 +683,13 @@ loading
 
 "Generate Test Cases"
 
+
 }
 
 
 
 </button>
+
 
 
 
@@ -627,6 +711,7 @@ loading
 
 
 tests &&
+
 
 
 
@@ -667,6 +752,7 @@ Generated Test Cases
 
 
 
+
 <div
 
 className="
@@ -679,6 +765,7 @@ p-5
 
 
 
+
 <pre
 
 className="
@@ -687,6 +774,7 @@ text-sm
 "
 
 >
+
 
 
 {
@@ -706,12 +794,16 @@ null,
 }
 
 
+
 </pre>
 
 
 
 
+
 </div>
+
+
 
 
 
@@ -736,6 +828,7 @@ navigate(
 
 
 state:{
+
 
 
 repo_url:
@@ -776,6 +869,7 @@ tests?.generated_test_cases
 
 
 
+
 className="
 mt-6
 bg-green-600
@@ -794,10 +888,13 @@ items-center
 
 
 
+
 <Code2 size={18}/>
 
 
+
 Convert To Code
+
 
 
 </button>
@@ -810,7 +907,9 @@ Convert To Code
 </div>
 
 
+
 }
+
 
 
 
@@ -825,6 +924,7 @@ Convert To Code
 
 
 }
+
 
 
 

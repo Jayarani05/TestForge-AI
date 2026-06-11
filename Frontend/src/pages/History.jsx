@@ -1,61 +1,20 @@
-import { useEffect, useState } from "react";
+import { useEffect,useState } from "react";
+
 import {
-    Trash,
-    Clock,
-    FileText,
-    CheckCircle,
-    Shield,
-    XCircle
+
+History as HistoryIcon,
+Trash2,
+CheckCircle
+
 } from "lucide-react";
 
-import api from "../api/axios";
 
+import {
 
-function TestItem({ test }) {
+getHistory,
+clearHistory
 
-    return (
-
-        <div className="
-        border
-        rounded-lg
-        p-3
-        mb-2
-        ">
-
-            <div className="
-            flex
-            justify-between
-            ">
-
-                <b>
-                    {test.id}
-                </b>
-
-                <span className="
-                text-blue-600
-                text-sm
-                ">
-                    {test.priority}
-                </span>
-
-            </div>
-
-
-            <p className="
-            text-gray-600
-            text-sm
-            mt-2
-            ">
-
-                {test.title}
-
-            </p>
-
-        </div>
-
-    )
-
-}
+} from "../services/historyService";
 
 
 
@@ -64,82 +23,38 @@ function TestItem({ test }) {
 function History(){
 
 
-const [history,setHistory] = useState([]);
+const [items,setItems]=useState([]);
 
-const [selected,setSelected] = useState(null);
 
 
 
 useEffect(()=>{
 
-    loadHistory();
+
+setItems(
+
+getHistory()
+
+);
+
 
 },[]);
 
 
 
 
-const loadHistory = async()=>{
-
-try{
-
-    const response = await api.get(
-        "/history/"
-    );
 
 
-    setHistory(response.data);
+function removeAll(){
 
 
-}
-catch(error){
-
-    console.log(error);
-
-}
-
-};
+clearHistory();
 
 
-
-
-
-
-
-const deleteHistory = async(id)=>{
-
-try{
-
-
-if(!confirm("Delete history?")){
-
-    return;
-
-}
-
-
-await api.delete(
-    `/history/${id}`
-);
-
-
-loadHistory();
-
-
-setSelected(null);
+setItems([]);
 
 
 }
-catch(error){
-
-alert("Delete API not available");
-
-}
-
-};
-
-
-
 
 
 
@@ -152,13 +67,24 @@ return(
 
 
 
-<h1 className="
-text-2xl
-font-bold
+<div className="
+flex
+justify-between
+items-center
 mb-6
 ">
 
-Generation History
+
+<h1 className="
+text-2xl
+font-bold
+flex
+gap-2
+">
+
+<HistoryIcon/>
+
+Activity History
 
 </h1>
 
@@ -166,137 +92,25 @@ Generation History
 
 
 
-
-
-<div className="
-grid
-grid-cols-3
-gap-6
-">
-
-
-
-
-
-
-
-{/* LEFT */}
-
-
-<div className="
-bg-white
-border
-rounded-xl
-p-5
-">
-
-
-<h2 className="
-font-semibold
-flex
-gap-2
-mb-5
-">
-
-<Clock size={18}/>
-
-Previous Runs
-
-</h2>
-
-
-
-
-
-
-{
-
-history.length===0
-
-?
-
-<p className="text-gray-400">
-
-No history found
-
-</p>
-
-
-:
-
-
-history.map(item=>(
-
-
-<div
-
-key={item.id}
-
-onClick={()=>setSelected(item)}
-
-className="
-border
-rounded-lg
-p-3
-mb-3
-cursor-pointer
-hover:bg-gray-50
-"
-
->
-
-
-<div className="
-flex
-gap-2
-items-center
-">
-
-<FileText size={16}/>
-
-
-<p className="
-font-medium
-truncate
-">
-
-{
-item.user_story ||
-item.input_story ||
-"Generated Test"
-}
-
-</p>
-
-
-</div>
-
-
-
 <button
 
-onClick={(e)=>{
-
-e.stopPropagation();
-
-deleteHistory(item.id);
-
-}}
+onClick={removeAll}
 
 className="
-text-red-500
-text-sm
+bg-red-600
+text-white
+px-4
+py-2
+rounded-lg
 flex
-gap-1
-mt-3
+gap-2
 "
 
 >
 
-<Trash size={14}/>
+<Trash2 size={18}/>
 
-Delete
-
+Clear
 
 </button>
 
@@ -305,13 +119,6 @@ Delete
 </div>
 
 
-))
-
-}
-
-
-
-</div>
 
 
 
@@ -319,206 +126,25 @@ Delete
 
 
 
+{
 
 
-{/* RIGHT */}
+items.length===0
 
+?
 
 <div className="
 bg-white
 border
 rounded-xl
-p-5
-col-span-2
-overflow-y-auto
-h-[650px]
-">
-
-
-
-{
-
-selected
-
-?
-
-<div>
-
-
-
-<h2 className="
-font-bold
-mb-4
-">
-
-Generated Result
-
-</h2>
-
-
-
-
-
-<h3 className="
-font-semibold
-mb-2
-">
-
-Requirement
-
-</h3>
-
-
-<p className="
-bg-gray-100
-rounded-lg
-p-3
-mb-5
-">
-
-{
-selected.user_story ||
-selected.input_story
-}
-
-</p>
-
-
-
-
-
-
-
-<h3 className="
-font-bold
+h-60
 flex
-gap-2
-mb-3
+items-center
+justify-center
+text-gray-400
 ">
 
-<CheckCircle/>
-
-Positive Tests
-
-</h3>
-
-
-
-{
-
-selected.generated_output
-?.generated_test_cases
-?.result
-?.positive_tests
-?.map(test=>(
-
-<TestItem
-
-key={test.id}
-
-test={test}
-
-/>
-
-))
-
-}
-
-
-
-
-
-
-
-
-
-<h3 className="
-font-bold
-flex
-gap-2
-mt-5
-mb-3
-">
-
-<XCircle/>
-
-Negative Tests
-
-</h3>
-
-
-
-{
-
-selected.generated_output
-?.generated_test_cases
-?.result
-?.negative_tests
-?.map(test=>(
-
-
-<TestItem
-
-key={test.id}
-
-test={test}
-
-/>
-
-
-))
-
-}
-
-
-
-
-
-
-
-
-
-
-<h3 className="
-font-bold
-flex
-gap-2
-mt-5
-mb-3
-">
-
-<Shield/>
-
-Security Tests
-
-</h3>
-
-
-
-{
-
-selected.generated_output
-?.generated_test_cases
-?.result
-?.security_tests
-?.map(test=>(
-
-
-<TestItem
-
-key={test.id}
-
-test={test}
-
-/>
-
-
-))
-
-}
-
-
-
+No history available
 
 </div>
 
@@ -526,28 +152,126 @@ test={test}
 :
 
 
-<div className="
-h-full
+
+<div className="space-y-5">
+
+
+{
+
+items.map((item)=>(
+
+
+
+<div
+
+key={item.id}
+
+className="
+bg-white
+border
+rounded-xl
+p-5
 flex
+justify-between
 items-center
-justify-center
-text-gray-400
+"
+
+>
+
+
+
+<div>
+
+
+<h2 className="
+font-bold
+text-lg
 ">
 
-Select history item
+{item.type}
+
+</h2>
+
+
+
+<p>
+
+{item.title}
+
+</p>
+
+
+
+<p className="
+text-gray-500
+text-sm
+">
+
+{item.description}
+
+</p>
+
+
 
 </div>
 
+
+
+
+
+
+
+<div className="
+text-right
+">
+
+
+<CheckCircle className="
+text-green-600
+ml-auto
+"/>
+
+
+
+<b>
+
+{item.status}
+
+</b>
+
+
+
+<p className="
+text-gray-400
+text-sm
+">
+
+{item.time}
+
+</p>
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+))
+
+}
+
+
+</div>
 
 }
 
 
 
-</div>
 
-
-
-</div>
 
 
 </div>
@@ -557,6 +281,7 @@ Select history item
 
 
 }
+
 
 
 export default History;

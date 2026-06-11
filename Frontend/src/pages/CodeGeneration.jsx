@@ -15,15 +15,22 @@ import {
 import api from "../api/axios";
 
 
+import { saveHistory } from "../services/historyService";
+
+
+
+
 
 
 
 function CodeGeneration(){
 
 
+
 const location = useLocation();
 
 const navigate = useNavigate();
+
 
 
 
@@ -43,9 +50,15 @@ const {
 
 
 
+
+
 const [code,setCode] = useState("");
 
 const [loading,setLoading] = useState(false);
+
+
+
+
 
 
 
@@ -59,7 +72,9 @@ async function generateCode(){
 try{
 
 
+
 setLoading(true);
+
 
 
 
@@ -68,16 +83,27 @@ setLoading(true);
 const payload = {
 
 
-    test_cases:test_cases,
+    test_cases:
+
+        test_cases,
 
 
-    repo_context:repository,
+
+    repo_context:
+
+        repository,
 
 
-    language:"python",
+
+    language:
+
+        "python",
 
 
-    framework:"pytest"
+
+    framework:
+
+        "pytest"
 
 
 };
@@ -87,10 +113,17 @@ const payload = {
 
 
 
+
+
 console.log(
-    "SENDING CODE REQUEST",
-    payload
+
+"SENDING CODE REQUEST",
+
+payload
+
 );
+
+
 
 
 
@@ -99,11 +132,13 @@ console.log(
 
 const response = await api.post(
 
-    "/code/generate",
+"/code/generate",
 
-    payload
+payload
 
 );
+
+
 
 
 
@@ -112,110 +147,276 @@ const response = await api.post(
 
 
 console.log(
-    "FULL BACKEND RESPONSE",
-    response.data
+
+"FULL BACKEND RESPONSE",
+
+response.data
+
 );
 
 
 
 
 
-// FIX ALL POSSIBLE BACKEND FORMATS
+
+
+
 
 let generatedCode = "";
 
 
+
+
+
 if(
-    response.data?.generated_code?.code
+
+response.data?.generated_code?.code
+
 ){
 
-    generatedCode =
-    response.data.generated_code.code;
+
+
+generatedCode =
+
+response.data.generated_code.code;
+
+
 
 }
+
+
 
 
 else if(
-    response.data?.code
+
+response.data?.code
+
 ){
 
-    generatedCode =
-    response.data.code;
+
+
+generatedCode =
+
+response.data.code;
+
+
 
 }
+
+
+
 
 
 else if(
-    typeof response.data?.generated_code === "string"
+
+typeof response.data?.generated_code === "string"
+
 ){
 
-    generatedCode =
-    response.data.generated_code;
+
+
+generatedCode =
+
+response.data.generated_code;
+
+
 
 }
+
+
+
 
 
 else{
 
-    generatedCode =
-    JSON.stringify(
-        response.data,
-        null,
-        2
-    );
+
+generatedCode =
+
+JSON.stringify(
+
+response.data,
+
+null,
+
+2
+
+);
+
 
 }
 
 
 
 
-console.log(
-    "DISPLAY CODE",
-    generatedCode
-);
+
+
 
 
 
 
 setCode(
-    generatedCode
+
+generatedCode
+
 );
 
 
 
 
+
+
+
+
+
+
+// ============================
+// SAVE FOR EXPORT
+// ============================
+
+
+localStorage.setItem(
+
+"generatedCode",
+
+generatedCode
+
+);
+
+
+
+
+
+
+
+
+
+// ============================
+// SAVE HISTORY
+// ============================
+
+
+saveHistory({
+
+
+
+type:
+
+"Code Generation",
+
+
+
+
+title:
+
+"Automation Code Generated",
+
+
+
+
+description:
+
+"PyTest Selenium automation script generated",
+
+
+
+
+status:
+
+"Completed",
+
+
+
+
+data:{
+
+
+
+repository:
+
+repository?.name || "Repository",
+
+
+
+
+framework:
+
+"PyTest + Selenium",
+
+
+
+
+code:
+
+generatedCode
+
+
+
 }
+
+
+
+});
+
+
+
+
+
+
+
+
+
+}
+
 
 
 catch(error){
 
 
+
 console.log(
-    "CODE ERROR",
-    error
+
+"CODE ERROR",
+
+error
+
 );
+
+
 
 
 alert(
-    "Code generation failed"
+
+"Code generation failed"
+
 );
 
 
+
 }
+
+
+
+
 
 
 
 finally{
 
 
+
 setLoading(false);
 
 
+
+}
+
+
+
 }
 
 
 
-}
+
 
 
 
@@ -227,19 +428,27 @@ setLoading(false);
 
 return(
 
+
 <div>
 
 
 
+
+
+
 <h1
+
 className="
 text-2xl
 font-bold
 mb-6
 "
+
 >
 
+
 Automation Code Generator
+
 
 </h1>
 
@@ -249,7 +458,11 @@ Automation Code Generator
 
 
 
+
+
+
 <div
+
 className="
 bg-white
 border
@@ -257,13 +470,16 @@ rounded-xl
 p-6
 mb-6
 "
+
 >
 
 
 
 <h2 className="font-bold mb-3">
 
+
 Input Summary
+
 
 </h2>
 
@@ -271,28 +487,48 @@ Input Summary
 
 
 
+
+
+
 <p>
+
 
 <b>Repository :</b>{" "}
 
+
+
 {
+
 repository?.name ||
+
 "Repository Loaded"
+
 }
+
 
 </p>
 
 
 
 
+
+
+
+
 <p>
+
 
 <b>User Story :</b>{" "}
 
+
 {
+
 user_story ||
+
 "Loaded"
+
 }
+
 
 </p>
 
@@ -300,13 +536,22 @@ user_story ||
 
 
 
+
+
+
 <p>
+
 
 <b>Framework :</b>{" "}
 
+
 PyTest + Selenium
 
+
 </p>
+
+
+
 
 
 
@@ -314,17 +559,27 @@ PyTest + Selenium
 
 <p>
 
+
 <b>Test Cases :</b>{" "}
 
+
 {
+
 test_cases
+
 ?
+
 "Loaded"
+
 :
+
 "Missing"
+
 }
 
+
 </p>
+
 
 
 
@@ -339,11 +594,17 @@ test_cases
 
 
 
+
+
+
 <button
+
 
 onClick={generateCode}
 
+
 disabled={loading}
+
 
 className="
 bg-blue-600
@@ -359,7 +620,10 @@ items-center
 >
 
 
+
 <Code2 size={18}/>
+
+
 
 
 {
@@ -374,7 +638,9 @@ loading
 
 "Generate Automation Code"
 
+
 }
+
 
 
 </button>
@@ -387,12 +653,18 @@ loading
 
 
 
+
+
 {
+
 
 code &&
 
 
+
+
 <div
+
 className="
 mt-6
 bg-gray-900
@@ -400,19 +672,27 @@ text-green-400
 rounded-xl
 p-5
 "
+
 >
 
 
 
+
+
+
 <h2
+
 className="
 text-white
 font-bold
 mb-4
 "
+
 >
 
+
 Generated Automation Script
+
 
 </h2>
 
@@ -420,18 +700,26 @@ Generated Automation Script
 
 
 
+
+
+
 <pre
+
 className="
 whitespace-pre-wrap
 overflow-auto
 max-h-[500px]
 text-sm
 "
+
 >
+
 
 {code}
 
+
 </pre>
+
 
 
 
@@ -443,6 +731,7 @@ text-sm
 <button
 
 
+
 onClick={()=>{
 
 
@@ -452,22 +741,42 @@ navigate(
 
 {
 
+
 state:{
 
-generated_code:code,
 
-test_cases:test_cases,
 
-repository:repository
+generated_code:
+
+code,
+
+
+
+test_cases:
+
+test_cases,
+
+
+
+repository:
+
+repository
+
+
 
 }
 
+
+
 }
+
 
 );
 
 
+
 }}
+
 
 
 className="
@@ -485,10 +794,13 @@ items-center
 >
 
 
+
 <Play size={18}/>
 
 
+
 Execute Tests
+
 
 
 </button>
@@ -496,10 +808,15 @@ Execute Tests
 
 
 
+
 </div>
 
 
+
 }
+
+
+
 
 
 
@@ -512,6 +829,8 @@ Execute Tests
 
 
 }
+
+
 
 
 

@@ -18,6 +18,9 @@ import {
 
 import api from "../api/axios";
 
+import { saveHistory } from "../services/historyService";
+
+
 
 
 
@@ -33,6 +36,8 @@ const [url,setUrl] = useState("");
 const [result,setResult] = useState(null);
 
 const [loading,setLoading] = useState(false);
+
+
 
 
 
@@ -60,10 +65,12 @@ return;
 
 
 
+
 try{
 
 
 setLoading(true);
+
 
 
 
@@ -81,6 +88,8 @@ repo_url:url
 
 
 
+
+
 console.log(
 
 "REPO RESPONSE",
@@ -88,6 +97,9 @@ console.log(
 response.data
 
 );
+
+
+
 
 
 
@@ -102,6 +114,10 @@ response.data;
 
 
 
+
+
+
+
 setResult(
 
 repoResult
@@ -110,9 +126,73 @@ repoResult
 
 
 
+
+
+
+
+
+// ==============================
+// SAVE HISTORY
+// ==============================
+
+
+saveHistory({
+
+    type:"Repository Analysis",
+
+
+    title:
+
+        repoResult.name ||
+
+        "GitHub Repository",
+
+
+
+    description:
+
+        `Repository analyzed successfully`,
+
+
+
+    status:"Completed",
+
+
+
+    data:{
+
+
+        repo_url:url,
+
+
+        tech_stack:
+
+            repoResult.tech_stack,
+
+
+        security:
+
+            repoResult.security,
+
+
+        rating:
+
+            repoResult.rating
+
+    }
+
+
+});
+
+
+
+
+
+
 }
 
 catch(error){
+
 
 
 console.log(error);
@@ -128,6 +208,7 @@ alert(
 
 
 }
+
 
 
 
@@ -221,7 +302,8 @@ Analyze GitHub repositories using AI agents
 
 
 
-{/* INPUT CARD */}
+
+{/* INPUT */}
 
 
 <div
@@ -264,7 +346,9 @@ Repository URL
 
 
 
+
 <div className="flex gap-4">
+
 
 
 
@@ -274,15 +358,7 @@ Repository URL
 value={url}
 
 
-onChange={
-
-(e)=>setUrl(
-
-e.target.value
-
-)
-
-}
+onChange={(e)=>setUrl(e.target.value)}
 
 
 placeholder="https://github.com/user/project"
@@ -333,7 +409,6 @@ items-center
 
 {
 
-
 loading
 
 ?
@@ -343,7 +418,6 @@ loading
 :
 
 "Analyze"
-
 
 }
 
@@ -366,8 +440,9 @@ loading
 
 
 
-{
 
+
+{
 
 result
 
@@ -385,35 +460,28 @@ result
 {/* OVERVIEW */}
 
 
-<div
-
-className="
+<div className="
 bg-white
 border
 rounded-xl
 p-6
-"
-
->
+">
 
 
 <h2 className="font-semibold flex gap-2 mb-4">
 
-
 <FolderGit2 size={18}/>
-
 
 Repository Overview
 
-
 </h2>
+
 
 
 
 <p>
 
 <b>Name :</b>{" "}
-
 
 {
 
@@ -423,7 +491,6 @@ result.name ||
 
 }
 
-
 </p>
 
 
@@ -431,9 +498,7 @@ result.name ||
 
 <p>
 
-
 <b>Quality :</b>{" "}
-
 
 {
 
@@ -444,7 +509,6 @@ result.quality_score ||
 "Good"
 
 }
-
 
 </p>
 
@@ -461,19 +525,16 @@ result.quality_score ||
 
 
 
+
 {/* TECH STACK */}
 
 
-<div
-
-className="
+<div className="
 bg-white
 border
 rounded-xl
 p-6
-"
-
->
+">
 
 
 
@@ -481,7 +542,6 @@ p-6
 
 
 <Code size={18}/>
-
 
 Tech Stack
 
@@ -492,9 +552,7 @@ Tech Stack
 
 
 
-
 {
-
 
 listData(
 
@@ -505,6 +563,7 @@ result.tech_stack
 .map(
 
 (item,index)=>(
+
 
 
 <span
@@ -524,7 +583,6 @@ mr-2
 mb-2
 "
 
-
 >
 
 
@@ -532,6 +590,7 @@ mb-2
 
 
 </span>
+
 
 
 )
@@ -553,19 +612,16 @@ mb-2
 
 
 
+
 {/* SECURITY */}
 
 
-<div
-
-className="
+<div className="
 bg-white
 border
 rounded-xl
 p-6
-"
-
->
+">
 
 
 
@@ -573,7 +629,6 @@ p-6
 
 
 <ShieldCheck size={18}/>
-
 
 Security Analysis
 
@@ -585,7 +640,6 @@ Security Analysis
 
 <p>
 
-
 {
 
 result.security ||
@@ -593,7 +647,6 @@ result.security ||
 "No security issues detected"
 
 }
-
 
 </p>
 
@@ -609,20 +662,15 @@ result.security ||
 
 
 
-
 {/* SCORE */}
 
 
-<div
-
-className="
+<div className="
 bg-white
 border
 rounded-xl
 p-6
-"
-
->
+">
 
 
 
@@ -631,12 +679,10 @@ p-6
 
 <Star size={18}/>
 
-
 Repository Score
 
 
 </h2>
-
 
 
 
@@ -649,9 +695,7 @@ result.rating ||
 
 "8/10"
 
-
 }
-
 
 
 </h1>
@@ -668,27 +712,24 @@ result.rating ||
 
 
 
-{/* AI RECOMMENDATIONS */}
 
 
-<div
+{/* RECOMMENDATION */}
 
-className="
+
+<div className="
 bg-white
 border
 rounded-xl
 p-6
 col-span-2
-"
-
->
+">
 
 
 <h2 className="font-semibold flex gap-2 mb-4">
 
 
 <Lightbulb size={18}/>
-
 
 AI Recommendations
 
@@ -700,7 +741,6 @@ AI Recommendations
 
 
 <ul className="space-y-2">
-
 
 
 {
@@ -717,21 +757,16 @@ result.recommendations
 (item,index)=>(
 
 
-
 <li key={index}>
 
-
 ✅ {item}
-
 
 </li>
 
 
-
 )
 
 )
-
 
 }
 
@@ -750,12 +785,11 @@ result.recommendations
 
 
 
-{/* GENERATE TEST BUTTON */}
+
+{/* NEXT */}
 
 
-<div
-
-className="
+<div className="
 bg-white
 border
 rounded-xl
@@ -763,9 +797,7 @@ p-6
 col-span-2
 flex
 justify-end
-"
-
->
+">
 
 
 <button
@@ -782,24 +814,18 @@ navigate(
 
 state:{
 
-
 repository:result,
-
 
 repo_url:url
 
-
 }
 
-
 }
-
 
 );
 
 
 }}
-
 
 
 className="
@@ -813,24 +839,19 @@ items-center
 gap-2
 "
 
-
 >
-
 
 
 <Rocket size={18}/>
 
 
-
 Generate Tests
-
 
 
 </button>
 
 
 
-
 </div>
 
 
@@ -838,15 +859,10 @@ Generate Tests
 
 
 
-
-
 </div>
-
 
 
 :
-
-
 
 
 
@@ -870,7 +886,6 @@ Repository insights appear here
 
 
 </div>
-
 
 
 

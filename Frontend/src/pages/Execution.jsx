@@ -1,14 +1,16 @@
 import { useState } from "react";
 
-import {
+import { useLocation } from "react-router-dom";
 
+
+import {
     Play,
     CheckCircle,
     XCircle,
     Clock,
     Bug,
-    Activity
-
+    Activity,
+    Wand2
 } from "lucide-react";
 
 
@@ -19,44 +21,86 @@ import api from "../api/axios";
 
 
 
+
 function Execution(){
 
 
 
-const [code,setCode] = useState("");
-
-const [result,setResult] = useState(null);
-
-const [loading,setLoading] = useState(false);
+const location = useLocation();
 
 
 
+// RECEIVE GENERATED CODE
+
+const generatedCode =
+
+    location.state?.generated_code || "";
+
+
+
+
+
+console.log(
+
+    "RECEIVED CODE:",
+
+    generatedCode
+
+);
 
 
 
 
 
 
-// ===============================
-// RUN TEST EXECUTION
-// ===============================
+const [code,setCode] =
+
+    useState(generatedCode);
 
 
-const runTest = async()=>{
+
+
+const [result,setResult] =
+
+    useState(null);
+
+
+
+
+const [loading,setLoading] =
+
+    useState(false);
+
+
+
+
+
+
+
+
+
+// ===========================
+// RUN EXECUTION
+// ===========================
+
+
+async function runTest(){
 
 
 
 if(!code.trim()){
 
 
-    alert(
-        "Enter automation code"
-    );
+alert(
+"No generated code found"
+);
 
 
-    return;
+return;
+
 
 }
+
 
 
 
@@ -70,41 +114,65 @@ setLoading(true);
 
 
 
-const response = await api.post(
 
-    "/execution/run",
 
-    {
+console.log(
 
-        code:code
+"EXECUTION REQUEST",
 
-    }
+code
 
 );
+
+
+
+
+
+
+
+const response = await api.post(
+
+"/execution/run",
+
+{
+
+code:code
+
+}
+
+);
+
+
+
+
 
 
 
 
 console.log(
 
-    "EXECUTION RESULT",
+"EXECUTION RESPONSE",
 
-    response.data
+response.data
 
 );
+
+
+
 
 
 
 
 setResult(
 
-    response.data
+response.data
 
 );
 
 
 
 }
+
 
 
 
@@ -114,9 +182,9 @@ catch(error){
 
 console.log(
 
-    "EXECUTION ERROR",
+"EXECUTION ERROR",
 
-    error
+error
 
 );
 
@@ -124,13 +192,14 @@ console.log(
 
 alert(
 
-    "Execution failed"
+"Execution failed"
 
 );
 
 
 
 }
+
 
 
 
@@ -146,7 +215,7 @@ setLoading(false);
 
 
 
-};
+}
 
 
 
@@ -158,8 +227,9 @@ setLoading(false);
 
 return(
 
-
 <div>
+
+
 
 
 
@@ -167,23 +237,12 @@ return(
 <h1 className="
 text-2xl
 font-bold
+mb-6
 ">
 
-Test Execution
+Test Execution Engine
 
 </h1>
-
-
-
-
-<p className="
-text-gray-500
-mb-8
-">
-
-Run automated tests and analyze execution results
-
-</p>
 
 
 
@@ -205,7 +264,9 @@ gap-8
 
 
 
-{/* ================= LEFT ================= */}
+
+
+{/* LEFT SIDE */}
 
 
 <div className="
@@ -218,14 +279,16 @@ p-6
 
 
 
+
 <h2 className="
 font-bold
-mb-5
+mb-4
 ">
 
-Automation Code
+Generated Automation Code
 
 </h2>
+
 
 
 
@@ -241,25 +304,23 @@ value={code}
 onChange={(e)=>setCode(e.target.value)}
 
 
-
-placeholder="
-Paste generated pytest selenium code here...
-"
-
+placeholder="Generated automation code appears here"
 
 
 className="
 w-full
-h-[420px]
+h-[450px]
 border
 rounded-xl
 p-5
 font-mono
+text-sm
 resize-none
 "
 
 
 />
+
 
 
 
@@ -281,7 +342,7 @@ className="
 mt-5
 bg-blue-600
 text-white
-px-8
+px-6
 py-3
 rounded-lg
 flex
@@ -294,6 +355,7 @@ items-center
 >
 
 
+
 <Play size={18}/>
 
 
@@ -304,18 +366,19 @@ loading
 
 ?
 
-"Running..."
+"Executing..."
 
 :
 
-"Run Test"
-
+"Execute Tests"
 
 }
 
 
 
 </button>
+
+
 
 
 
@@ -331,8 +394,12 @@ loading
 
 
 
-{/* ================= RIGHT ================= */}
 
+
+
+
+
+{/* RIGHT SIDE */}
 
 
 <div className="
@@ -346,11 +413,13 @@ p-6
 
 
 
+
+
 <h2 className="
 font-bold
 flex
 gap-2
-mb-6
+mb-5
 ">
 
 
@@ -369,14 +438,13 @@ Execution Result
 
 
 
-
 {
 
 
 result
 
-
 ?
+
 
 
 
@@ -388,15 +456,19 @@ result
 
 
 
-{/* STATUS CARDS */}
+
+
+{/* STATUS */}
+
 
 
 <div className="
 grid
 grid-cols-3
-gap-5
-mb-8
+gap-4
+mb-6
 ">
+
 
 
 
@@ -408,18 +480,14 @@ mb-8
 <div className="
 border
 rounded-xl
-p-5
+p-4
 ">
 
 
 <Clock/>
 
 
-<p className="text-gray-500 mt-2">
-
-Status
-
-</p>
+<p>Status</p>
 
 
 
@@ -448,10 +516,11 @@ result.execution_result?.status
 
 
 
+
 <div className="
 border
 rounded-xl
-p-5
+p-4
 ">
 
 
@@ -472,13 +541,7 @@ result.execution_result?.passed
 
 
 
-
-<p className="text-gray-500 mt-2">
-
-Result
-
-</p>
-
+<p>Result</p>
 
 
 
@@ -501,7 +564,9 @@ result.execution_result?.passed
 }
 
 
+
 </b>
+
 
 
 
@@ -519,19 +584,14 @@ result.execution_result?.passed
 <div className="
 border
 rounded-xl
-p-5
+p-4
 ">
 
 
 <Clock/>
 
 
-<p className="text-gray-500 mt-2">
-
-Time
-
-</p>
-
+<p>Time</p>
 
 
 <b>
@@ -539,11 +599,7 @@ Time
 
 {
 
-result.execution_result?.execution_time
-
-||
-"-"
-
+result.execution_result?.execution_time || "-"
 
 }
 
@@ -552,9 +608,8 @@ result.execution_result?.execution_time
 
 
 
+
 </div>
-
-
 
 
 
@@ -581,7 +636,7 @@ result.execution_result?.execution_time
 border
 rounded-xl
 p-5
-mb-6
+mb-5
 ">
 
 
@@ -592,14 +647,14 @@ mb-6
 font-bold
 flex
 gap-2
-mb-4
+mb-3
 ">
 
 
 <Bug/>
 
 
-Bug Analysis
+Bug Analyzer Agent
 
 
 </h2>
@@ -609,29 +664,34 @@ Bug Analysis
 
 
 
-<p className="
-font-semibold
-mb-4
-">
-
 
 
 {
 
 result.execution_result?.passed
 
+
 ?
 
-"✅ No Bugs Found"
+
+<p>
+
+✅ No bugs detected
+
+</p>
+
+
 
 :
 
-"🐞 Bug Detected"
+
+<div className="space-y-2">
 
 
-}
 
+<p>
 
+🐞 Bug detected
 
 </p>
 
@@ -639,25 +699,10 @@ result.execution_result?.passed
 
 
 
-
-
-
-
-{
-
-!result.execution_result?.passed &&
-
-
-
-<div className="
-space-y-3
-">
-
-
-
 <p>
 
-<b>Severity : </b>
+
+<b>Severity :</b>{" "}
 
 
 {
@@ -674,9 +719,12 @@ result.bug_analysis?.severity
 
 
 
+
+
 <p>
 
-<b>Root Cause : </b>
+
+<b>Root Cause :</b>{" "}
 
 
 {
@@ -694,9 +742,11 @@ result.bug_analysis?.root_cause
 
 
 
+
 <p>
 
-<b>Possible Fix : </b>
+
+<b>Possible Fix :</b>{" "}
 
 
 {
@@ -714,9 +764,11 @@ result.bug_analysis?.possible_fix
 
 
 
+
 <p>
 
-<b>QA Recommendation : </b>
+
+<b>Recommendation :</b>{" "}
 
 
 {
@@ -754,6 +806,115 @@ result.bug_analysis?.qa_recommendation
 
 
 
+
+
+
+
+{/* SELF HEALING */}
+
+
+{
+
+
+result.self_healing?.applied &&
+
+
+
+<div className="
+border
+rounded-xl
+p-5
+mb-5
+">
+
+
+
+
+
+<h2 className="
+font-bold
+flex
+gap-2
+mb-3
+">
+
+
+<Wand2/>
+
+
+Self Healing Agent
+
+
+</h2>
+
+
+
+
+
+
+<p>
+
+✅ Auto fix generated
+
+</p>
+
+
+
+
+
+
+
+<pre className="
+bg-gray-900
+text-green-400
+rounded-xl
+p-4
+mt-3
+whitespace-pre-wrap
+text-sm
+">
+
+
+
+{
+
+
+result.self_healing
+?.fixed_code
+?.fixed_code
+
+||
+
+result.self_healing
+?.fixed_code
+
+
+}
+
+
+
+</pre>
+
+
+
+
+
+</div>
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
 {/* LOGS */}
 
 
@@ -762,20 +923,19 @@ result.bug_analysis?.qa_recommendation
 bg-gray-900
 text-green-400
 rounded-xl
-p-5
+p-4
 ">
 
 
 
-<h2 className="
-font-bold
-mb-3
+<h3 className="
 text-white
+mb-2
 ">
 
 Logs
 
-</h2>
+</h3>
 
 
 
@@ -784,7 +944,6 @@ Logs
 whitespace-pre-wrap
 text-sm
 ">
-
 
 
 {
@@ -799,7 +958,6 @@ result.execution_result?.errors
 ||
 
 "No logs"
-
 
 
 }
@@ -829,7 +987,6 @@ result.execution_result?.errors
 
 
 
-
 <div className="
 h-96
 flex
@@ -839,7 +996,7 @@ text-gray-400
 ">
 
 
-Run tests to see execution report
+Waiting for execution
 
 
 </div>
@@ -853,10 +1010,6 @@ Run tests to see execution report
 
 
 
-</div>
-
-
-
 
 
 </div>
@@ -865,9 +1018,15 @@ Run tests to see execution report
 
 
 
+
 </div>
 
 
+
+
+
+
+</div>
 
 );
 
